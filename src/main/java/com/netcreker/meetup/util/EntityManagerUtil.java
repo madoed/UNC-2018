@@ -4,10 +4,7 @@ import com.netcreker.meetup.annotations.Parameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EntityManagerUtil {
     public static List<Field> getFieldsWithAnnotation(Class<?> clazz, Class<? extends Annotation> ann) {
@@ -34,7 +31,8 @@ public class EntityManagerUtil {
         return parameters;
     }
 
-    public static <T> void setField(Object instance, Field field, T value) {
+    // TODO : decorator method for set & get field value
+    public static <T> void setFieldValue(Object instance, Field field, T value) {
         try {
             boolean accessible = field.isAccessible();
             field.setAccessible(true);
@@ -43,6 +41,19 @@ public class EntityManagerUtil {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    public static <T> T getFieldValue(Object instance, Field field) {
+        try {
+            boolean accessible = field.isAccessible();
+            field.setAccessible(true);
+            Object value = field.get(instance);
+            field.setAccessible(accessible);
+            return (T) value;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static void setParameters(Object instance,
@@ -57,12 +68,22 @@ public class EntityManagerUtil {
             // TODO : connect this to Attributes.attr_type in DB
             // TODO : exception handling
             if (field.getType() == int.class){
-                setField(instance, field, Integer.parseInt(value));
+                setFieldValue(instance, field, Integer.parseInt(value));
             } else if (field.getType() == byte.class){
-                setField(instance, field, Byte.parseByte(value));
+                setFieldValue(instance, field, Byte.parseByte(value));
             } else {
-                setField(instance, field, value);
+                setFieldValue(instance, field, value);
             }
         }
+    }
+
+    public static <T> Map<String, T> getParameterValues(Object instance, Class<?> clazz) {
+        Map<String, T> values = new HashMap<>();
+        List<Field> parameters = getFieldsWithAnnotation(clazz, Parameter.class);
+        for (Field field : parameters) {
+            values.put(field.getAnnotation(Parameter.class).name(),
+                    getFieldValue(instance, field));
+        }
+        return values;
     }
 }

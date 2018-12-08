@@ -20,10 +20,10 @@ public class DatabaseManagerTest {
 
     @Before
     public void establishConnection() {
+        String url = "jdbc:postgresql://localhost:5432/unc2018";
+        String name = "unc2018";
+        String password = "unc2018";
         try {
-            String url = "jdbc:postgresql://localhost:5432/unc2018";
-            String name = "unc2018";
-            String password = "unc2018";
             Class.forName("org.postgresql.Driver");
             System.out.println("Драйвер подключен");
             connection = DriverManager.getConnection(url, name, password);
@@ -58,6 +58,14 @@ public class DatabaseManagerTest {
 
         assertEquals("1", params.get("id"));
         assertEquals("first schedule", params.get("name"));
+    }
+
+    @Test
+    public void testSave() {
+    }
+
+    @Test
+    public void testDelete() {
     }
 }
 

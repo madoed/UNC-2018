@@ -17,6 +17,8 @@ public class EAVEntityManager implements EntityManager {
         this.dbManager = dbManager;
     }
 
+    // TODO : ADD REFERENCES
+    // TODO : add nullability checks
     // TODO : add NORMAL error handling
     public <T> T load(int id, Class<T> clazz) {
         try {
@@ -40,11 +42,11 @@ public class EAVEntityManager implements EntityManager {
         return null;
     }
 
-    public void delete(int id) {
-        // TODO : implement deletion logic
+    public void save(Object instance, Class<?> clazz) {
+
     }
 
-    public void save(Object o, Class<?> clazz) {
-        // TODO : implement saving logic
+    public void delete(int id) {
+        dbManager.delete(id);
     }
 }
