@@ -8,4 +8,8 @@
     <changeSet id="1" author="yudin">
         <sqlFile path="sql/001_init.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
+
+    <changeSet id="2" author="ilyina">
+        <sqlFile path="sql/002_scheduler.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
 </databaseChangeLog>
