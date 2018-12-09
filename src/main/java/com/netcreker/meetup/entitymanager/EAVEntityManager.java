@@ -2,6 +2,7 @@ package com.netcreker.meetup.entitymanager;
 
 import com.netcreker.meetup.annotations.*;
 import com.netcreker.meetup.databasemanager.DatabaseManager;
+import lombok.extern.log4j.Log4j;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 import static com.netcreker.meetup.util.EntityManagerUtil.*;
 
-
+@Log4j
 public class EAVEntityManager implements EntityManager {
     private DatabaseManager dbManager;
 
@@ -19,8 +20,7 @@ public class EAVEntityManager implements EntityManager {
 
     // TODO : ADD REFERENCES
     // TODO : add nullability checks
-    // TODO : add NORMAL error handling
-    public <T> T load(int id, Class<T> clazz) {
+    public <T> T load(long id, Class<T> clazz) {
         try {
             List<Field> idFields = getFieldsWithAnnotation(clazz, Id.class);
             if (idFields.size() != 1)
@@ -32,21 +32,23 @@ public class EAVEntityManager implements EntityManager {
             Map<String, String> parameters = dbManager.getParameters(id,
                     parameterAttrNames);
 
-            Object model = clazz.newInstance();
+            T model = clazz.newInstance();
             setParameters(model, clazz, parameters);
 
-            return (T) model;
-        } catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            return model;
+        } catch (EntityManagerException
+                | InstantiationException
+                | IllegalAccessException eme) {
+            log.error(null, eme);
         }
         return null;
-    }
+        }
 
     public void save(Object instance, Class<?> clazz) {
-
+        //TODO : implement saving logic
     }
 
-    public void delete(int id) {
+    public void delete(long id) {
         dbManager.delete(id);
     }
 }

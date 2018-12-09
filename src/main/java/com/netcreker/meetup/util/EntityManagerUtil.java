@@ -1,11 +1,13 @@
 package com.netcreker.meetup.util;
 
 import com.netcreker.meetup.annotations.Parameter;
+import lombok.extern.log4j.Log4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
+@Log4j
 public class EntityManagerUtil {
     public static List<Field> getFieldsWithAnnotation(Class<?> clazz, Class<? extends Annotation> ann) {
         List<Field> fieldList = new LinkedList<>();
@@ -38,8 +40,8 @@ public class EntityManagerUtil {
             field.setAccessible(true);
             field.set(instance, value);
             field.setAccessible(accessible);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException iae) {
+            log.error(null, iae);
         }
     }
 
@@ -50,8 +52,8 @@ public class EntityManagerUtil {
             Object value = field.get(instance);
             field.setAccessible(accessible);
             return (T) value;
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException iae) {
+            log.error(null, iae);
         }
         return null;
     }
@@ -67,8 +69,8 @@ public class EntityManagerUtil {
 
             // TODO : connect this to Attributes.attr_type in DB
             // TODO : exception handling
-            if (field.getType() == int.class){
-                setFieldValue(instance, field, Integer.parseInt(value));
+            if (field.getType() == long.class){
+                setFieldValue(instance, field, Long.parseLong(value));
             } else if (field.getType() == byte.class){
                 setFieldValue(instance, field, Byte.parseByte(value));
             } else {

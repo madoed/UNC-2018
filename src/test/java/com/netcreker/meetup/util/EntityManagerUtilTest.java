@@ -5,10 +5,9 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
-import static com.netcreker.meetup.model.ModelGenerator.getScheduleParams1;
+import static com.netcreker.meetup.model.ModelGenerator.getScheduleParams;
 
 public class EntityManagerUtilTest {
     @Test
@@ -21,11 +20,11 @@ public class EntityManagerUtilTest {
     @Test
     public void testSetParameters() {
         Schedule schedule = new Schedule();
-        Map<String, String> params = getScheduleParams1();
+        Map<String, String> params = getScheduleParams();
         EntityManagerUtil.setParameters(schedule, schedule.getClass(), params);
 
-        assertEquals(1, schedule.getId());
-        assertEquals("schedule 1", schedule.getName());
+        assertEquals(2, schedule.getId());
+        assertEquals("schedule 2", schedule.getName());
         assertEquals("...", schedule.getDescription());
         assertEquals(0, schedule.getPrivacySetting());
         assertEquals(444, schedule.getUserId());

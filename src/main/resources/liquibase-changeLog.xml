@@ -12,4 +12,8 @@
     <changeSet id="2" author="ilyina">
         <sqlFile path="sql/002_scheduler.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
+
+    <changeSet id="3" author="ilyina">
+        <sqlFile path="sql/003_object_attr_constraint.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
 </databaseChangeLog>

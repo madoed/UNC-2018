@@ -1,5 +1,6 @@
 package com.netcreker.meetup.databasemanager;
 
+import lombok.extern.log4j.Log4j;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -8,15 +9,19 @@ import static org.junit.Assert.assertEquals;
 import javax.annotation.Resource;
 import java.sql.*;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import java.util.List;
 import java.util.ArrayList;
 
+import static com.netcreker.meetup.model.ModelGenerator.getScheduleParams;
+
+// TODO : fix multiple logs
+@Log4j
 public class DatabaseManagerTest {
     @Resource
     Connection connection = null;
+    @Resource
+    DatabaseManager dbm = null;
 
     @Before
     public void establishConnection() {
@@ -25,11 +30,13 @@ public class DatabaseManagerTest {
         String password = "unc2018";
         try {
             Class.forName("org.postgresql.Driver");
-            System.out.println("Драйвер подключен");
+            log.debug("Драйвер подключен");
             connection = DriverManager.getConnection(url, name, password);
-            System.out.println("Соединение установлено");
+            log.debug("Соединение установлено");
+            dbm = new EAVDatabaseManager(connection);
+            log.debug("DatabaseManager создан");
         } catch (Exception ex) {
-            Logger.getLogger(DatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(null, ex);
         }
     }
 
@@ -38,8 +45,9 @@ public class DatabaseManagerTest {
         if (connection != null) {
             try {
                 connection.close();
+                dbm = null;
             } catch (SQLException ex) {
-                Logger.getLogger(DatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+                log.error(null, ex);
             }
         }
     }
@@ -53,7 +61,6 @@ public class DatabaseManagerTest {
         attrNames.add("privacy_setting");
         attrNames.add("user_id");
 
-        DatabaseManager dbm = new EAVDatabaseManager(connection);
         Map<String, String> params = dbm.getParameters(1, attrNames);
 
         assertEquals("1", params.get("id"));
@@ -61,11 +68,21 @@ public class DatabaseManagerTest {
     }
 
     @Test
-    public void testSave() {
+    public void testSetParameters() {
+        Map<String, String> params = getScheduleParams();
+        dbm.setParameters(2, params);
+    }
+
+    @Test
+    public void testCreate() {
+        Map<String, String> params = getScheduleParams();
+        dbm.create("schedule", params);
     }
 
     @Test
     public void testDelete() {
+        // PLease make sure the object with given id exists in the DB
+        //dbm.delete(2);
     }
 }
 

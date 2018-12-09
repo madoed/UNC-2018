@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ModelGenerator {
-    public static Schedule getSchedule1() {
+    public static Schedule getSchedule() {
         Schedule schedule = new Schedule();
         schedule.setId(1);
         schedule.setName("schedule 1");
@@ -14,10 +14,10 @@ public class ModelGenerator {
         return schedule;
     }
 
-    public static Map<String, String> getScheduleParams1() {
+    public static Map<String, String> getScheduleParams() {
         Map<String, String> params = new HashMap<>();
-        params.put("id", "1");
-        params.put("name", "schedule 1");
+        params.put("id", "2");
+        params.put("name", "schedule 2");
         params.put("description", "...");
         params.put("privacy_setting", "0");
         params.put("user_id", "444");

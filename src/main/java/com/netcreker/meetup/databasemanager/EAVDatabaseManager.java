@@ -1,12 +1,14 @@
 package com.netcreker.meetup.databasemanager;
 
+import lombok.extern.log4j.Log4j;
+
 import java.sql.*;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
+import static com.netcreker.meetup.util.DatabaseManagerUtil.*;
+
+@Log4j
 public class EAVDatabaseManager implements DatabaseManager {
     // TODO : config connection
     private Connection connection;
@@ -15,50 +17,32 @@ public class EAVDatabaseManager implements DatabaseManager {
         this.connection = connection;
     }
 
-    public String getParameter(int id, String attrName) {
-        // TODO : is this code legit?
+    // TODO : consider pre-loading attrs and obj types
+    public String getParameter(long id, String attrName) {
+        String query = paramSelect(id, attrName);
+        List<String> values = getStringResults(executeQuery(query), "value");
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT * FROM Params natural join Attributes" +
-                            " where object_id = ?" +
-                            " and attr_name like ?");
-            preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, attrName);
-
-            ResultSet result = preparedStatement.executeQuery();
-            result.next();
-            return result.getString("value");
-        }catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            if (values.size() > 1)
+                throw new DatabaseManagerException("Query returned more than one result");
+            return values.get(0);
+        } catch (DatabaseManagerException dme) {
+            log.error(dme.getMessage(), dme);
         }
         return null;
     }
 
-    public Map<String, String> getParameters(int id, List<String> attrNames) {
-        Map<String, String> values = new HashMap<>();
-        for (String attrName : attrNames) {
-            values.put(attrName, getParameter(id, attrName));
-        }
-        return values;
+    public Map<String, String> getParameters(long id, List<String> attrNames) {
+        String query = paramSelect(id, attrNames);
+        return getParameterValues(executeQuery(query), "value");
     }
 
-    // TODO : upsert
-    public void setParameter(int id, String attrName, String value) {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO Params (object_id, attr_id, value)" +
-                            "SELECT ?, attr_id, ?" +
-                            "FROM Attributes where attr_name like ?");
-            preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, value);
-            preparedStatement.setString(3, attrName);
-            ResultSet result = preparedStatement.executeQuery();
-        }catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
-        }
+    public void setParameter(long id, String value, String attrName) {
+        String query = paramInsert(id, value, attrName);
+        executeUpdate(query);
     }
 
-    public void setParameters(int id, Map<String, String> parameters) {
+    // TODO : insert for multiple attributes?
+    public void setParameters(long id, Map<String, String> parameters) {
         Iterator<Map.Entry<String, String>> it = parameters.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> parameter = it.next();
@@ -66,15 +50,85 @@ public class EAVDatabaseManager implements DatabaseManager {
         }
     }
 
-    // TODO : ADD DB CASCADE !!!
-    public void delete(int id) {
+    public void create(String objectType, Map<String, String> parameters) {
+        // TODO : generate object names
+        String query = String.format(new StringBuilder()
+                .append("insert into Objects (object_type_id, object_name)")
+                .append(" values (%d, '%s') returning object_id")
+                .toString(), getObjectTypeId(objectType), "noname");
+        ResultSet result = executeQuery(query);
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "DELETE FROM Objects where object_id = ?");
-            preparedStatement.setInt(1, id);
-            ResultSet result = preparedStatement.executeQuery();
-        }catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            result.next();
+            setParameters(result.getLong("object_id"), parameters);
+        } catch (SQLException sqlEx) {
+            log.error(sqlEx.getMessage(), sqlEx);
         }
+    }
+
+    // TODO : ADD DB CASCADE !!!
+    public void delete(long id) {
+        String query = "delete from Objects where object_id = " + id;
+        executeUpdate(query);
+    }
+
+    private ResultSet executeQuery(String query) {
+        try {
+            Statement statement = connection.createStatement();
+            return statement.executeQuery(query);
+        } catch (SQLException sqlEx) {
+            log.error(sqlEx.getMessage(), sqlEx);
+        }
+        return null;
+    }
+
+    // TODO : DEAL WITH ERROR - Object with id (n) does not exist !!!
+    private ResultSet executeUpdate(String query) {
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
+        } catch (SQLException sqlEx) {
+            log.error(sqlEx.getMessage(), sqlEx);
+        }
+        return null;
+    }
+
+    private List<String> getStringResults(ResultSet result, String columnLabel) {
+        List<String> values = new LinkedList<>();
+        try {
+            while (result.next())
+                values.add(result.getString(columnLabel));
+        } catch (SQLException sqlEx) {
+            log.error(sqlEx.getMessage(), sqlEx);
+        }
+        return values;
+    }
+
+    private Map<String, String> getParameterValues(ResultSet result, String columnLabel) {
+        Map<String, String> params = new HashMap<>();
+        try {
+            while (result.next())
+                params.put(result.getString("attr_name"),
+                        result.getString(columnLabel));
+        } catch (SQLException sqlEx) {
+            log.error(sqlEx.getMessage(), sqlEx);
+        }
+        return params;
+    }
+
+    private long getObjectTypeId(String objectType) {
+        String query = String.format(new StringBuilder()
+                .append("select object_type_id from Obj_types")
+                .append(" where name like '%s'")
+                .toString(), objectType);
+        ResultSet result = executeQuery(query);
+        try {
+            if (!result.next())
+                throw new DatabaseManagerException(
+                        "An object type with name '" + objectType + "does not exist");
+            return result.getLong("object_type_id");
+        } catch (SQLException | DatabaseManagerException sqlEx) {
+            log.error(sqlEx.getMessage(), sqlEx);
+        }
+        return -1;
     }
 }

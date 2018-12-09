@@ -4,6 +4,7 @@ import com.netcreker.meetup.databasemanager.DatabaseManager;
 import com.netcreker.meetup.databasemanager.EAVDatabaseManager;
 import com.netcreker.meetup.model.Schedule;
 
+import lombok.extern.log4j.Log4j;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -11,32 +12,32 @@ import static org.junit.Assert.assertEquals;
 
 import javax.annotation.Resource;
 import java.sql.*;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import static com.netcreker.meetup.model.ModelGenerator.getScheduleParams1;
-
+@Log4j
 public class EntityManagerTest {
     @Resource
     Connection connection = null;
     @Resource
     DatabaseManager dbm = null;
+    @Resource
+    EntityManager em = null;
 
     @Before
     public void establishConnection() {
+        String url = "jdbc:postgresql://localhost:5432/unc2018";
+        String name = "unc2018";
+        String password = "unc2018";
         try {
-            String url = "jdbc:postgresql://localhost:5432/unc2018";
-            String name = "unc2018";
-            String password = "unc2018";
             Class.forName("org.postgresql.Driver");
-            System.out.println("Драйвер подключен");
+            log.debug("Драйвер подключен");
             connection = DriverManager.getConnection(url, name, password);
-            System.out.println("Соединение установлено");
+            log.debug("Соединение установлено");
             dbm = new EAVDatabaseManager(connection);
-            System.out.println("DatabaseManager подключен");
+            log.debug("DatabaseManager создан");
+            em = new EAVEntityManager(dbm);
+            log.debug("EntityManager создан");
         } catch (Exception ex) {
-            Logger.getLogger(EntityManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(null, ex);
         }
     }
 
@@ -46,8 +47,9 @@ public class EntityManagerTest {
             try {
                 connection.close();
                 dbm = null;
+                em = null;
             } catch (SQLException ex) {
-                Logger.getLogger(EntityManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+                log.error(null, ex);
             }
         }
     }
@@ -57,10 +59,14 @@ public class EntityManagerTest {
         // В моей БД лежит объект типа schedule с аттрибутами:
         // id = 1;
         // name = "first schedule";
-        EntityManager em = new EAVEntityManager(dbm);
         Schedule schedule = em.load(1, Schedule.class);
 
         assertEquals(1, schedule.getId());
         assertEquals("first schedule", schedule.getName());
+    }
+
+    @Test
+    public void testDelete() {
+        //em.delete(6);
     }
 }

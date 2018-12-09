@@ -1,7 +1,7 @@
 package com.netcreker.meetup.entitymanager;
 
 public interface EntityManager {
-    <T> T load(int id, Class<T> clazz);
-    void delete(int id);
+    <T> T load(long id, Class<T> clazz);
+    void delete(long id);
     void save(Object instance, Class<?> clazz);
 }
