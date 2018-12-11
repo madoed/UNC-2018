@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface DatabaseManager {
-    String getParameter(long id, String attrName);
+    List<String> getParameter(long id, String attrName);
     Map<String, String> getParameters(long id, List<String> attrNames);
 
     void setParameter(long id, String attrName, String value);

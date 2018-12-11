@@ -24,7 +24,7 @@ public class EntityManagerTest {
 
     @Before
     public void establishConnection() {
-        String url = "jdbc:postgresql://localhost:5432/unc2018";
+        String url = "jdbc:postgresql://localhost:5432/meetupdb";
         String name = "unc2018";
         String password = "unc2018";
         try {
@@ -67,6 +67,7 @@ public class EntityManagerTest {
 
     @Test
     public void testDelete() {
-        //em.delete(6);
+        // TODO : test delete
+        //em.delete(2);
     }
 }

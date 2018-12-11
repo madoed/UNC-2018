@@ -21,30 +21,30 @@ public class EAVEntityManager implements EntityManager {
     // TODO : ADD REFERENCES
     // TODO : add nullability checks
     public <T> T load(long id, Class<T> clazz) {
+        List<Field> idFields = getFieldsWithAnnotation(clazz, Id.class);
         try {
-            List<Field> idFields = getFieldsWithAnnotation(clazz, Id.class);
             if (idFields.size() != 1)
                 throw new EntityManagerException(
-                        "Unable to resolve @Id annotation; encountered @Ids - "
-                                + idFields.size());
-
-            List<String> parameterAttrNames = getParameterAttrNames(clazz);
-            Map<String, String> parameters = dbManager.getParameters(id,
-                    parameterAttrNames);
-
+                    "Unable to resolve @Id annotation; encountered zero or multiple @Ids");
+        } catch (EntityManagerException e) {
+            log.error(e.getMessage(), e);
+        }
+        List<String> parameterAttrNames = getParameterAttrNames(clazz);
+        Map<String, String> parameters = dbManager.getParameters(id,
+                parameterAttrNames);
+        try {
             T model = clazz.newInstance();
             setParameters(model, clazz, parameters);
-
+            setFieldValue(model, idFields.get(0), id);
             return model;
-        } catch (EntityManagerException
-                | InstantiationException
-                | IllegalAccessException eme) {
-            log.error(null, eme);
+        } catch (InstantiationException
+                | IllegalAccessException e) {
+            log.error(e.getMessage(), e);
         }
         return null;
         }
 
-    public void save(Object instance, Class<?> clazz) {
+    public <T extends Object> void save(T instance) {
         //TODO : implement saving logic
     }
 

@@ -1,7 +1,8 @@
 package com.netcreker.meetup.entitymanager;
 
 public interface EntityManager {
+    // TODO : add filter method
     <T> T load(long id, Class<T> clazz);
     void delete(long id);
-    void save(Object instance, Class<?> clazz);
+    <T extends Object> void save(T instance);
 }

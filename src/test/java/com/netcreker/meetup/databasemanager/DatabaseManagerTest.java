@@ -25,7 +25,7 @@ public class DatabaseManagerTest {
 
     @Before
     public void establishConnection() {
-        String url = "jdbc:postgresql://localhost:5432/unc2018";
+        String url = "jdbc:postgresql://localhost:5432/meetupdb";
         String name = "unc2018";
         String password = "unc2018";
         try {

@@ -8,13 +8,18 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 import lombok.ToString;
 
 @ToString
 @NoArgsConstructor @AllArgsConstructor
 @ObjectType("schedule")
 public class Schedule {
-    @Getter @Setter @Id @Parameter(name = "id")
+    @Id
+    private long objectId;
+
+    @Getter @Setter @Parameter(name = "id")
     private long id;
 
     @Getter @Setter @Parameter(name = "name")
@@ -27,5 +32,5 @@ public class Schedule {
     private byte privacySetting;
 
     @Getter @Setter @Parameter(name = "user_id")
-    private int userId;
+    private long userId;
 }
