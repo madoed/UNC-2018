@@ -1,7 +1,4 @@
-DROP SCHEMA IF EXISTS meetupdb CASCADE ;
-create schema meetupdb;
-
-set search_path to meetupdb;
+drop SCHEMA IF EXISTS meetupdb CASCADE ;
 
 create sequence global_id_sequence;
 
@@ -10,12 +7,9 @@ create or replace function id_generator(out result bigint) as $$
   our_epoch bigint := 10000;
 seq_id bigint;
 now_millis bigint;
--- the id of this db shard, must be set for each
--- schema shard you have - you could pass this as a parameter too
 shard_id int := 1;
 begin
   select nextval('global_id_sequence') % 1024 into seq_id;
-
   select floor(extract(epoch from clock_timestamp()) * 1000) into now_millis;
   result := (now_millis - our_epoch) << 23;
   result := result | (shard_id << 10);
@@ -52,11 +46,11 @@ create table objects
 create table params
 (
   object_id bigint not null,
-  attr_id  bigint not null,
+  attr_id   bigint not null,
   value     varchar(4000)
 );
 
-create table refer
+create table refs
 (
   object_id bigint not null,
   attr_id   bigint not null,
@@ -65,32 +59,40 @@ create table refer
 
 alter table obj_attributes
   add constraint obj_attributes_attributes foreign key (attr_id)
-    references attributes (attr_id);
+    references attributes (attr_id)
+      on delete cascade;
 
 alter table obj_attributes
   add constraint obj_attributes_obj_types foreign key (object_type_id)
-    references obj_types (object_type_id);
+    references obj_types (object_type_id)
+      on delete cascade;
 
 alter table objects
   add constraint obj_types_objects foreign key (object_type_id)
-    references obj_types (object_type_id);
+    references obj_types (object_type_id)
+      on delete cascade;
 
-alter table refer
+alter table refs
   add constraint objects_references foreign key (reference)
-    references objects (object_id);
+    references objects (object_id)
+      on delete cascade;
 
 alter table params
   add constraint params_attributes foreign key (attr_id)
-    references attributes (attr_id);
+    references attributes (attr_id)
+      on delete cascade;
 
 alter table params
   add constraint params_objects foreign key (object_id)
-    references objects (object_id);
+    references objects (object_id)
+      on delete cascade;
 
-alter table refer
+alter table refs
   add constraint references_attributes foreign key (attr_id)
-    references attributes (attr_id);
+    references attributes (attr_id)
+      on delete cascade;
 
-alter table refer
+alter table refs
   add constraint references_objects foreign key (object_id)
-    references objects (object_id);
+    references objects (object_id)
+      on delete cascade;
