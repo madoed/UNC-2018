@@ -9,7 +9,9 @@
         <sqlFile path="sql/001_init.sql" relativeToChangelogFile="true" stripComments="true" splitStatements="false"/>
     </changeSet>
     <changeSet id="2" author="ilyina">
-        <sqlFile path="sql/002_scheduler.sql" relativeToChangelogFile="true" stripComments="true"
-                 splitStatements="false"/>
+        <sqlFile path="sql/002_scheduler.sql" relativeToChangelogFile="true" stripComments="true" splitStatements="false"/>
+    </changeSet>
+    <changeSet id="3" author="guseva">
+        <sqlFile path="sql/003_cardinfo.sql" relativeToChangelogFile="true" stripComments="true" splitStatements="false"/>
     </changeSet>
 </databaseChangeLog>
