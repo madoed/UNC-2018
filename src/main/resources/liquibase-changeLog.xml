@@ -12,4 +12,8 @@
         <sqlFile path="sql/002_scheduler.sql" relativeToChangelogFile="true" stripComments="true"
                  splitStatements="false"/>
     </changeSet>
+    <changeSet id="3" author="morozov">
+        <sqlFile path="sql/003_meeting.sql" relativeToChangelogFile="true" stripComments="true"
+                 splitStatements="false"/>
+    </changeSet>
 </databaseChangeLog>
