@@ -1,21 +1,21 @@
 insert into Obj_types (name) values
-('schedule'),
-('event');
+    ('schedule'),
+    ('event');
 
 insert into Attributes (attr_type, attr_name) values
-(0, 'id'),
-(0, 'name'),
-(0, 'description'),
-(0, 'privacy_setting'),
-(0, 'user_id'),
-(0, 'start_date'),
-(0, 'end_date'),
-(0, 'priority'),
-(0, 'event_type'),
-(0, 'recursion'),
-(0, 'reminder'),
-(0, 'schedule_id'),
-(0, 'meeting_id');
+    (0, 'id'),
+    (0, 'name'),
+    (0, 'description'),
+    (0, 'privacy_setting'),
+    (0, 'user_id'),
+    (0, 'start_date'),
+    (0, 'end_date'),
+    (0, 'priority'),
+    (0, 'event_type'),
+    (0, 'recursion'),
+    (0, 'reminder'),
+    (0, 'schedule_id'),
+    (0, 'meeting_id');
 
 insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id

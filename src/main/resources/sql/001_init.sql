@@ -1,5 +1,3 @@
-drop SCHEMA IF EXISTS meetupdb CASCADE ;
-
 create sequence global_id_sequence;
 
 create or replace function id_generator(out result bigint) as $$
