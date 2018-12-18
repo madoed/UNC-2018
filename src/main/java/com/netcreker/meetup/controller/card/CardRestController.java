@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @RequestMapping("/{id}/card")
@@ -17,14 +15,14 @@ public class CardRestController {
   @Autowired
   private CardService cardService;
 
-  @RequestMapping(method = GET)
+  @GetMapping()
   public ArrayList<Card> getСard(@PathVariable Long id) {
     return cardService.getMyCards(id);
   }
 
-  @RequestMapping(method = POST)
+  @PostMapping()
   @ResponseStatus(CREATED)
-  public void addCard(@PathVariable Long id,@RequestBody Card newCard) {
-    cardService.addCard(id,newCard);
+  public Card addCard(@PathVariable Long id,@RequestBody Card newCard) {
+    return cardService.addCard(id,newCard);
   }
 }
