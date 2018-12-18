@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 @Service
 public class CardService {
-  DatabaseManagerImpl dbmanager;
+  //DatabaseManagerImpl dbmanager;
 
   public ArrayList<Card> getMyCards(Long id){
     //по id найти в refs ссылку с attr_id которые имеют тип card_info

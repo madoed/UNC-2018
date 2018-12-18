@@ -16,7 +16,7 @@ public class CardRestController {
   private CardService cardService;
 
   @GetMapping()
-  public ArrayList<Card> getСard(@PathVariable Long id) {
+  public ArrayList<Card> getСards(@PathVariable Long id) {
     return cardService.getMyCards(id);
   }
 
