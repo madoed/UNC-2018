@@ -1,14 +1,6 @@
 insert into Obj_types (name) values
 ('Credit_card_info');
 
-insert into objects (object_type_id, object_name)
-values ((select object_type_id from Obj_types where name like 'Credit_card_info'),
-          'card');
-
-insert into objects (object_type_id, object_name)
-values ((select object_type_id from obj_types where name like 'Credit_card_info'),
-          'encripted_card');
-
 insert into attributes (attr_name,attr_type)
 values ( 'name_surname', 0);
 
