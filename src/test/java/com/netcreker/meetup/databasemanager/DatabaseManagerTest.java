@@ -1,88 +1,44 @@
 package com.netcreker.meetup.databasemanager;
 
 import lombok.extern.log4j.Log4j;
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-
-import javax.annotation.Resource;
-import java.sql.*;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 
-import static com.netcreker.meetup.model.ModelGenerator.getScheduleParams;
+import static org.junit.Assert.assertEquals;
 
-// TODO : fix multiple logs
+import static com.netcreker.meetup.entity.EntityGenerator.getScheduleParams;
+
+
 @Log4j
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class DatabaseManagerTest {
-    @Resource
-    Connection connection = null;
-    @Resource
+
+    @Autowired
     DatabaseManager dbm = null;
 
-    @Before
-    public void establishConnection() {
-        String url = "jdbc:postgresql://localhost:5432/meetupdb";
-        String name = "unc2018";
-        String password = "unc2018";
-        try {
-            Class.forName("org.postgresql.Driver");
-            log.debug("Драйвер подключен");
-            connection = DriverManager.getConnection(url, name, password);
-            log.debug("Соединение установлено");
-            dbm = new EAVDatabaseManager(connection);
-            log.debug("DatabaseManager создан");
-        } catch (Exception ex) {
-            log.error(null, ex);
-        }
-    }
-
-    @After
-    public void closeConnection() {
-        if (connection != null) {
-            try {
-                connection.close();
-                dbm = null;
-            } catch (SQLException ex) {
-                log.error(null, ex);
-            }
-        }
+    @Test
+    public void testGetValue() {
+        List<Map<String, Object>> result = dbm.getValue(1, -5483786440967977981L);
+        assertEquals("schedule 1", result.get(0).get("value"));
+        assertEquals("schedule one", result.get(1).get("value"));
     }
 
     @Test
-    public void testGetParameters() {
-        List<String> attrNames = new ArrayList<>(5);
-        attrNames.add("id");
-        attrNames.add("name");
-        attrNames.add("description");
-        attrNames.add("privacy_setting");
-        attrNames.add("user_id");
-
-        Map<String, String> params = dbm.getParameters(1, attrNames);
-
-        assertEquals("1", params.get("id"));
-        assertEquals("first schedule", params.get("name"));
+    public void testGetValues() {
+        List<Map<String, Object>> result = dbm.getValues(1);
+        log.debug(result.toString());
     }
 
     @Test
-    public void testSetParameters() {
-        Map<String, String> params = getScheduleParams();
-        dbm.setParameters(2, params);
-    }
-
-    @Test
-    public void testCreate() {
-        Map<String, String> params = getScheduleParams();
-        dbm.create("schedule", params);
-    }
-
-    @Test
-    public void testDelete() {
-        // PLease make sure the object with given id exists in the DB
-        //dbm.delete(2);
+    public void testSetValue() {
+        dbm.setValue(1, -5483786440724708348L, "this is a test");
     }
 }
 

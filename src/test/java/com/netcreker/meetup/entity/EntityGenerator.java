@@ -1,16 +1,23 @@
-package com.netcreker.meetup.model;
+package com.netcreker.meetup.entity;
+
+import com.netcreker.meetup.entity.scheduler.*;
+import com.netcreker.meetup.entity.user.User;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ModelGenerator {
+public class EntityGenerator {
     public static Schedule getSchedule() {
+        User user = new User();
+        user.setId(444);
+
         Schedule schedule = new Schedule();
         schedule.setId(1);
         schedule.setName("schedule 1");
         schedule.setDescription("...");
         schedule.setPrivacySetting((byte)0);
-        schedule.setUserId(444);
+        schedule.setUser(user);
+
         return schedule;
     }
 
@@ -20,7 +27,7 @@ public class ModelGenerator {
         params.put("name", "schedule 2");
         params.put("description", "...");
         params.put("privacy_setting", "0");
-        params.put("user_id", "444");
+        params.put("user", "444");
         return params;
     }
 }

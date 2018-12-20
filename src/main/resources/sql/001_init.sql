@@ -1,8 +1,3 @@
-DROP SCHEMA IF EXISTS meetupdb CASCADE ;
-create schema meetupdb;
-
-set search_path to meetupdb;
-
 create sequence global_id_sequence;
 
 create or replace function id_generator(out result bigint) as $$
@@ -63,39 +58,39 @@ create table refs
 alter table obj_attributes
   add constraint obj_attributes_attributes foreign key (attr_id)
     references attributes (attr_id)
-    on delete cascade;
+      on delete cascade;
 
 alter table obj_attributes
   add constraint obj_attributes_obj_types foreign key (object_type_id)
     references obj_types (object_type_id)
-    on delete cascade;
+      on delete cascade;
 
 alter table objects
   add constraint obj_types_objects foreign key (object_type_id)
     references obj_types (object_type_id)
-    on delete cascade;
+      on delete cascade;
 
 alter table refs
   add constraint objects_references foreign key (reference)
     references objects (object_id)
-    on delete cascade;
+      on delete cascade;
 
 alter table params
   add constraint params_attributes foreign key (attr_id)
     references attributes (attr_id)
-    on delete cascade;
+      on delete cascade;
 
 alter table params
   add constraint params_objects foreign key (object_id)
     references objects (object_id)
-    on delete cascade;
+      on delete cascade;
 
 alter table refs
   add constraint references_attributes foreign key (attr_id)
     references attributes (attr_id)
-    on delete cascade;
+      on delete cascade;
 
 alter table refs
   add constraint references_objects foreign key (object_id)
     references objects (object_id)
-    on delete cascade;
+      on delete cascade;

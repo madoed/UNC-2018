@@ -1,6 +1,6 @@
 package com.netcreker.meetup.util;
 
-import com.netcreker.meetup.annotations.Parameter;
+import com.netcreker.meetup.annotation.Parameter;
 import lombok.extern.log4j.Log4j;
 
 import java.lang.annotation.Annotation;
@@ -9,7 +9,7 @@ import java.util.*;
 
 @Log4j
 public class EntityManagerUtil {
-    public static List<Field> getFieldsWithAnnotation(Class<?> clazz, Class<? extends Annotation> ann) {
+    /*public static List<Field> getFieldsWithAnnotation(Class<?> clazz, Class<? extends Annotation> ann) {
         List<Field> fieldList = new LinkedList<>();
         Class<?> c = clazz;
         while (c != null) {
@@ -87,5 +87,5 @@ public class EntityManagerUtil {
                     getFieldValue(instance, field));
         }
         return values;
-    }
+    }*/
 }

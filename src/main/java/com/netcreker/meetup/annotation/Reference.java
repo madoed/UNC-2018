@@ -1,4 +1,4 @@
-package com.netcreker.meetup.annotations;
+package com.netcreker.meetup.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Parameter {
-    String name() default "";
+public @interface Reference {
+    long value();
 }
