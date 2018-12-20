@@ -5,24 +5,36 @@ import java.util.Map;
 
 public interface DatabaseManager {
 
-    List<Map<String, Object>> getValue(long id, long attrId);
+    long create(long objType, Map<Long, String> values, Map<Long, Long> refs)
+            throws DatabaseManagerException;
 
-    List<Map<String, Object>> getValues(long id);
+    void delete(long id);
 
-    void setValue(long id, long attrId, String val);
+    void deleteReference(long id, long attrId, long ref);
 
-    void setValues(long id, Map<Long, String> values);
+    void deleteReferences(long id);
+
+    void deleteValues(long id);
 
     long getReference(long id, long attrId);
 
     List<Long> getReferences(long id, long attrId);
 
+    List<Map<String, Object>> getValue(long id, long attrId);
+
+    List<Map<String, Object>> getValues(long id);
+
     void setReference(long id, long attrId, long ref);
 
-    //void deleteReference(long id, long attrId, long ref);
+    void setReferences(long id, Map<Long, Long> refs)
+            throws DatabaseManagerException;
 
-    void delete(long id);
+    void setValue(long id, long attrId, String val);
 
-    //long create(long objType, Map<Long, String> values, Map<Long, Long> refs);
+    void setValues(long id, Map<Long, String> values)
+            throws DatabaseManagerException;
+
+    void update(long id, Map<Long, String> values, Map<Long, Long> refs)
+            throws DatabaseManagerException;
 
 }

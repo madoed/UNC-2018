@@ -15,17 +15,83 @@ import java.text.SimpleDateFormat;
 public class DatabaseManagerImpl implements DatabaseManager {
 
     // TODO : config date format
-    // TODO : update query - fix multiple insertions
+    // TODO : set const ids for attrs & rewrite id generator
+    // TODO : log operations
 
     private final JdbcTemplate jdbcTemplate;
+
+
+    public long create(long objType, Map<Long, String> values, Map<Long, Long> refs)
+            throws DatabaseManagerException {
+        String objName = "obj_type " + objType + " " +
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+                        .format(new Date());
+        String sql = String.format(
+                "insert into Objects (object_type_id, object_name) values" +
+                        " (%d, '%s') returning object_id",
+                objType, objName);
+
+        long id = jdbcTemplate.queryForObject(sql, Long.class);
+        setValues(id, values);
+        setReferences(id, refs);
+
+        return id;
+    }
+
+
+    public void delete(long id) {
+        String sql = "delete from Objects where object_id = " + id;
+        jdbcTemplate.update(sql);
+    }
+
+
+    public void deleteReference(long id, long attrId, long ref) {
+        String sql = String.format(
+                "delete from Refs where object_id = %d and" +
+                        "attr_id = %d and reference = %d",
+                id, attrId, ref);
+        jdbcTemplate.update(sql);
+    }
+
+
+    public void deleteReferences(long id) {
+        String sql = "delete from Refs where object_id = " + id;
+        jdbcTemplate.update(sql);
+    }
+
+
+    public void deleteValues(long id) {
+        String sql = "delete from Params where object_id = " + id;
+        jdbcTemplate.update(sql);
+    }
+
+
+    public long getReference(long id, long attrId) {
+        String sql = String.format(
+                "select reference from Refs" +
+                        " where object_id = %d and attr_id = %d",
+                id, attrId);
+        return jdbcTemplate.queryForObject(sql, Long.class);
+    }
+
+
+    public List<Long> getReferences(long id, long attrId) {
+        String sql = String.format(
+                "select reference from Refs" +
+                        " where object_id = %d and attr_id = %d",
+                id, attrId);
+        return jdbcTemplate.queryForList(sql, Long.class);
+    }
+
 
     public List<Map<String, Object>> getValue(long id, long attrId) {
         String sql = String.format(
                 "select * from Params" +
-                " where object_id = %d and attr_id = %d",
+                    " where object_id = %d and attr_id = %d",
                 id, attrId);
         return jdbcTemplate.queryForList(sql);
     }
+
 
     public List<Map<String, Object>> getValues(long id) {
         String sql = String.format(
@@ -34,15 +100,53 @@ public class DatabaseManagerImpl implements DatabaseManager {
         return jdbcTemplate.queryForList(sql);
     }
 
+
+
+    public void setReference(long id, long attrId, long ref) {
+        String sql = String.format(
+                "insert into Refs (object_id, attr_id, reference) values" +
+                        " (%d, %d, '%s')",
+                id, attrId, ref);
+        jdbcTemplate.update(sql);
+    }
+
+
+    public void setReferences(long id, Map<Long, Long> refs)
+            throws DatabaseManagerException {
+        if (refs == null)
+            throw new DatabaseManagerException("References must be specified");
+        if (refs.size() == 0)
+            return;
+
+        String sql = "insert into Refs (object_id, attr_id, reference) values";
+        Iterator<Map.Entry<Long, Long>> iter = refs.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<Long, Long> ref = iter.next();
+            sql += String.format(" (%d, %d, %d)",
+                    id, ref.getKey(), ref.getValue());
+            if (iter.hasNext()) sql += ",";
+        }
+
+        jdbcTemplate.update(sql);
+    }
+
+
     public void setValue(long id, long attrId, String val) {
         String sql = String.format(
                 "insert into Params (object_id, attr_id, value) values" +
-                " (%d, %d, '%s')",
+                    " (%d, %d, '%s')",
                 id, attrId, val);
         jdbcTemplate.update(sql);
     }
 
-    public void setValues(long id, Map<Long, String> values) {
+
+    public void setValues(long id, Map<Long, String> values)
+            throws DatabaseManagerException {
+        if (values == null)
+            throw new DatabaseManagerException("Values must be specified");
+        if (values.size() == 0)
+            return;
+
         String sql = "insert into Params (object_id, attr_id, value) values";
         Iterator<Map.Entry<Long, String>> iter = values.entrySet().iterator();
         while (iter.hasNext()) {
@@ -51,102 +155,20 @@ public class DatabaseManagerImpl implements DatabaseManager {
                     id, value.getKey(), value.getValue());
             if (iter.hasNext()) sql += ",";
         }
+
         jdbcTemplate.update(sql);
     }
 
-    public long getReference(long id, long attrId) {
-        String sql = String.format(
-                "select reference from Refs" +
-                " where object_id = %d and attr_id = %d",
-                id, attrId);
-        return jdbcTemplate.queryForObject(sql, Long.class);
+
+    // TODO : entity update function in database?
+
+    public void update(long id, Map<Long, String> values, Map<Long, Long> refs)
+            throws DatabaseManagerException {
+        deleteReferences(id);
+        deleteValues(id);
+
+        setReferences(id, refs);
+        setValues(id, values);
     }
 
-    // TODO : test getReferences
-    // TODO : set const ids for attrs
-    public List<Long> getReferences(long id, long attrId) {
-        String sql = String.format(
-                "select reference from Refs" +
-                " where object_id = %d and attr_id = %d",
-                id, attrId);
-        List<?> list = jdbcTemplate.queryForObject(sql, ArrayList.class);
-        return null;
-    }
-
-    public void setReference(long id, long attrId, long ref) {
-        String sql = String.format(
-                "insert into Refs (object_id, attr_id, reference) values" +
-                " (%d, %d, '%s')",
-                id, attrId, ref);
-        jdbcTemplate.update(sql);
-    }
-
-    public void delete(long id) {
-        String query = "delete from Objects where object_id = " + id;
-        jdbcTemplate.update(query);
-    }
-
-    /*
-    public void create(String objectType, Map<String, String> parameters) {
-        String objName = objectType + " " +
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
-                        .format(new Date());
-        String query = String.format(
-                "insert into meetupdb.Objects (object_type_id, object_name)" +
-                " select object_type_id, '%s'" +
-                " from meetupdb.Obj_types" +
-                " where name like '%s'" +
-                " returning object_id",
-                objName, objectType);
-        ResultSet result = executeQuery(query);
-        try {
-            result.next();
-            setParameters(result.getLong("object_id"), parameters);
-        } catch (SQLException e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
-    private ResultSet executeQuery(String query) {
-        try {
-            Statement statement = connection.createStatement();
-            return statement.executeQuery(query);
-        } catch (SQLException e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
-    }
-
-    private ResultSet executeUpdate(String query) {
-        try {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
-        } catch (SQLException e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
-    }
-
-    private List<String> getStringResults(ResultSet result, String columnLabel) {
-        List<String> values = new LinkedList<>();
-        try {
-            while (result.next())
-                values.add(result.getString(columnLabel));
-        } catch (SQLException e) {
-            log.error(e.getMessage(), e);
-        }
-        return values;
-    }
-
-    private Map<String, String> getAttrValues(ResultSet result, String columnLabel) {
-        Map<String, String> params = new HashMap<>();
-        try {
-            while (result.next())
-                params.put(result.getString("attr_name"),
-                        result.getString(columnLabel));
-        } catch (SQLException e) {
-            log.error(e.getMessage(), e);
-        }
-        return params;
-    }*/
 }
