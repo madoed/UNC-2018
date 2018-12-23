@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface DatabaseManager {
 
-    long create(long objType, Map<Long, String> values, Map<Long, Long> refs)
+    long create(long objType, Map<Long, String> values, List<Map<Long, Long>> refs)
             throws DatabaseManagerException;
 
     void delete(long id);
@@ -26,7 +26,7 @@ public interface DatabaseManager {
 
     void setReference(long id, long attrId, long ref);
 
-    void setReferences(long id, Map<Long, Long> refs)
+    void setReferences(long id, List<Map<Long, Long>> refs)
             throws DatabaseManagerException;
 
     void setValue(long id, long attrId, String val);
@@ -34,7 +34,7 @@ public interface DatabaseManager {
     void setValues(long id, Map<Long, String> values)
             throws DatabaseManagerException;
 
-    void update(long id, Map<Long, String> values, Map<Long, Long> refs)
+    void update(long id, Map<Long, String> values, List<Map<Long, Long>> refs)
             throws DatabaseManagerException;
 
 }

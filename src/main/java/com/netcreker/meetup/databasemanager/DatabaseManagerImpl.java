@@ -18,10 +18,11 @@ public class DatabaseManagerImpl implements DatabaseManager {
     // TODO : set const ids for attrs & rewrite id generator
     // TODO : log operations
 
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
 
 
-    public long create(long objType, Map<Long, String> values, Map<Long, Long> refs)
+    public long create(long objType, Map<Long, String> values, List<Map<Long, Long>> refs)
             throws DatabaseManagerException {
         String objName = "obj_type " + objType + " " +
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
@@ -101,7 +102,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
 
-
     public void setReference(long id, long attrId, long ref) {
         String sql = String.format(
                 "insert into Refs (object_id, attr_id, reference) values" +
@@ -111,7 +111,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
 
-    public void setReferences(long id, Map<Long, Long> refs)
+    public void setReferences(long id, List<Map<Long, Long>> refs)
             throws DatabaseManagerException {
         if (refs == null)
             throw new DatabaseManagerException("References must be specified");
@@ -119,12 +119,13 @@ public class DatabaseManagerImpl implements DatabaseManager {
             return;
 
         String sql = "insert into Refs (object_id, attr_id, reference) values";
-        Iterator<Map.Entry<Long, Long>> iter = refs.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry<Long, Long> ref = iter.next();
-            sql += String.format(" (%d, %d, %d)",
-                    id, ref.getKey(), ref.getValue());
-            if (iter.hasNext()) sql += ",";
+        for (Iterator<Map<Long, Long>> ref = refs.iterator(); ref.hasNext(); ) {
+            for (Iterator<Map.Entry<Long, Long>> iter = ref.next().entrySet().iterator(); iter.hasNext(); ) {
+                Map.Entry<Long, Long> refEntry = iter.next();
+                sql += String.format(" (%d, %d, %d)",
+                        id, refEntry.getKey(), refEntry.getValue());
+            }
+            if (ref.hasNext()) sql += ",";
         }
 
         jdbcTemplate.update(sql);
@@ -148,11 +149,10 @@ public class DatabaseManagerImpl implements DatabaseManager {
             return;
 
         String sql = "insert into Params (object_id, attr_id, value) values";
-        Iterator<Map.Entry<Long, String>> iter = values.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry<Long, String> value = iter.next();
+        for (Iterator<Map.Entry<Long, String>> iter = values.entrySet().iterator(); iter.hasNext(); ) {
+            Map.Entry<Long, String> valueEntry = iter.next();
             sql += String.format(" (%d, %d, '%s')",
-                    id, value.getKey(), value.getValue());
+                    id, valueEntry.getKey(), valueEntry.getValue());
             if (iter.hasNext()) sql += ",";
         }
 
@@ -160,9 +160,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
 
-    // TODO : entity update function in database?
-
-    public void update(long id, Map<Long, String> values, Map<Long, Long> refs)
+    public void update(long id, Map<Long, String> values, List<Map<Long, Long>> refs)
             throws DatabaseManagerException {
         deleteReferences(id);
         deleteValues(id);
