@@ -1,12 +1,16 @@
 package com.netcreker.meetup.entitymanager;
 
+import com.netcreker.meetup.entity.Entity;
+
 public interface EntityManager {
 
-    <T extends Object> T load(long id, Class<T> clazz)
-            throws IllegalAccessException, InstantiationException, EntityManagerException;
+    <T extends Entity> void delete(T entity)
+            throws EntityManagerException;
 
-    void delete(long id);
+    <T extends Entity> T load(long id, Class<T> clazz)
+            throws Exception;
 
-    <T extends Object> void save(T instance);
+    <T extends Entity> void save(T entity)
+            throws EntityManagerException;
 
 }
