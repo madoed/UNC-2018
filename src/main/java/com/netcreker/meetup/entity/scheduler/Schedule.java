@@ -1,24 +1,23 @@
 package com.netcreker.meetup.entity.scheduler;
 
 import com.netcreker.meetup.annotation.*;
+import com.netcreker.meetup.entity.Entity;
 import com.netcreker.meetup.entity.user.User;
 import lombok.Data;
 
 @Data
-@ObjectType(-5485260815210642431L)
-public class Schedule {
-    @Id
-    private long id;
+@ObjectType(2)
+public class Schedule extends Entity {
 
-    @Parameter(-5485260814833155068L)
+    @Parameter(attrId=1001)
     private String name;
 
-    @Parameter(-5485260814833155067L)
+    @Parameter(attrId=1002)
     private String description;
 
-    @Parameter(-5485260814833155066L)
+    @Parameter(attrId=1003)
     private byte privacySetting;
 
-    @Reference(-5485260814833155065L)
+    @Reference(attrId=1004)
     private User user;
 }
