@@ -18,7 +18,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
     // TODO : set const ids for attrs & rewrite id generator
     // TODO : log operations
 
-    @Autowired
     private final JdbcTemplate jdbcTemplate;
 
 
