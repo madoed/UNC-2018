@@ -21,7 +21,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
     private final JdbcTemplate jdbcTemplate;
 
 
-    public long create(long objType, Map<Long, String> values, List<Map<Long, Long>> refs) {
+    public long create(long objType, List<Map<Long, String>> values, List<Map<Long, Long>> refs) {
         String objName = "obj_type " + objType + " " +
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
                         .format(new Date());
@@ -42,7 +42,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         jdbcTemplate.update(sql);
     }
 
-    public void update(long id, Map<Long, String> values, List<Map<Long, Long>> refs) {
+    public void update(long id, List<Map<Long, String>> values, List<Map<Long, Long>> refs) {
         deleteReferences(id);
         deleteValues(id);
 
@@ -79,20 +79,17 @@ public class DatabaseManagerImpl implements DatabaseManager {
         return jdbcTemplate.queryForObject(sql, Long.class);
     }
 
-    public long getReference(long id, long attrId) {
-        String sql = String.format(
-                "select reference from Refs" +
-                        " where object_id = %d and attr_id = %d",
-                id, attrId);
-        return jdbcTemplate.queryForObject(sql, Long.class);
-    }
-
-    public List<Long> getReferences(long id, long attrId) {
+    public List<Long> getReference(long id, long attrId) {
         String sql = String.format(
                 "select reference from Refs" +
                         " where object_id = %d and attr_id = %d",
                 id, attrId);
         return jdbcTemplate.queryForList(sql, Long.class);
+    }
+
+    public List<Map<String, Object>> getReferences(long id) {
+        String sql = "select attr_id, reference from Refs where object_id = " + id;
+        return jdbcTemplate.queryForList(sql);
     }
 
     public List<Map<String, Object>> getValue(long id, long attrId) {
@@ -134,6 +131,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 Map.Entry<Long, Long> refEntry = iter.next();
                 sql += String.format(" (%d, %d, %d)",
                         id, refEntry.getKey(), refEntry.getValue());
+                if (iter.hasNext()) sql += ",";
             }
             if (ref.hasNext()) sql += ",";
         }
@@ -149,16 +147,19 @@ public class DatabaseManagerImpl implements DatabaseManager {
         jdbcTemplate.update(sql);
     }
 
-    public void setValues(long id, @NonNull Map<Long, String> values) {
+    public void setValues(long id, @NonNull List<Map<Long, String>> values) {
         if (values.size() == 0)
             return;
 
         String sql = "insert into Params (object_id, attr_id, value) values";
-        for (Iterator<Map.Entry<Long, String>> iter = values.entrySet().iterator(); iter.hasNext(); ) {
-            Map.Entry<Long, String> valueEntry = iter.next();
-            sql += String.format(" (%d, %d, '%s')",
-                    id, valueEntry.getKey(), valueEntry.getValue());
-            if (iter.hasNext()) sql += ",";
+        for (Iterator<Map<Long, String>> val = values.iterator(); val.hasNext(); ) {
+            for (Iterator<Map.Entry<Long, String>> iter = val.next().entrySet().iterator(); iter.hasNext(); ) {
+                Map.Entry<Long, String> valEntry = iter.next();
+                sql += String.format(" (%d, %d, %s)",
+                        id, valEntry.getKey(), valEntry.getValue());
+                if (iter.hasNext()) sql += ",";
+            }
+            if (val.hasNext()) sql += ",";
         }
 
         jdbcTemplate.update(sql);

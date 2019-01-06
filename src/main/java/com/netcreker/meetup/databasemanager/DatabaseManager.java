@@ -5,11 +5,11 @@ import java.util.Map;
 
 public interface DatabaseManager {
 
-    long create(long objType, Map<Long, String> values, List<Map<Long, Long>> refs);
+    long create(long objType, List<Map<Long, String>> values, List<Map<Long, Long>> refs);
 
     void delete(long id);
 
-    void update(long id, Map<Long, String> values, List<Map<Long, Long>> refs);
+    void update(long id, List<Map<Long, String>> values, List<Map<Long, Long>> refs);
 
     void deleteReference(long id, long attrId, long ref);
 
@@ -21,9 +21,9 @@ public interface DatabaseManager {
 
     long getEntityByName(String name);
 
-    long getReference(long id, long attrId);
+    List<Long> getReference(long id, long attrId);
 
-    List<Long> getReferences(long id, long attrId);
+    List<Map<String, Object>> getReferences(long id);
 
     List<Map<String, Object>> getValue(long id, long attrId);
 
@@ -37,6 +37,6 @@ public interface DatabaseManager {
 
     void setValue(long id, long attrId, String val);
 
-    void setValues(long id, Map<Long, String> values);
+    void setValues(long id, List<Map<Long, String>> values);
 
 }
