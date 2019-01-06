@@ -1,12 +1,16 @@
 package com.netcreker.meetup.databasemanager;
 
 import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.text.SimpleDateFormat;
 
 @Data
@@ -14,15 +18,10 @@ import java.text.SimpleDateFormat;
 @RequiredArgsConstructor(onConstructor = @_(@Autowired))
 public class DatabaseManagerImpl implements DatabaseManager {
 
-    // TODO : config date format
-    // TODO : set const ids for attrs & rewrite id generator
-    // TODO : log operations
-
     private final JdbcTemplate jdbcTemplate;
 
 
-    public long create(long objType, Map<Long, String> values, List<Map<Long, Long>> refs)
-            throws DatabaseManagerException {
+    public long create(long objType, Map<Long, String> values, List<Map<Long, Long>> refs) {
         String objName = "obj_type " + objType + " " +
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
                         .format(new Date());
@@ -38,12 +37,18 @@ public class DatabaseManagerImpl implements DatabaseManager {
         return id;
     }
 
-
     public void delete(long id) {
         String sql = "delete from Objects where object_id = " + id;
         jdbcTemplate.update(sql);
     }
 
+    public void update(long id, Map<Long, String> values, List<Map<Long, Long>> refs) {
+        deleteReferences(id);
+        deleteValues(id);
+
+        setReferences(id, refs);
+        setValues(id, values);
+    }
 
     public void deleteReference(long id, long attrId, long ref) {
         String sql = String.format(
@@ -53,18 +58,26 @@ public class DatabaseManagerImpl implements DatabaseManager {
         jdbcTemplate.update(sql);
     }
 
-
     public void deleteReferences(long id) {
         String sql = "delete from Refs where object_id = " + id;
         jdbcTemplate.update(sql);
     }
 
+    public void deleteValue(long id, long attrId) {
+        String sql = "delete from Params where object_id = " + id +
+                " and attr_id = " + attrId;
+        jdbcTemplate.update(sql);
+    }
 
     public void deleteValues(long id) {
         String sql = "delete from Params where object_id = " + id;
         jdbcTemplate.update(sql);
     }
 
+    public long getEntityByName(@NonNull String name) {
+        String sql = "select object_id from Objects where object_name like " + name;
+        return jdbcTemplate.queryForObject(sql, Long.class);
+    }
 
     public long getReference(long id, long attrId) {
         String sql = String.format(
@@ -74,7 +87,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
         return jdbcTemplate.queryForObject(sql, Long.class);
     }
 
-
     public List<Long> getReferences(long id, long attrId) {
         String sql = String.format(
                 "select reference from Refs" +
@@ -82,7 +94,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 id, attrId);
         return jdbcTemplate.queryForList(sql, Long.class);
     }
-
 
     public List<Map<String, Object>> getValue(long id, long attrId) {
         String sql = String.format(
@@ -92,7 +103,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
         return jdbcTemplate.queryForList(sql);
     }
 
-
     public List<Map<String, Object>> getValues(long id) {
         String sql = String.format(
                 "select * from Params where object_id = %d",
@@ -100,6 +110,11 @@ public class DatabaseManagerImpl implements DatabaseManager {
         return jdbcTemplate.queryForList(sql);
     }
 
+    public void setName(long id, @NonNull String name) {
+        String sql = "update Objects set object_name = " + name +
+                " where object_id = " + id;
+        jdbcTemplate.update(sql);
+    }
 
     public void setReference(long id, long attrId, long ref) {
         String sql = String.format(
@@ -109,11 +124,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         jdbcTemplate.update(sql);
     }
 
-
-    public void setReferences(long id, List<Map<Long, Long>> refs)
-            throws DatabaseManagerException {
-        if (refs == null)
-            throw new DatabaseManagerException("References must be specified");
+    public void setReferences(long id, @NonNull List<Map<Long, Long>> refs) {
         if (refs.size() == 0)
             return;
 
@@ -130,8 +141,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         jdbcTemplate.update(sql);
     }
 
-
-    public void setValue(long id, long attrId, String val) {
+    public void setValue(long id, long attrId, @NonNull String val) {
         String sql = String.format(
                 "insert into Params (object_id, attr_id, value) values" +
                     " (%d, %d, '%s')",
@@ -139,11 +149,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         jdbcTemplate.update(sql);
     }
 
-
-    public void setValues(long id, Map<Long, String> values)
-            throws DatabaseManagerException {
-        if (values == null)
-            throw new DatabaseManagerException("Values must be specified");
+    public void setValues(long id, @NonNull Map<Long, String> values) {
         if (values.size() == 0)
             return;
 
@@ -156,16 +162,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
         }
 
         jdbcTemplate.update(sql);
-    }
-
-
-    public void update(long id, Map<Long, String> values, List<Map<Long, Long>> refs)
-            throws DatabaseManagerException {
-        deleteReferences(id);
-        deleteValues(id);
-
-        setReferences(id, refs);
-        setValues(id, values);
     }
 
 }
