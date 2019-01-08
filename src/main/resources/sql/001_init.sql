@@ -3,7 +3,7 @@ create sequence global_id_sequence;
 create or replace function generate_id(out result bigint) as $$
 declare
   -- TO START IDS SMALLER, YOU COULD CHANGE THIS TO A MORE RECENT UNIX TIMESTAMP
-  our_epoch bigint := 1545577916;
+  our_epoch bigint := 1546955963;
   seq_id bigint;
   now_millis bigint;
   -- UNIQUE SERVICE IDENTIFIER

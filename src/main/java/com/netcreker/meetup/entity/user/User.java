@@ -5,36 +5,45 @@ import com.netcreker.meetup.annotation.Parameter;
 import com.netcreker.meetup.annotation.Reference;
 import com.netcreker.meetup.entity.Entity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Date;
 import java.util.List;
 
-
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ObjectType(1)
 public class User extends Entity {
 
-    @Parameter(attrId=1001)
-    private String name;
+    @Parameter(1001)
+    private String firstName;
 
-    @Parameter(attrId=1013)
+    @Parameter(1002)
+    private String lastName;
+
+    @Parameter(1003)
     private String login;
 
-    @Parameter(attrId=1014)
+    @Parameter(1004)
     private String email;
 
-    @Parameter(attrId=1015)
+    @Parameter(1005)
     private String password;
 
-    @Reference(attrId=1016)
+    @Reference(1006)
     private List<User> friends;
 
-    @Parameter(attrId=1017)
+    @Parameter(1007)
     private Date lastVisit;
 
     public void setPassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         this.password = passwordEncoder.encode(password);
+    }
+
+    @Override
+    public String toString() {
+        return "Id: " + id + ", name: " + name;
     }
 }

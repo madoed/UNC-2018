@@ -4,20 +4,19 @@ import com.netcreker.meetup.annotation.*;
 import com.netcreker.meetup.entity.Entity;
 import com.netcreker.meetup.entity.user.User;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ObjectType(2)
 public class Schedule extends Entity {
 
-    @Parameter(attrId=1001)
-    private String name;
-
-    @Parameter(attrId=1002)
+    @Parameter(1008)
     private String description;
 
-    @Parameter(attrId=1003)
+    @Parameter(1009)
     private byte privacySetting;
 
-    @Reference(attrId=1004)
+    @Reference(1010)
     private User user;
 }
