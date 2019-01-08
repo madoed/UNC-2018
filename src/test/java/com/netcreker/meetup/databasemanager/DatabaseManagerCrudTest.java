@@ -39,7 +39,7 @@ public class DatabaseManagerTest {
     }
 
     @Test
-    public void testSetValues() throws DatabaseManagerException {
+    public void testSetValues() {
         Map<Long, String> map = new HashMap<>();
         map.put(1013L, "bob");
         map.put(1014L, "bob@example.com");
@@ -62,7 +62,7 @@ public class DatabaseManagerTest {
     }
 
     @Test
-    public void testCreate() throws DatabaseManagerException {
+    public void testCreate() {
         Map<Long, String> params = new HashMap<>();
         params.put(1001L, "create test name");
         params.put(1013L, "create test login");
@@ -86,8 +86,7 @@ public class DatabaseManagerTest {
     }
 
     @Test
-    public void testUpdate() throws DatabaseManagerException {
-        /*
+    public void testUpdate() {
         Map<Long, String> params = new HashMap<>();
         params.put(-5483786440967977981L, "update test");
         params.put(-5483786440724708348L, "update test description");
@@ -97,7 +96,7 @@ public class DatabaseManagerTest {
         refs.put(-5483786440724708339L, 1L);
 
         dbm.update(-1L, params, refs);
-        */
     }
+
 }
 

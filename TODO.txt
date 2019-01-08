@@ -1,0 +1,4 @@
+1. Config date format
+2. Database and entity manager tests
+3. Object names?
+4. LoadingCache in entity manager
