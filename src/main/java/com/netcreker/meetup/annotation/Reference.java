@@ -8,7 +8,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Reference {
-    long attrId();
-    boolean asList() default false;
-    boolean lazy() default true;
+    long value();
 }
