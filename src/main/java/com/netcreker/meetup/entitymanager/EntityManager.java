@@ -4,13 +4,10 @@ import com.netcreker.meetup.entity.Entity;
 
 public interface EntityManager {
 
-    <T extends Entity> void delete(T entity)
-            throws EntityManagerException;
+    <T extends Entity> void delete(T entity);
 
-    <T extends Entity> T load(long id, Class<T> clazz)
-            throws Exception;
+    <T extends Entity> T load(Class<T> clazz, long id);
 
-    <T extends Entity> void save(T entity)
-            throws EntityManagerException;
+    <T extends Entity> void save(T entity);
 
 }

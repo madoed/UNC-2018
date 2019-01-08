@@ -1,143 +1,128 @@
 package com.netcreker.meetup.entitymanager;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.Cache;
 import com.netcreker.meetup.databasemanager.DatabaseManager;
-import com.netcreker.meetup.databasemanager.DatabaseManagerException;
 import com.netcreker.meetup.entity.Entity;
 import com.netcreker.meetup.util.Reflection;
 
+import lombok.NonNull;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class EntityManagerImpl implements EntityManager {
 
+    private final DatabaseManager dbManager;
+
+    private final Cache<Long, Entity> references = CacheBuilder.newBuilder()
+            .maximumSize(1000)
+            .expireAfterWrite(20, TimeUnit.MINUTES)
+            //.refreshAfterWrite(5, TimeUnit.MINUTES)
+            .build();
+
     @Autowired
-    private DatabaseManager dbManager;
-
-
-    public <T extends Entity> void delete(T entity)
-            throws EntityManagerException {
-        if (entity.getId() == 0)
-            throw new EntityManagerException("Entity id must be specified");
-        dbManager.delete(entity.getId());
+    public EntityManagerImpl(DatabaseManager dbManager) {
+        this.dbManager = dbManager;
     }
 
 
-    // TODO : add nullability checks
-    // TODO : fix circular stackOverflow
-    public <T extends Entity> T load(long id, Class<T> clazz)
-            throws Exception {
-        T entity = clazz.newInstance();
-        entity.setId(id);
+    @Override
+    public <T extends Entity> void delete(@NonNull T entity) {
+        dbManager.delete(entity.getId());
+        references.invalidate(entity);
+    }
 
-        // TODO : dbm update(...)
-        loadParams(clazz, entity);
+    @SneakyThrows
+    public <T extends Entity> T load(@NonNull Class<T> clazz, long id) {
+        T entity = (T) references.get(id, () -> {
+            Entity newEntity = clazz.newInstance();
+            newEntity.setId(id);
+            newEntity.setName(dbManager.getName(id));
+
+            loadParams(clazz, newEntity);
+            return newEntity;
+        });
         loadRefs(clazz, entity);
         return entity;
     }
 
-
-    public <T extends Entity> void save(T entity)
-            throws EntityManagerException {
-        if (entity.getId() == 0)
-            throw new EntityManagerException("Entity id must be specified");
-
-        dbManager.deleteReferences(entity.getId());
-        dbManager.deleteValues(entity.getId());
-
-        try {
-            saveParams(entity);
-            saveRefs(entity);
-        } catch (Exception e) {
-            throw new EntityManagerException(e.getMessage(), e .getCause());
+    @SneakyThrows
+    public <T extends Entity> void save(@NonNull T entity) {
+        if (entity.getId() == 0) {
+            entity.setId(dbManager.create(
+                    Reflection.getObjectType(entity.getClass()),
+                    entity.getName()));
         }
+        dbManager.update(entity.getId(), getParams(entity), getRefs(entity));
+        references.invalidate(entity);
     }
 
-
-    // Предполанается уникальность пары (object_id, attr_id) в Params
-    private <T extends Entity> void loadParams(Class<T> clazz, T entity)
-            throws Exception {
+    @SneakyThrows
+    private <T extends Entity> void loadParams(Class<T> clazz, Entity entity) {
         Map<Long, Field> paramFields = Reflection.getParamFields(clazz);
 
-        for (Map<String, Object> param : dbManager.getValues(entity.getId())) {
-            Field paramField = paramFields.get(param.get("attr_id"));
-            if (paramField != null)
-                Reflection.setField(paramField, entity, param.get("value"));
+        for (Map<String, Object> param : dbManager.getAllValues(entity.getId())) {
+            Field field = paramFields.get(param.get("attr_id"));
+            if (field != null)
+                Reflection.setField(field, entity, param.get("value"));
         }
     }
 
-
-    private <T extends Entity> void loadRefs(Class<T> clazz, T entity)
-            throws Exception {
-
+    @SneakyThrows
+    private <T extends Entity> void loadRefs(Class<T> clazz, Entity entity) {
         Map<Long, Field> refFields = Reflection.getRefFields(clazz);
 
-        for (Iterator<Map.Entry<Long, Field>> iter = refFields.entrySet().iterator(); iter.hasNext(); ) {
-            Map.Entry<Long, Field> fieldEntry = iter.next();
-            Object reference;
+        for (Map<String, Object> ref : dbManager.getAllReferences(entity.getId())) {
+            Field field = refFields.get(ref.get("attr_id"));
+            if (field != null) {
+                Class<? extends Entity> refClass = (Class<? extends Entity>) Reflection.getActualClass(field);
+                long refId = Long.parseLong(ref.get("reference").toString());
+                Entity refEntity = references.getIfPresent(refId);
 
-            if (fieldEntry.getValue().getType() == List.class) {
-                List<Long> refs = dbManager.getReferences(entity.getId(), fieldEntry.getKey());
-                ParameterizedType listType = (ParameterizedType) fieldEntry.getValue().getGenericType();
-                Class<T> refClass = (Class<T>) listType.getActualTypeArguments()[0];
-                reference = new ArrayList<>();
-
-                for (Long ref : refs) {
-                    ((ArrayList) reference).add(load(ref, refClass));
-                }
-            } else {
-                Long ref = dbManager.getReference(entity.getId(), fieldEntry.getKey());
-                Class<T> refClass = (Class<T>) fieldEntry.getValue().getType();
-                reference = load(ref, refClass);
+                if (refEntity == null)
+                    Reflection.setField(field, entity, load(refClass, refId));
+                else
+                    Reflection.setField(field, entity, refEntity);
             }
-
-            Reflection.setField(fieldEntry.getValue(), entity, reference);
         }
     }
 
-
-    private <T extends Entity> void saveParams(T entity)
-            throws IllegalAccessException, DatabaseManagerException {
+    private List<Map<Long, String>>getParams(Entity entity) throws IllegalAccessException {
         Map<Long, Field> paramFields = Reflection.getParamFields(entity.getClass());
-        Map<Long, String> params = new HashMap<>();
+        List<Map<Long, String>> params = new ArrayList<>();
 
-        for (Iterator<Map.Entry<Long, Field>> iter = paramFields.entrySet().iterator(); iter.hasNext(); ) {
-            Map.Entry<Long, Field> fieldEntry = iter.next();
-            String value = fieldEntry.getValue().getType() == Date.class ?
-                           Reflection.dateFormat.format(Reflection.getFieldValue(fieldEntry.getValue(), entity)) :
-                           Reflection.getFieldValue(fieldEntry.getValue(), entity).toString();
-
-            params.put(fieldEntry.getKey(), value);
-        }
-
-        if (params.size() > 0)
-            dbManager.setValues(entity.getId(), params);
-    }
-
-
-    private <T extends Entity> void saveRefs(T entity)
-            throws IllegalAccessException, DatabaseManagerException {
-        Map<Long, Field> refFields = Reflection.getRefFields(entity.getClass());
-        Map<Long, Long> refs = new HashMap<>();
-
-        for (Iterator<Map.Entry<Long, Field>> iter = refFields.entrySet().iterator(); iter.hasNext(); ) {
-            Map.Entry<Long, Field> fieldEntry = iter.next();
-            if (fieldEntry.getValue().getType() == List.class) {
-                for (Object ref : (List<Object>) Reflection.getFieldValue(fieldEntry.getValue(), entity))
-                    refs.put(fieldEntry.getKey(), ((Entity) ref).getId());
-            } else {
-                refs.put(fieldEntry.getKey(),
-                        ((Entity) Reflection.getFieldValue(fieldEntry.getValue(), entity)).getId());
+        for (Map.Entry<Long, Field> fieldEntry : paramFields.entrySet()) {
+            List<String> values = Reflection.getValue(fieldEntry.getValue(), entity);
+            for (String value : values) {
+                Map<Long, String> map = new HashMap<>();
+                map.put(fieldEntry.getKey(), value);
+                params.add(map);
             }
         }
 
-        /*
-        if (refs.size() > 0)
-            dbManager.setReferences(entity.getId(), refs);*/
+        return params;
+    }
+
+    private List<Map<Long, Long>> getRefs(Entity entity) throws IllegalAccessException {
+        Map<Long, Field> refFields = Reflection.getRefFields(entity.getClass());
+        List<Map<Long, Long>> references = new ArrayList<>();
+
+        for (Map.Entry<Long, Field> fieldEntry : refFields.entrySet()) {
+            List<Long> refs = Reflection.getReference(fieldEntry.getValue(), entity);
+            for (long ref : refs) {
+                Map<Long, Long> map = new HashMap<>();
+                map.put(fieldEntry.getKey(), ref);
+                references.add(map);
+            }
+        }
+
+        return references;
     }
 
 }
