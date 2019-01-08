@@ -1,6 +1,9 @@
 package com.netcreker.meetup.databasemanager;
 
 import lombok.extern.log4j.Log4j;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.junit.runner.RunWith;
@@ -9,93 +12,86 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-
+@Ignore("DatabaseManagerCrudTest requires manual checking at runtime")
 @Log4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DatabaseManagerTest {
+public class DatabaseManagerCrudTest {
 
     @Autowired
-    DatabaseManager dbm = null;
+    private DatabaseManager dbm = null;
 
-    @Test
-    public void testGetValue() {
-        List<Map<String, Object>> result = dbm.getValue(-1, 1001);
-        assertEquals("Alice", result.get(0).get("value"));
-        log.debug("Name param of user with id -1 is: " + result.toString());
+    private List<Map<Long, String>> params1 = new ArrayList<>();
+    private List<Map<Long, String>>params2 = new ArrayList<>();
+    private List<Map<Long, Long>> refs1 = new ArrayList<>();
+    private List<Map<Long, Long>> refs2 = new ArrayList<>();
+
+
+    @Before
+    public void setup() {
+        log.debug("DatabaseManager CRUD test startup");
+
+        HashMap<Long, String> map1 = new HashMap<>();
+        map1.put(1001L, "first name 1");
+        map1.put(1002L, "last name 1");
+        map1.put(1003L, "login 1");
+        map1.put(1004L, "email 1");
+        map1.put(1005L, "password 1");
+        map1.put(1017L, "last visit 1");
+        params1.add(map1);
+
+        HashMap<Long, String> map2 = new HashMap<>();
+        map2.put(1001L, "first name 2");
+        map2.put(1002L, "last name 2");
+        map2.put(1003L, "login 2");
+        map2.put(1004L, "email 2");
+        map2.put(1005L, "password 2");
+        map2.put(1017L, "last visit 2");
+        params1.add(map2);
+    }
+
+    @After
+    public void cleanup() {
+        params1 = null; params2 = null;
+        refs1 = null; refs2 = null;
+        log.debug("DatabaseManager CRUD test termination");
     }
 
     @Test
-    public void testGetValues() {
-        List<Map<String, Object>> result = dbm.getValues(-1);
-        assertEquals(5, result.size());
-        log.debug("Friends refs of user with id -1 are:" + result.toString());
+    public void crudTest() {
+        long id1 = testCreate();
+        log.debug("Returned object_id 1: " + id1);
+        long id2 = testCreate();
+        log.debug("Returned object_id 2: " + id2);
+
+        HashMap<Long, Long> refMap1 = new HashMap<>();
+        refMap1.put(1006L, id2);
+        refs1.add(refMap1);
+        HashMap<Long, Long> refMap2 = new HashMap<>();
+        refMap2.put(1006L, id1);
+        refs2.add(refMap2);
+
+        testUpdate(id1, params1, refs1);
+        testUpdate(id2, params2, refs2);
+        log.debug("Updated test objects");
+
+        testDelete(id1);
+        testDelete(id2);
+        log.debug("Removed test objects from database");
     }
 
-    @Test
-    public void testSetValue() {
-        dbm.setValue(-2, 1001, "Bob");
+    public long testCreate() {
+        long objectType = 1; // user object_type_id
+        String name = "test user";
+        return dbm.create(objectType, name);
     }
 
-    @Test
-    public void testSetValues() {
-        Map<Long, String> map = new HashMap<>();
-        map.put(1013L, "bob");
-        map.put(1014L, "bob@example.com");
-        map.put(1015L, "123456");
-        map.put(1017L, "23-12-2018 22:48:00");
-        dbm.setValues(-2, map);
+    public void testUpdate(long id, List<Map<Long, String>> params, List<Map<Long, Long>> refs) {
+        dbm.update(id, params, refs);
     }
 
-    @Test
-    public void testGetReference() {
-        //long id = dbm.getReference(2, -5483786440724708339L);
-        //assertEquals(1, id);
-    }
-
-    @Test
-    public void testGetReferences() {
-        List<Long> ids = dbm.getReferences(-1, 1016);
-        assertEquals(2, ids.size());
-        log.debug(ids.toString());
-    }
-
-    @Test
-    public void testCreate() {
-        Map<Long, String> params = new HashMap<>();
-        params.put(1001L, "create test name");
-        params.put(1013L, "create test login");
-
-        Map<Long, Long> ref1 = new HashMap<>();
-        ref1.put(1013L, -2L);
-        Map<Long, Long> ref2 = new HashMap<>();
-        ref2.put(1013L, -1L);
-
-        List<Map<Long, Long>> refs = new ArrayList<>();
-        refs.add(ref1);
-        refs.add(ref2);
-
-        long id = dbm.create(1, params, refs);
-        log.debug("Created new object with id: " + id);
-    }
-
-    @Test
-    public void testDelete() {
-        //dbm.delete(0);
-    }
-
-    @Test
-    public void testUpdate() {
-        Map<Long, String> params = new HashMap<>();
-        params.put(-5483786440967977981L, "update test");
-        params.put(-5483786440724708348L, "update test description");
-        params.put(-5483786440724708345L, "01-01-2000");
-
-        Map<Long, Long> refs = new HashMap<>();
-        refs.put(-5483786440724708339L, 1L);
-
-        dbm.update(-1L, params, refs);
+    public void testDelete(long id) {
+        dbm.delete(id);
     }
 
 }

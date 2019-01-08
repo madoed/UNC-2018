@@ -5,38 +5,42 @@ import java.util.Map;
 
 public interface DatabaseManager {
 
-    long create(long objType, List<Map<Long, String>> values, List<Map<Long, Long>> refs);
+    long create(long objType);
+
+    long create(long objType, String name);
 
     void delete(long id);
 
     void update(long id, List<Map<Long, String>> values, List<Map<Long, Long>> refs);
 
-    void deleteReference(long id, long attrId, long ref);
+    void deleteAllReferences(long id);
 
-    void deleteReferences(long id);
+    void deleteAllValues(long id);
 
-    void deleteValue(long id, long attrId);
+    List<Map<String, Object>> getAllReferences(long id);
 
-    void deleteValues(long id);
+    List<Map<String, Object>> getAllValues(long id);
 
-    long getEntityByName(String name);
+    void setAllReferences(long id, List<Map<Long, Long>> refs);
 
-    List<Long> getReference(long id, long attrId);
+    void setAllValues(long id, List<Map<Long, String>> values);
 
-    List<Map<String, Object>> getReferences(long id);
-
-    List<Map<String, Object>> getValue(long id, long attrId);
-
-    List<Map<String, Object>> getValues(long id);
+    String getName(long id);
 
     void setName(long id, String name);
 
+    List<Long> getEntitiesByName(String name);
+
+    void deleteReference(long id, long attrId, long ref);
+
+    void deleteValue(long id, long attrId);
+
+    List<Long> getReference(long id, long attrId);
+
+    List<Map<String, Object>> getValue(long id, long attrId);
+
     void setReference(long id, long attrId, long ref);
 
-    void setReferences(long id, List<Map<Long, Long>> refs);
-
     void setValue(long id, long attrId, String val);
-
-    void setValues(long id, List<Map<Long, String>> values);
 
 }
