@@ -1,17 +1,17 @@
 package com.netcreker.meetup.entitymanager;
 
-import com.netcreker.meetup.entity.Entity;
 import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.util.Reflection;
 import lombok.extern.log4j.Log4j;
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.Month;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -24,30 +24,6 @@ public class EntityManagerTest {
 
     @Autowired
     private EntityManager em = null;
-
-    /*
-    private final long objectType = 1; // user object_type_id
-    private final String name = "Alice Smith";
-    private Entity alice;
-    private Entity bob;
-
-
-    @Before
-    public void setup() {
-        alice = new User();
-        ((User) alice).setFirstName("Alice");
-        ((User) alice).setLastName("Smith");
-        ((User) alice).setEmail("alice@example.com");
-        ((User) alice).setLogin("alice");
-        ((User) alice).setPassword("qwerty");
-        ((User) alice).setLastVisit(new Date());
-
-        bob = new User();
-        ((User) bob).setFirstName("Bob");
-        ArrayList<User> friends = new ArrayList<>();
-        friends.add((User) bob);
-    }
-    */
 
     @Test
     public void testLoad() {
@@ -66,6 +42,46 @@ public class EntityManagerTest {
         cal.set(2019, Calendar.JANUARY, 8, 22, 53, 54);
         Date date = cal.getTime();
         assertEquals(Reflection.dateFormat.format(date), Reflection.dateFormat.format(user.getLastVisit()));
+    }
+
+    @Test(expected = EmptyResultDataAccessException.class)
+    public void failLoad() {
+        em.load(User.class, -100500);
+    }
+
+    @Test
+    public void testSave() {
+        long id = -2;
+        User user = new User();
+        user.setId(-2);
+        user.setName("Bob Wilde");
+        user.setFirstName("Bob");
+        user.setLastName("Wilde");
+        user.setLastVisit(new Date());
+        em.save(user);
+
+        User loadedUser = em.load(User.class, id);
+        assertEquals("Loaded user must be equal to the created one", user, loadedUser);
+    }
+
+    @Ignore("Requires manual checking at runtime")
+    @Test
+    public void testCreateAndDelete() {
+        User user = new User();
+        user.setName("test user");
+        user.setFirstName("test");
+        user.setLastName("user");
+        user.setLogin("user");
+        user.setPassword("1111");
+        user.setEmail("user@example.com");
+        user.setLastVisit(new Date());
+        ArrayList<User> friends = new ArrayList<>();
+        friends.add(em.load(User.class, -2));
+        friends.add(em.load(User.class, -3));
+        user.setFriends(friends);
+
+        em.save(user);
+        em.delete(user);
     }
 
 }

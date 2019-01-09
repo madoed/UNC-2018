@@ -12,7 +12,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
 
-@Ignore("DatabaseManagerCrudTest requires manual checking at runtime")
 @Log4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -57,11 +56,12 @@ public class DatabaseManagerCrudTest {
         log.debug("DatabaseManager CRUD test termination");
     }
 
+    @Ignore("Requires manual checking at runtime")
     @Test
     public void crudTest() {
-        long id1 = testCreate();
+        long id1 = create();
         log.debug("Returned object_id 1: " + id1);
-        long id2 = testCreate();
+        long id2 = create();
         log.debug("Returned object_id 2: " + id2);
 
         HashMap<Long, Long> refMap1 = new HashMap<>();
@@ -71,26 +71,26 @@ public class DatabaseManagerCrudTest {
         refMap2.put(1006L, id1);
         refs2.add(refMap2);
 
-        testUpdate(id1, params1, refs1);
-        testUpdate(id2, params2, refs2);
+        update(id1, params1, refs1);
+        update(id2, params2, refs2);
         log.debug("Updated test objects");
 
-        testDelete(id1);
-        testDelete(id2);
+        delete(id1);
+        delete(id2);
         log.debug("Removed test objects from database");
     }
 
-    public long testCreate() {
+    public long create() {
         long objectType = 1; // user object_type_id
         String name = "test user";
         return dbm.create(objectType, name);
     }
 
-    public void testUpdate(long id, List<Map<Long, String>> params, List<Map<Long, Long>> refs) {
+    public void update(long id, List<Map<Long, String>> params, List<Map<Long, Long>> refs) {
         dbm.update(id, params, refs);
     }
 
-    public void testDelete(long id) {
+    public void delete(long id) {
         dbm.delete(id);
     }
 

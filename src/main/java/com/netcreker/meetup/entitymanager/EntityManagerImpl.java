@@ -7,11 +7,11 @@ import com.netcreker.meetup.entity.Entity;
 import com.netcreker.meetup.util.Reflection;
 
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -20,9 +20,9 @@ public class EntityManagerImpl implements EntityManager {
 
     private final DatabaseManager dbManager;
 
-    private final Cache<Long, Entity> references = CacheBuilder.newBuilder()
+    private final Cache<Long, Entity> entities = CacheBuilder.newBuilder()
             .maximumSize(1000)
-            .expireAfterWrite(20, TimeUnit.MINUTES)
+            .expireAfterAccess(5, TimeUnit.MINUTES)
             //.refreshAfterWrite(5, TimeUnit.MINUTES)
             .build();
 
@@ -35,36 +35,45 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public <T extends Entity> void delete(@NonNull T entity) {
         dbManager.delete(entity.getId());
-        references.invalidate(entity);
+        entities.invalidate(entity.getId());
     }
 
-    @SneakyThrows
+    @Override
     public <T extends Entity> T load(@NonNull Class<T> clazz, long id) {
-        T entity = (T) references.get(id, () -> {
-            Entity newEntity = clazz.newInstance();
-            newEntity.setId(id);
-            newEntity.setName(dbManager.getName(id));
+        T entity = (T) entities.getIfPresent(id);
+        if (entity == null) {
+            try {
+                entity = clazz.newInstance();
+                entity.setId(id);
+                entity.setName(dbManager.getName(id));
 
-            loadParams(clazz, newEntity);
-            return newEntity;
-        });
-        loadRefs(clazz, entity);
+                loadParams(clazz, entity);
+                entities.put(id, entity);
+                loadRefs(clazz, entity);
+            } catch (InstantiationException | IllegalAccessException | ParseException e) {
+                throw new EntityManagerException(e.getMessage(), e);
+            }
+        }
         return entity;
     }
 
-    @SneakyThrows
+    @Override
     public <T extends Entity> void save(@NonNull T entity) {
-        if (entity.getId() == 0) {
-            entity.setId(dbManager.create(
-                    Reflection.getObjectType(entity.getClass()),
-                    entity.getName()));
+        try {
+            if (entity.getId() == 0) {
+                entity.setId(dbManager.create(
+                        Reflection.getObjectType(entity.getClass()),
+                        entity.getName()));
+            }
+            dbManager.update(entity.getId(), getParams(entity), getRefs(entity));
+            entities.put(entity.getId(), entity);
+        } catch (ReflectiveOperationException e) {
+            throw new EntityManagerException(e.getMessage(), e);
         }
-        dbManager.update(entity.getId(), getParams(entity), getRefs(entity));
-        references.invalidate(entity);
     }
 
-    @SneakyThrows
-    private <T extends Entity> void loadParams(Class<T> clazz, Entity entity) {
+    private <T extends Entity> void loadParams(Class<T> clazz, Entity entity)
+            throws IllegalAccessException, ParseException {
         Map<Long, Field> paramFields = Reflection.getParamFields(clazz);
 
         for (Map<String, Object> param : dbManager.getAllValues(entity.getId())) {
@@ -74,8 +83,8 @@ public class EntityManagerImpl implements EntityManager {
         }
     }
 
-    @SneakyThrows
-    private <T extends Entity> void loadRefs(Class<T> clazz, Entity entity) {
+    private <T extends Entity> void loadRefs(Class<T> clazz, Entity entity)
+            throws IllegalAccessException, ParseException {
         Map<Long, Field> refFields = Reflection.getRefFields(clazz);
 
         for (Map<String, Object> ref : dbManager.getAllReferences(entity.getId())) {
@@ -83,12 +92,7 @@ public class EntityManagerImpl implements EntityManager {
             if (field != null) {
                 Class<? extends Entity> refClass = (Class<? extends Entity>) Reflection.getActualClass(field);
                 long refId = Long.parseLong(ref.get("reference").toString());
-                Entity refEntity = references.getIfPresent(refId);
-
-                if (refEntity == null)
-                    Reflection.setField(field, entity, load(refClass, refId));
-                else
-                    Reflection.setField(field, entity, refEntity);
+                Reflection.setField(field, entity, load(refClass, refId));
             }
         }
     }
