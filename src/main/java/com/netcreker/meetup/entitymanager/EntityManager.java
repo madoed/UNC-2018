@@ -4,7 +4,7 @@ import com.netcreker.meetup.entity.Entity;
 
 public interface EntityManager {
 
-    <T extends Entity> void delete(T entity);
+    <T extends Entity> void delete(long id);
 
     <T extends Entity> T load(Class<T> clazz, long id);
 

@@ -56,8 +56,8 @@ public class SaveTest {
         em.save(event);
         assertFalse(event.isReminder());
 
-        em.delete(schedule);
-        em.delete(event);
+        em.delete(schedule.getId());
+        em.delete(event.getId());
     }
 
 }

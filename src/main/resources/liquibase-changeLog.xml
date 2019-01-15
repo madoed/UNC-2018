@@ -16,4 +16,8 @@
     <changeSet id="6" author="ilyina">
         <sqlFile path="sql/006_user.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
+
+    <changeSet id="7" author="ilyina">
+        <sqlFile path="sql/007_testing.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
 </databaseChangeLog>

@@ -81,7 +81,7 @@ public class EntityManagerTest {
         user.setFriends(friends);
 
         em.save(user);
-        em.delete(user);
+        em.delete(user.getId());
     }
 
 }

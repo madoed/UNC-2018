@@ -1,20 +1,8 @@
 create sequence global_id_sequence;
 
 create or replace function generate_id(out result bigint) as $$
-declare
-  -- TO START IDS SMALLER, YOU COULD CHANGE THIS TO A MORE RECENT UNIX TIMESTAMP
-  our_epoch bigint := 1546955963;
-  seq_id bigint;
-  now_millis bigint;
-  -- UNIQUE SERVICE IDENTIFIER
-  -- CHANGE THIS FOR EACH SERVICE!!!
-  service_id int := 1;
 begin
-  select nextval('global_id_sequence') % 1024 into seq_id;
-  select FLOOR(EXTRACT(EPOCH from clock_timestamp())) into now_millis;
-  result := (now_millis - our_epoch) << 20;
-  result := result | (service_id << 10);
-  result := result | (seq_id);
+  result := nextval('global_id_sequence') + 10000;
 end;
 $$ language plpgsql;
 

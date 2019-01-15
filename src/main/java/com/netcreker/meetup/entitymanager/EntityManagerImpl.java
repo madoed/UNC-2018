@@ -23,7 +23,6 @@ public class EntityManagerImpl implements EntityManager {
     private final Cache<Long, Entity> entities = CacheBuilder.newBuilder()
             .maximumSize(1000)
             .expireAfterAccess(5, TimeUnit.MINUTES)
-            //.refreshAfterWrite(5, TimeUnit.MINUTES)
             .build();
 
     @Autowired
@@ -33,9 +32,9 @@ public class EntityManagerImpl implements EntityManager {
 
 
     @Override
-    public <T extends Entity> void delete(@NonNull T entity) {
-        dbManager.delete(entity.getId());
-        entities.invalidate(entity.getId());
+    public <T extends Entity> void delete(long id) {
+        dbManager.delete(id);
+        entities.invalidate(id);
     }
 
     @Override
@@ -64,6 +63,8 @@ public class EntityManagerImpl implements EntityManager {
                 entity.setId(dbManager.create(
                         Reflection.getObjectType(entity.getClass()),
                         entity.getName()));
+            } else {
+                dbManager.setName(entity.getId(), entity.getName());
             }
             dbManager.update(entity.getId(), getParams(entity), getRefs(entity));
             entities.put(entity.getId(), entity);

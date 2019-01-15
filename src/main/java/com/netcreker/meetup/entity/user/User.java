@@ -1,5 +1,6 @@
 package com.netcreker.meetup.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netcreker.meetup.annotation.ObjectType;
 import com.netcreker.meetup.annotation.Parameter;
 import com.netcreker.meetup.annotation.Reference;
@@ -32,6 +33,7 @@ public class User extends Entity {
     private String password;
 
     @Reference(1006)
+    @JsonIgnore
     private List<User> friends;
 
     @Parameter(1007)
