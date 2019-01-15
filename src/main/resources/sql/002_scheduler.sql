@@ -1,31 +1,19 @@
-insert into Obj_types (name) values
-    ('schedule'),
-    ('event');
+insert into Obj_types (object_type_id, name) values
+    (2, 'schedule'),
+    (3, 'event');
 
-insert into Attributes (attr_type, attr_name) values
-    (0, 'id'),
-    (0, 'name'),
-    (0, 'description'),
-    (0, 'privacy_setting'),
-    (0, 'user'),
-    (0, 'start_date'),
-    (0, 'end_date'),
-    (0, 'priority'),
-    (0, 'event_type'),
-    (0, 'recursion'),
-    (0, 'reminder'),
-    (0, 'schedule'),
-    (0, 'meeting');
-
-insert into Obj_attributes (object_type_id, attr_id)
-select object_type_id, attr_id
-from Obj_types, Attributes
-where Obj_types.name like 'schedule' and attr_name like 'id';
-
-insert into Obj_attributes (object_type_id, attr_id)
-select object_type_id, attr_id
-from Obj_types, Attributes
-where Obj_types.name like 'schedule' and attr_name like 'name';
+insert into Attributes (attr_id, attr_name) values
+    (1008, 'description'),
+    (1009, 'privacy_setting'),
+    (1010, 'user'),
+    (1011, 'start_date'),
+    (1012, 'end_date'),
+    (1013, 'priority'),
+    (1014, 'event_type'),
+    (1015, 'recursion'),
+    (1016, 'reminder'),
+    (1017, 'schedule'),
+    (1018, 'meeting');
 
 insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id
@@ -41,16 +29,6 @@ insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id
 from Obj_types, Attributes
 where Obj_types.name like 'schedule' and attr_name like 'user';
-
-insert into Obj_attributes (object_type_id, attr_id)
-select object_type_id, attr_id
-from Obj_types, Attributes
-where Obj_types.name like 'event' and attr_name like 'id';
-
-insert into Obj_attributes (object_type_id, attr_id)
-select object_type_id, attr_id
-from Obj_types, Attributes
-where Obj_types.name like 'event' and attr_name like 'name';
 
 insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id

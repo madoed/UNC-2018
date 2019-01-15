@@ -1,25 +1,16 @@
 create sequence global_id_sequence;
 
-create or replace function id_generator(out result bigint) as $$
-  declare
-  our_epoch bigint := 10000;
-seq_id bigint;
-now_millis bigint;
-shard_id int := 1;
+create or replace function generate_id(out result bigint) as $$
 begin
-  select nextval('global_id_sequence') % 1024 into seq_id;
-  select floor(extract(epoch from clock_timestamp()) * 1000) into now_millis;
-  result := (now_millis - our_epoch) << 23;
-  result := result | (shard_id << 10);
-  result := result | (seq_id);
+  result := nextval('global_id_sequence') + 10000;
 end;
 $$ language plpgsql;
 
 create table attributes
 (
-  attr_id   bigint primary key default id_generator(),
+  attr_id   bigint primary key default generate_id(),
   attr_name varchar(20) unique not null,
-  attr_type int  not null
+  attr_type int  not null default 0
 );
 
 create table obj_attributes
@@ -30,13 +21,13 @@ create table obj_attributes
 
 create table obj_types
 (
-  object_type_id bigint primary key default id_generator(),
+  object_type_id bigint primary key default generate_id(),
   name           varchar(20) unique not null
 );
 
 create table objects
 (
-  object_id      bigint primary key default id_generator(),
+  object_id      bigint primary key default generate_id(),
   object_type_id bigint not null,
   object_name    varchar(70)
 );

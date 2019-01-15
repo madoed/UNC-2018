@@ -1,22 +1,46 @@
 package com.netcreker.meetup.databasemanager;
 
+import java.util.List;
 import java.util.Map;
 
 public interface DatabaseManager {
 
-    String getValue(long id, long attr_id);
+    long create(long objType);
 
-    Map<String, String> getValues(Long id);
+    long create(long objType, String name);
 
-    String setValue(String val, long id, long attr_id);
+    void delete(long id);
 
-    String getReference(long id, long attr_id);
+    void update(long id, List<Map<Long, String>> values, List<Map<Long, Long>> refs);
 
-    String setReference(String val, long id, long attr_id);
+    void deleteAllReferences(long id);
+
+    void deleteAllValues(long id);
+
+    List<Map<String, Object>> getAllReferences(long id);
+
+    List<Map<String, Object>> getAllValues(long id);
+
+    void setAllReferences(long id, List<Map<Long, Long>> refs);
+
+    void setAllValues(long id, List<Map<Long, String>> values);
 
     String getName(long id);
 
-    String setName(String val, long id, long attr_id);
+    void setName(long id, String name);
 
-    void delete(long id);
+    List<Long> getEntitiesByName(String name);
+
+    void deleteReference(long id, long attrId, long ref);
+
+    void deleteValue(long id, long attrId);
+
+    List<Long> getReference(long id, long attrId);
+
+    List<Map<String, Object>> getValue(long id, long attrId);
+
+    void setReference(long id, long attrId, long ref);
+
+    void setValue(long id, long attrId, String val);
+
 }
