@@ -130,9 +130,11 @@ public class ReflectionTest {
     @Test
     public void testSetParameterField() throws IllegalAccessException, NoSuchFieldException, ParseException {
         Calendar cal = Calendar.getInstance();
-        cal.set(2018, Calendar.JANUARY, 1);
+        cal.clear(Calendar.MILLISECOND);
+        cal.set(2018, Calendar.JANUARY, 1, 0, 0, 0);
         Date newDate = cal.getTime();
-        Reflection.setField(User.class.getDeclaredField("lastVisit"), user2, newDate);
+        Reflection.setField(User.class.getDeclaredField("lastVisit"), user2,
+                Reflection.dateFormat.format(newDate));
         assertEquals("Field value must equal set value", user2.getLastVisit(), newDate);
     }
 

@@ -116,7 +116,7 @@ public class Reflection {
             actualList.add(listClass.cast(value));
             field.set(instance, actualList);
         } else {
-            if (field.getType() == Date.class) {
+            if (field.getType() == Date.class && value.getClass() == String.class) {
                 field.set(instance, dateFormat.parse(value.toString()));
             } else {
                 if (value.getClass() == String.class) {
