@@ -15,7 +15,7 @@ public class RestController {
 
     @GetMapping("testLoad")
     public String getAll() throws InstantiationException, IllegalAccessException {
-        entityManager.load();
+        //entityManager.load();
         return "test";
     }
 }
