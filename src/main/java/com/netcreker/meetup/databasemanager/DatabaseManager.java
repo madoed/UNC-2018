@@ -29,6 +29,8 @@ public interface DatabaseManager {
 
     void setName(long id, String name);
 
+    List<Long> queryForObjectIds(ObjectQuery query);
+
     List<Long> getEntitiesByName(String name);
 
     void deleteReference(long id, long attrId, long ref);

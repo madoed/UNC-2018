@@ -120,6 +120,10 @@ public class DatabaseManagerImpl implements DatabaseManager {
         jdbcTemplate.update(sql);
     }
 
+    public List<Long> queryForObjectIds(ObjectQuery query) {
+        return jdbcTemplate.queryForList(query.toString(), Long.class);
+    }
+
     public List<Long> getEntitiesByName(@NonNull String name) {
         String sql = "select object_id from Objects where object_name like '" + name + "'";
         return jdbcTemplate.queryForList(sql, Long.class);
