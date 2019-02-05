@@ -33,7 +33,7 @@ public class DatabaseManagerCrudTest {
         HashMap<Long, String> map1 = new HashMap<>();
         map1.put(1001L, "first name 1");
         map1.put(1002L, "last name 1");
-        map1.put(1003L, "login 1");
+        map1.put(1003L, "username 1");
         map1.put(1004L, "email 1");
         map1.put(1005L, "password 1");
         map1.put(1017L, "last visit 1");
@@ -42,7 +42,7 @@ public class DatabaseManagerCrudTest {
         HashMap<Long, String> map2 = new HashMap<>();
         map2.put(1001L, "first name 2");
         map2.put(1002L, "last name 2");
-        map2.put(1003L, "login 2");
+        map2.put(1003L, "username 2");
         map2.put(1004L, "email 2");
         map2.put(1005L, "password 2");
         map2.put(1017L, "last visit 2");

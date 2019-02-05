@@ -7,8 +7,9 @@ import com.netcreker.meetup.annotation.Reference;
 import com.netcreker.meetup.entity.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +17,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ObjectType(1)
 public class User extends Entity {
-
     @Parameter(1001)
     private String firstName;
 
@@ -24,13 +24,18 @@ public class User extends Entity {
     private String lastName;
 
     @Parameter(1003)
-    private String login;
+    private String username;
 
     @Parameter(1004)
     private String email;
 
     @Parameter(1005)
     private String password;
+
+    //@Parameter()
+    private String avatarUrl;
+
+    private Role role = Role.USER;
 
     @Reference(1006)
     @JsonIgnore
@@ -39,10 +44,19 @@ public class User extends Entity {
     @Parameter(1007)
     private Date lastVisit;
 
-    public void setPassword(String password) {
+    public void copy(User user) {
+        firstName = user.firstName;
+        lastName = user.lastName;
+        username = user.username;
+        email = user.email;
+        password = user.password;
+        friends = new ArrayList<>(user.friends);
+    }
+
+    /*public void setPassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         this.password = passwordEncoder.encode(password);
-    }
+    }*/
 
     @Override
     public String toString() {
