@@ -3,6 +3,7 @@ package com.netcreker.meetup.entitymanager;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.Cache;
 import com.netcreker.meetup.databasemanager.DatabaseManager;
+import com.netcreker.meetup.databasemanager.ObjectQuery;
 import com.netcreker.meetup.entity.Entity;
 import com.netcreker.meetup.util.Reflection;
 
@@ -35,6 +36,15 @@ public class EntityManagerImpl implements EntityManager {
     public <T extends Entity> void delete(long id) {
         dbManager.delete(id);
         entities.invalidate(id);
+    }
+
+    @Override
+    public <T extends Entity> List<T> filter(Class<T> clazz, ObjectQuery query) {
+        List<T> result = new ArrayList<>();
+        for (long id : dbManager.queryForObjectIds(query)) {
+            result.add(load(clazz, id));
+        }
+        return result;
     }
 
     @Override
