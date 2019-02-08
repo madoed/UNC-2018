@@ -13,7 +13,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer {
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry.addEndpoint("/socket")
+    registry.addEndpoint("/wechat")
             .setAllowedOrigins("*")
             .withSockJS();
   }
@@ -21,6 +21,6 @@ public class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfig
   @Override
   public void configureMessageBroker(MessageBrokerRegistry registry) {
     registry.setApplicationDestinationPrefixes("/app")
-            .enableSimpleBroker("/chat");
+            .enableSimpleBroker("/channel");
   }
 }

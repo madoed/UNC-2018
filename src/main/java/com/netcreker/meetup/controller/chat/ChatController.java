@@ -1,33 +1,36 @@
 package com.netcreker.meetup.controller.chat;
 
-import com.netcreker.meetup.entity.chat.ChatMessage;
+import com.netcreker.meetup.entity.chat.Chat;
+import com.netcreker.meetup.service.chat.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 
 
-@Controller
+@RestController
 @CrossOrigin(origins = "http://localhost:4200")
 public class ChatController {
-  private final SimpMessagingTemplate template;
 
-    @Autowired
-    public ChatController(final SimpMessagingTemplate template) {
-      this.template = template;
-    }
+  @Autowired
+  private ChatService chatService;
 
-    @MessageMapping("/send/message")
-    public void onReceiveMessage(@Nullable final String message) {
-      this.template.convertAndSend("/chat",
-              LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + ": " + message);
-    }
+  @GetMapping("/chat/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ArrayList<Chat> getChats(@PathVariable long id) {
+    return chatService.getChats(id);
   }
+
+  /*
+  @MessageMapping("/chat")
+  public void handleMessage(Message message) {
+    message.setTimestamp(new Date());
+    messageService.save(message);
+    template.convertAndSend("/channel/chat/" + message.getChannel(), message);
+  }*/
+}
