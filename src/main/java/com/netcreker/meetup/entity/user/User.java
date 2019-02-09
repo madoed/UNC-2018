@@ -35,6 +35,9 @@ public class User extends Entity {
     //@Parameter()
     private String avatarUrl;
 
+    //@Parameter()
+    private String aboutMe;
+
     private Role role = Role.USER;
 
     @Reference(1006)

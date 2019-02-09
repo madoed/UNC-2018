@@ -3,25 +3,41 @@ package com.netcreker.meetup.controller.user;
 import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.entity.user.UserCredentials;
 import com.netcreker.meetup.service.user.UserService;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Date;
 
 @RestController
 public class UserRestController {
     @Autowired
     UserService userService;
 
+    @CrossOrigin(origins = "http://localhost:4200/")
     @PostMapping("/users/auth")
     public ResponseEntity<?> authenticate(@RequestBody UserCredentials credentials) {
-        User user = userService.loadByUsername(credentials);
-        if (user == null || !password.equals(user.getPassword())) {
-            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        User user = userService.loadByUsername(credentials.getUsername());
+        if (user == null || !credentials.validate(user)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<User>(user, HttpStatus.OK);
+        String jwtToken = Jwts.builder()
+                .setSubject(user.getUsername())
+                .claim("role", user.getRole())
+                .setIssuedAt(new Date())
+                .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256))
+                .compact();
+        HashMap<String, Object> response = new HashMap<>();
+        response.put("user", user);
+        response.put("token", jwtToken);
+        response.put("expiresIn", 3600);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/users/{id}")
