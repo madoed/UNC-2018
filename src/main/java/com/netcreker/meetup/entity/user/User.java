@@ -7,11 +7,10 @@ import com.netcreker.meetup.annotation.Reference;
 import com.netcreker.meetup.entity.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.*;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -32,34 +31,46 @@ public class User extends Entity {
     @Parameter(1005)
     private String password;
 
-    //@Parameter()
-    private String avatarUrl;
-
-    //@Parameter()
-    private String aboutMe;
-
-    private Role role = Role.USER;
-
     @Reference(1006)
-    @JsonIgnore
-    private List<User> friends;
+    private List<User> friends = new ArrayList<>();
 
     @Parameter(1007)
     private Date lastVisit;
 
-    public void copy(User user) {
-        firstName = user.firstName;
-        lastName = user.lastName;
-        username = user.username;
-        email = user.email;
-        password = user.password;
-        friends = new ArrayList<>(user.friends);
+    @Parameter(1028)
+    private String avatar;
+
+    @Parameter(1029)
+    private String aboutMe = "";
+
+    @JsonIgnore
+    @Reference(1030)
+    private List<Role> roles = new ArrayList<>();
+
+    public User copy() {
+        User user = new User();
+        user.id = id;
+        user.name = name;
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.username = username;
+        user.email = email;
+        user.password = password;
+        user.avatar = avatar;
+        user.aboutMe = aboutMe;
+        user.roles.addAll(roles);
+        user.friends.addAll(friends);
+        return user;
     }
 
-    /*public void setPassword(String password) {
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
+    public void setPassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         this.password = passwordEncoder.encode(password);
-    }*/
+    }
 
     @Override
     public String toString() {

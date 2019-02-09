@@ -1,25 +1,10 @@
 package com.netcreker.meetup.entity.user;
 
-public enum Role {
-    ADMIN ("admin"),
-    USER ("user");
+import com.netcreker.meetup.annotation.ObjectType;
+import com.netcreker.meetup.entity.Entity;
+import lombok.EqualsAndHashCode;
 
-    final String name;
-
-    Role(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public static Role fromName(String name) {
-        for (Role r : Role.values()) {
-            if (r.name.equalsIgnoreCase(name)) {
-                return r;
-            }
-        }
-        return null;
-    }
+@EqualsAndHashCode(callSuper = true)
+@ObjectType(6)
+public class Role extends Entity {
 }

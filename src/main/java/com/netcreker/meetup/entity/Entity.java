@@ -1,5 +1,7 @@
 package com.netcreker.meetup.entity;
 
+import java.util.Objects;
+
 /*
 ** Generic entity class; all entities must derive from this
  */
@@ -24,6 +26,19 @@ public class Entity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Entity that = (Entity) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override
