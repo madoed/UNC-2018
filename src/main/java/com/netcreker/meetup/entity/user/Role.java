@@ -5,6 +5,6 @@ import com.netcreker.meetup.entity.Entity;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@ObjectType(6)
+@ObjectType(8)
 public class Role extends Entity {
 }

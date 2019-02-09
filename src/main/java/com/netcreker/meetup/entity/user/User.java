@@ -37,14 +37,14 @@ public class User extends Entity {
     @Parameter(1007)
     private Date lastVisit;
 
-    @Parameter(1028)
+    @Parameter(1036)
     private String avatar;
 
-    @Parameter(1029)
+    @Parameter(1037)
     private String aboutMe = "";
 
     @JsonIgnore
-    @Reference(1030)
+    @Reference(1038)
     private List<Role> roles = new ArrayList<>();
 
     public User copy() {

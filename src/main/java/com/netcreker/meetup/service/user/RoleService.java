@@ -21,7 +21,7 @@ public class RoleService {
 
     public Role loadByName(RoleName roleName) {
         ObjectQuery query = ObjectQuery.newInstance()
-                .objectTypeId(6).objectName(roleName.name());
+                .objectTypeId(8).objectName(roleName.name());
         List<Role> result = em.filter(Role.class, query, true);
         if (result.isEmpty())
             throw new ResourceNotFoundException("Role", "name", roleName.name());

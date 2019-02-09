@@ -9,9 +9,9 @@ insert into Attributes (attr_id, attr_name) values
     (1005, 'password'),
     (1006, 'friend'),
     (1007, 'last_visit'),
-    (1028, 'avatar'),
-    (1029, 'about_me'),
-    (1030, 'role');
+    (1036, 'avatar'),
+    (1037, 'about_me'),
+    (1038, 'role');
 
 insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id
