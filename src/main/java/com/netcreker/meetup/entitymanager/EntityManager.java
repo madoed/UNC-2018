@@ -9,7 +9,9 @@ public interface EntityManager {
 
     <T extends Entity> void delete(long id);
 
-    <T extends Entity> List<T> filter(Class<T> clazz, ObjectQuery query);
+    <T extends Entity> List<T> filter(Class<T> clazz, ObjectQuery query, boolean lazy);
+
+    <T extends Entity> T lazyLoad(Class<T> clazz, long id);
 
     <T extends Entity> T load(Class<T> clazz, long id);
 

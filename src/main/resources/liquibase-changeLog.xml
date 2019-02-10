@@ -21,11 +21,15 @@
         <sqlFile path="sql/004_location.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 
+    <changeSet id="5" author="ilyina">
+        <sqlFile path="sql/005_user.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
     <changeSet id="6" author="ilyina">
-        <sqlFile path="sql/006_user.sql" relativeToChangelogFile="true" stripComments="true"/>
+        <sqlFile path="sql/006_testing.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 
     <changeSet id="7" author="ilyina">
-        <sqlFile path="sql/007_testing.sql" relativeToChangelogFile="true" stripComments="true"/>
+        <sqlFile path="sql/007_role.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 </databaseChangeLog>

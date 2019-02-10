@@ -49,7 +49,7 @@ public class DatabaseManagerTests {
     public void testCreate() {
         Map<Long, String> params = new HashMap<>();
         params.put(1001L, "create test name");
-        params.put(1013L, "create test login");
+        params.put(1013L, "create test username");
 
         Map<Long, Long> ref1 = new HashMap<>();
         ref1.put(1013L, -2L);

@@ -25,7 +25,7 @@ public class ReflectionTest {
         user1.setId(1);
         user1.setName("Alice");
         user1.setEmail("alice@example.com");
-        user1.setLogin("alice");
+        user1.setUsername("alice");
         user1.setPassword("qwerty");
         user1.setLastVisit(new Date());
 
@@ -33,7 +33,7 @@ public class ReflectionTest {
         user2.setId(2);
         user2.setName("Bob");
         user2.setEmail("bob@example.com");
-        user2.setLogin("bob");
+        user2.setUsername("bob");
         user2.setPassword("123456");
         user2.setLastVisit(new Date());
 

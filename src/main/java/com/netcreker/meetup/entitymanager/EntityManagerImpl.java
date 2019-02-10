@@ -5,6 +5,7 @@ import com.google.common.cache.Cache;
 import com.netcreker.meetup.databasemanager.DatabaseManager;
 import com.netcreker.meetup.databasemanager.ObjectQuery;
 import com.netcreker.meetup.entity.Entity;
+import com.netcreker.meetup.exceptions.EntityManagerException;
 import com.netcreker.meetup.util.Reflection;
 
 import lombok.NonNull;
@@ -39,16 +40,17 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     @Override
-    public <T extends Entity> List<T> filter(Class<T> clazz, ObjectQuery query) {
+    public <T extends Entity> List<T> filter(Class<T> clazz, ObjectQuery query, boolean lazy) {
         List<T> result = new ArrayList<>();
         for (long id : dbManager.queryForObjectIds(query)) {
-            result.add(load(clazz, id));
+            T entity = lazy ? lazyLoad(clazz, id) : load(clazz, id);
+            result.add(entity);
         }
         return result;
     }
 
     @Override
-    public <T extends Entity> T load(@NonNull Class<T> clazz, long id) {
+    public <T extends Entity> T lazyLoad(@NonNull Class<T> clazz, long id) {
         T entity = (T) entities.getIfPresent(id);
         if (entity == null) {
             try {
@@ -58,12 +60,27 @@ public class EntityManagerImpl implements EntityManager {
 
                 loadParams(clazz, entity);
                 entities.put(id, entity);
-                loadRefs(clazz, entity);
             } catch (InstantiationException | IllegalAccessException | ParseException e) {
                 throw new EntityManagerException(e.getMessage(), e);
             }
         }
         return entity;
+    }
+
+    @Override
+    public <T extends Entity> T load(@NonNull Class<T> clazz, long id) {
+        try {
+            T entity = clazz.newInstance();
+            entity.setId(id);
+            entity.setName(dbManager.getName(id));
+
+            loadParams(clazz, entity);
+            loadRefs(clazz, entity);
+            entities.put(id, entity);
+            return entity;
+        } catch (InstantiationException | IllegalAccessException | ParseException e) {
+            throw new EntityManagerException(e);
+        }
     }
 
     @Override
@@ -103,7 +120,7 @@ public class EntityManagerImpl implements EntityManager {
             if (field != null) {
                 Class<? extends Entity> refClass = (Class<? extends Entity>) Reflection.getActualClass(field);
                 long refId = Long.parseLong(ref.get("reference").toString());
-                Reflection.setField(field, entity, load(refClass, refId));
+                Reflection.setField(field, entity, lazyLoad(refClass, refId));
             }
         }
     }

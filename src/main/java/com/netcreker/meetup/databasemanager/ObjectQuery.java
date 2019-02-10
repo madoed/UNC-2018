@@ -17,11 +17,12 @@ public class ObjectQuery {
         return new ObjectQuery();
     }
 
-    public void clear() {
+    public ObjectQuery clear() {
         objectTypeId = 0;
         objectName = null;
         references.clear();
         values.clear();
+        return this;
     }
 
     public ObjectQuery objectTypeId(long id) {

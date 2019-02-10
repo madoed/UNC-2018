@@ -33,7 +33,7 @@ public class EntityManagerTest {
         assertEquals("Alice Smith", user.getName());
         assertEquals("Alice", user.getFirstName());
         assertEquals("Smith", user.getLastName());
-        assertEquals("alice", user.getLogin());
+        assertEquals("alice", user.getUsername());
         assertEquals("qwerty", user.getPassword());
         assertEquals("alice@example.com", user.getEmail());
         assertEquals(2, user.getFriends().size());
@@ -71,7 +71,7 @@ public class EntityManagerTest {
         user.setName("test user");
         user.setFirstName("test");
         user.setLastName("user");
-        user.setLogin("user");
+        user.setUsername("user");
         user.setPassword("1111");
         user.setEmail("user@example.com");
         user.setLastVisit(new Date());

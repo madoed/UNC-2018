@@ -2,6 +2,7 @@ package com.netcreker.meetup.entitymanager;
 
 import com.netcreker.meetup.entity.scheduler.Event;
 import com.netcreker.meetup.entity.scheduler.Schedule;
+import com.netcreker.meetup.entity.user.User;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -20,6 +21,17 @@ public class LoadTest {
 
     @Autowired
     private EntityManager em = null;
+
+    @Test
+    public void testLazyLoad() {
+        User lazyUser =  em.lazyLoad(User.class, -1);
+        assertEquals("alice", lazyUser.getUsername());
+        assertEquals(null, lazyUser.getFriends());
+
+        User user =  em.load(User.class, -1);
+        assertEquals("alice", user.getUsername());
+        assertEquals(2, user.getFriends().size());
+    }
 
     @Test
     public void testLoad1() {
