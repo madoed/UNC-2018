@@ -1,21 +1,19 @@
 package com.netcreker.meetup.entity.chat;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netcreker.meetup.annotation.ObjectType;
-import com.netcreker.meetup.annotation.Parameter;
 import com.netcreker.meetup.annotation.Reference;
 import com.netcreker.meetup.entity.Entity;
 import com.netcreker.meetup.entity.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.List;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ObjectType(6)
-public class Chat extends Entity {
-  @Parameter(1029)
-  private String chatName;
+@ObjectType(9)
+public class UserChat extends Entity {
+  @Reference(1034)
+  private Chat chat;
 
+  @Reference(1035)
+  private User subscriber;
 }

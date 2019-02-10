@@ -1,6 +1,7 @@
 package com.netcreker.meetup.controller.chat;
 
 import com.netcreker.meetup.entity.chat.Chat;
+import com.netcreker.meetup.entity.chat.DAOChat;
 import com.netcreker.meetup.service.chat.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,7 +23,7 @@ public class ChatController {
 
   @GetMapping("/chat/{id}")
   @CrossOrigin(origins = "http://localhost:4200")
-  public ArrayList<Chat> getChats(@PathVariable long id) {
+  public ArrayList<DAOChat> getChats(@PathVariable long id) {
     return chatService.getChats(id);
   }
 

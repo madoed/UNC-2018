@@ -13,8 +13,8 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Data
-//@EqualsAndHashCode(callSuper = true)
-@ObjectType(6)
+@EqualsAndHashCode(callSuper = true)
+@ObjectType(7)
 public class Message extends Entity {
 
   @Parameter(1030)
@@ -24,8 +24,8 @@ public class Message extends Entity {
   @Temporal(TemporalType.TIMESTAMP)
   private Date timestamp;
 
-  @Parameter(1032)
-  private long chat;
+  @Reference(1032)
+  private Chat from_chat;
 
   @Parameter(1033)
   private String sender;

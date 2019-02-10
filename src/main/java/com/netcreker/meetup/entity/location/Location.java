@@ -12,13 +12,13 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @ObjectType(5)
 public class Location extends Entity {
-  @Parameter(1026)
+  @Parameter(1025)
   private String lng;
-  @Parameter(1027)
+  @Parameter(1026)
   private String lat;
-  @Parameter(1028)
+  @Parameter(1027)
   private String placeName;
-  @Reference(1029)
-  private Meeting meeting;
+  @Reference(1028)
+  private Meeting meetings;
 }
 

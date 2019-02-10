@@ -32,4 +32,16 @@
     <changeSet id="7" author="ilyina">
         <sqlFile path="sql/007_role.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
+
+    <changeSet id="8" author="guseva">
+        <sqlFile path="sql/008_chat.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="9" author="guseva">
+        <sqlFile path="sql/009_message.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="10" author="guseva">
+        <sqlFile path="sql/010_userchat.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
 </databaseChangeLog>

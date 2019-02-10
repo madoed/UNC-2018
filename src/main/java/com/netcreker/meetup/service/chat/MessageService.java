@@ -1,5 +1,7 @@
 package com.netcreker.meetup.service.chat;
 
+import com.netcreker.meetup.entity.chat.DAOMessage;
+import com.netcreker.meetup.entity.chat.DTOMessage;
 import com.netcreker.meetup.entity.chat.Message;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,27 +17,33 @@ import java.util.function.Function;
 @Service
 public class MessageService {
 
-  public ArrayList<Message>  chatsList=new ArrayList<Message> ();
+  public ArrayList<DAOMessage>  chatsList=new ArrayList<DAOMessage> ();
 
-  public void save(Message message){
-
+  public void save(DTOMessage message){
+    DAOMessage mes = new DAOMessage();
+    mes.setContent(message.getContent());
+    //mes.setSender(message.getSender());
+    mes.setSender("ktoto");
+    chatsList.add(mes);
   }
 
-  public void sendReadReceipt(Message message){
-    chatsList.add(message);
+  public void sendReadReceipt(DTOMessage message){
+    DAOMessage mes = new DAOMessage();
+    mes.setContent(message.getContent());
+    //mes.setSender(message.getSender());
+    mes.setSender("ktoto");
+    chatsList.add(mes);
   }
 
-  public ArrayList<Message> findAllByChat(long channelId){
+  public ArrayList<DAOMessage> findAllByChat(long channelId){
 
     if(chatsList.size()<2) {
-      Message mes = new Message();
+      DAOMessage mes = new DAOMessage();
       mes.setContent("hi");
-      mes.setTimestamp(new Date());
       mes.setSender("Nina");
       chatsList.add(mes);
-      mes = new Message();
+      mes = new DAOMessage();
       mes.setContent("hey");
-      mes.setTimestamp(new Date());
       mes.setSender("Vika");
       chatsList.add(mes);
     }
