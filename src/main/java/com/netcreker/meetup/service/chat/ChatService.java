@@ -22,7 +22,15 @@ public class ChatService {
     user.setFirstName("Nastya");
     ArrayList<User> usersList=new ArrayList<User>();
     usersList.add(user);
+    chat.setFriends(usersList);
     chatsList.add(chat);
+
+    chat=new Chat();
+    chat.setId(2);
+    chat.setChatName("second chat");
+    chat.setFriends(usersList);
+    chatsList.add(chat);
+
     return chatsList;
   }
 }

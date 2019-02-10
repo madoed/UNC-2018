@@ -24,9 +24,8 @@ public class Message extends Entity {
   @Temporal(TemporalType.TIMESTAMP)
   private Date timestamp;
 
-  @Reference(1032)
-  @JsonIgnore
-  private Chat chat;
+  @Parameter(1032)
+  private long chat;
 
   @Parameter(1033)
   private String sender;

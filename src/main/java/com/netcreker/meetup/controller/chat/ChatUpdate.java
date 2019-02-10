@@ -1,5 +1,6 @@
 package com.netcreker.meetup.controller.chat;
 
+import com.netcreker.meetup.entity.chat.Chat;
 import com.netcreker.meetup.entity.chat.Message;
 import com.netcreker.meetup.service.chat.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ public class ChatUpdate {
     public void handleMessage(Message message) {
       message.setTimestamp(new Date());
       messageService.save(message);
-      template.convertAndSend("/channel1/" , message);
+      //String id = chat.getChatName();
+      template.convertAndSend("/channel/"+ message.getChat(), message);
     }
 }
