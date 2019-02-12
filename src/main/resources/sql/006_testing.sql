@@ -34,3 +34,11 @@ insert into params values (-4, 1008, 'My schedule. Yay!!!'),
                           (-6, 1013, '80'),
                           (-6, 1014, 'class'),
                           (-6, 1015, '604800000');
+
+insert into objects values (-7, 6, 'First chat' ),
+                           (-8, 6, 'Second chat' );
+insert into refs values (-7, 1030, -1),
+                        (-7, 1030, -2),
+                        (-8, 1030, -1);
+insert into params values (-7, 1029, 'First chat!'),
+                          (-8, 1029, 'Second chat!');

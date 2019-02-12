@@ -5,6 +5,7 @@ import com.netcreker.meetup.annotation.ObjectType;
 import com.netcreker.meetup.annotation.Parameter;
 import com.netcreker.meetup.annotation.Reference;
 import com.netcreker.meetup.entity.Entity;
+import com.netcreker.meetup.entity.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -17,17 +18,17 @@ import java.util.Date;
 @ObjectType(7)
 public class Message extends Entity {
 
-  @Parameter(1030)
+  @Parameter(1031)
   private String content;
 
-  @Parameter(1031)
+  @Parameter(1032)
   @Temporal(TemporalType.TIMESTAMP)
   private Date timestamp;
 
-  @Reference(1032)
+  @Reference(1033)
   private Chat from_chat;
 
-  @Parameter(1033)
-  private String sender;
+  @Reference(1034)
+  private User sender;
 
 }

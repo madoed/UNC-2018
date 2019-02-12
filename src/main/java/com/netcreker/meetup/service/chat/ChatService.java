@@ -1,30 +1,35 @@
 package com.netcreker.meetup.service.chat;
 
+import com.netcreker.meetup.databasemanager.ObjectQuery;
 import com.netcreker.meetup.entity.chat.Chat;
-import com.netcreker.meetup.entity.chat.DAOChat;
 import com.netcreker.meetup.entity.user.User;
+import com.netcreker.meetup.entitymanager.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.List;
+
 
 @Service
 public class ChatService {
+  @Autowired
+  private EntityManager em;
 
-  public ArrayList<DAOChat> getChats(Long id){
-    //по id найти в refs ссылку с attr_id которые имеют тип card_info
-    //ArrayList<Card> cardsList = dbmanager.getValue(id, );
-    //return mapper.mapAsList
-    ArrayList<DAOChat> chatsList=new ArrayList<DAOChat>();
-    DAOChat chat=new DAOChat();
-    chat.setId(1);
-    chat.setChatName("first chat");
-    chatsList.add(chat);
+  public List<Chat> getChats(Long id){
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(6).reference(1030, -1);
+    List<Chat> result = em.filter(Chat.class, query, false);
+    return result;
+  }
 
-    chat=new DAOChat();
-    chat.setId(2);
-    chat.setChatName("second chat");
-    chatsList.add(chat);
+  public List<User> getFriends(Long id){
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(1).reference(1006, -1);
+    List<User> result = em.filter(User.class, query, false);
+    return result;
+  }
 
-    return chatsList;
+  public void addChat(Chat newChat){
+    em.save(newChat);
   }
 }

@@ -18,4 +18,6 @@ public class Chat extends Entity {
   @Parameter(1029)
   private String chatName;
 
+  @Reference(1030)
+  private List<User> subscribers;
 }

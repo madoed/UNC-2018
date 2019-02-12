@@ -1,8 +1,11 @@
 package com.netcreker.meetup.service.chat;
 
-import com.netcreker.meetup.entity.chat.DAOMessage;
-import com.netcreker.meetup.entity.chat.DTOMessage;
+import com.netcreker.meetup.databasemanager.ObjectQuery;
+import com.netcreker.meetup.entity.chat.Chat;
 import com.netcreker.meetup.entity.chat.Message;
+import com.netcreker.meetup.entity.user.User;
+import com.netcreker.meetup.entitymanager.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,36 +20,36 @@ import java.util.function.Function;
 @Service
 public class MessageService {
 
-  public ArrayList<DAOMessage>  chatsList=new ArrayList<DAOMessage> ();
+  @Autowired
+  private EntityManager em;
 
-  public void save(DTOMessage message){
-    DAOMessage mes = new DAOMessage();
-    mes.setContent(message.getContent());
-    //mes.setSender(message.getSender());
-    mes.setSender("ktoto");
-    chatsList.add(mes);
+  public void save(Message message){
+    //delete
+    message.setSender(em.load(User.class,-1));
+    em.save(message);
   }
 
-  public void sendReadReceipt(DTOMessage message){
-    DAOMessage mes = new DAOMessage();
-    mes.setContent(message.getContent());
-    //mes.setSender(message.getSender());
-    mes.setSender("ktoto");
-    chatsList.add(mes);
-  }
+  /*public void sendReadReceipt(Message message){
 
-  public ArrayList<DAOMessage> findAllByChat(long channelId){
+  }*/
 
-    if(chatsList.size()<2) {
-      DAOMessage mes = new DAOMessage();
+  public List<Message> findAllByChat(long channelId){
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(7).reference(1033, channelId);
+    List<Message> result = em.filter(Message.class, query, false);
+
+    return result.isEmpty() ? null : result;
+    /*if(chatsList.size()<2) {
+      Message mes = new Message();
       mes.setContent("hi");
-      mes.setSender("Nina");
+      mes.setTimestamp(new Date());
+      mes.setSender(new User());
       chatsList.add(mes);
-      mes = new DAOMessage();
+      mes = new Message();
       mes.setContent("hey");
-      mes.setSender("Vika");
+      mes.setTimestamp(new Date());
+      mes.setSender(new User());
       chatsList.add(mes);
-    }
-    return chatsList;
+    }*/
   }
 }
