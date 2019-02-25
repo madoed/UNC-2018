@@ -35,6 +35,7 @@ insert into params values (-4, 1008, 'My schedule. Yay!!!'),
                           (-6, 1014, 'class'),
                           (-6, 1015, '604800000');
 
+--chat
 insert into objects values (-7, 6, 'First chat' ),
                            (-8, 6, 'Second chat' );
 insert into refs values (-7, 1030, -1),
@@ -42,3 +43,164 @@ insert into refs values (-7, 1030, -1),
                         (-8, 1030, -1);
 insert into params values (-7, 1029, 'First chat!'),
                           (-8, 1029, 'Second chat!');
+
+--location
+insert into objects values (-14, 5, 'place1' ),
+                           (-15, 5, 'place2' );
+insert into params values (-14, 1027, 'Place1 !'),
+                          (-14, 1026, '51.6754966'),
+                          (-14, 1025, '39.2088823'),
+                          (-15, 1025, '39.254592'),
+                          (-15, 1026, '51.685036'),
+                          (-15, 1027, 'Place 2 !');
+
+--meeting
+insert into objects values (-9, 9, 'First meeting' ),
+                           (-10, 9, 'Second meeting' );
+insert into refs values (-9, 1043, -1),
+                        (-10, 1043, -1),
+                        (-9, 1044, -7),
+                        (-9, 1043, -2),
+                        (-10, 1043, -1),
+                        (-9, 1044, -7),
+                        (-10, 1044, -8),
+                        (-9, 1045, -14);
+insert into params values (-9, 1039, 'First meeting!'),
+                          (-10, 1039, 'Second meeting!'),
+                          (-9, 1040, 'Lets eat'),
+                          (-9, 1041, '20-04-2019 00:00:00'),
+                          (-9, 1042, 'new'),
+                          (-10, 1040, 'We need to talk'),
+                          (-10, 1041, '27-05-2019 00:00:00'),
+                          (-10, 1042, 'new');
+
+--participant(10)
+insert into objects values (-11, 10, 'participant 1' ),
+                           (-12, 10, 'participant  2' ),
+                           (-13, 10, 'participant  3' );
+insert into refs values (-11, 1048, -9),
+                        (-12, 1048, -10),
+                        (-13, 1048, -9),
+                        (-11, 1046, -1),
+                        (-12, 1046, -1),
+                        (-13, 1046, -2),
+                        (-11, 1047, -14),
+                        (-12, 1047, -15);
+
+--bill(11)
+insert into objects values (-16, 11, 'bill for first meeting' ),
+                           (-17, 11, 'bill for second meeting' );
+insert into refs values (-16, 1049, -1),
+                        (-17, 1049, -1),
+                        (-16, 1050, -9),
+                        (-17, 1050, -10);
+insert into params values (-16, 1051, '24-02-2019 00:00:00'),
+                          (-16, 1052, 'open'),
+                          (-17, 1051, '22-01-2019 00:00:00'),
+                          (-17, 1052, 'open');
+
+--check(14)
+insert into objects values (-18, 14, 'check for participant 1 of meeting 1' ),
+                           (-19, 14, 'check for participant 2 of meeting 1' );
+insert into refs values (-18, 1062, -1),
+                        (-19, 1062, -2);
+insert into params values (-18, 1065, 'not payed'),
+                          (-19, 1065, 'not payed'),
+                          (-18, 1063, '300'),
+                          (-19, 1063, '300'),
+                          (-18, 1064, '750'),--from common
+                          (-19, 1064, '750');
+
+--bill item(12)
+insert into objects values (-20, 12, 'candles' ),
+                           (-21, 12, 'cake' ),
+                           (-22, 12, 'water' ),
+                           (-23, 12, 'balloons'),
+                           (-24, 12, 'lighter' );
+insert into refs values (-20, 1058, -16),
+                        (-21, 1058, -16),
+                        (-22, 1058, -16),
+                        (-23, 1058, -16),
+                        (-24, 1058, -16);
+insert into params values (-20, 1053, 'candles'),
+                          (-20, 1054, '2'),
+                          (-20, 1055, '1'),
+                          (-20, 1057, '100'),
+                          (-21, 1053, 'cake'),
+                          (-21, 1054, '3'),
+                          (-21, 1055, '1'),
+                          (-21, 1057, '200'),
+                          (-22, 1053, 'water'),
+                          (-22, 1054, '4'),
+                          (-22, 1055, '2'),
+                          (-22, 1057, '50'),
+                          (-23, 1053, 'balloons'),
+                          (-23, 1054, '10'),
+                          (-23, 1055, '10'),
+                          (-23, 1057, '100'),
+                          (-24, 1053, 'lighter'),
+                          (-24, 1054, '1'),
+                          (-24, 1055, '1'),
+                          (-24, 1057, '100');
+
+--item amount(13)
+insert into objects values (-25, 13, 'amount' ),
+                           (-26, 13, 'amount' ),
+                           (-27, 13, 'amount' ),
+                           (-28, 13, 'amount' );
+insert into refs values (-25, 1059, -20),
+                        (-26, 1059, -21),
+                        (-27, 1059, -21),
+                        (-28, 1059, -22),
+                        (-25, 1060, -18),
+                        (-26, 1060, -18),
+                        (-27, 1060, -19),
+                        (-28, 1060, -19);
+insert into params values (-25, 1061, '1'),
+                          (-26, 1061, '1'),
+                          (-27, 1061, '1'),
+                          (-28, 1061, '2');
+
+--card info(4)
+insert into objects values (-29, 4, 'card' ),
+                           (-30, 4, 'card' ),
+                           (-31, 4, 'card' ),
+                           (-32, 4, 'card' ),
+                           (-33, 15, 'card' ),
+                           (-34, 15, 'card' ),
+                           (-35, 15, 'card' ),
+                           (-36, 15, 'card' );
+insert into refs values (-29, 1024, -1),
+                        (-30, 1024, -1),
+                        (-31, 1024, -2),
+                        (-32, 1024, -2),
+                        (-33, 1067, -29),
+                        (-34, 1067, -30),
+                        (-35, 1067, -31),
+                        (-36, 1067, -32);
+insert into params values (-29, 1019, 'Alice Smith'),
+                          (-33, 1020, 'cipher'),
+                          (-29, 1021, '4567'),
+                          (-29, 1022, '12/20'),
+                          (-33, 1023, 'xfghfg'),--salt
+                          (-29, 1066, '1'),
+                          (-30, 1019, 'Alice Smith'),
+                          (-34, 1020, 'cipher'),
+                          (-30, 1021, '1111'),
+                          (-30, 1022, '12/20'),
+                          (-34, 1023, 'xfghfg'),--salt
+                          (-30, 1066, '0'),
+                          (-31, 1019, 'Bob Wilde'),
+                          (-35, 1020, 'cipher'),
+                          (-31, 1021, '2222'),
+                          (-31, 1022, '12/20'),
+                          (-35, 1023, 'xfghfg'),--salt
+                          (-31, 1066, '1'),
+                          (-32, 1019, 'Bob Wilde'),
+                          (-36, 1020, 'cipher'),
+                          (-32, 1021, '3333'),
+                          (-32, 1022, '12/20'),
+                          (-36, 1023, 'xfghfg'),--salt
+                          (-32, 1066, '0');
+
+-- max attr_id: 1066, max obj_type_id: 15

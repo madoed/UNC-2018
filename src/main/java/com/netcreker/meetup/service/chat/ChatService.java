@@ -29,6 +29,10 @@ public class ChatService {
     return result;
   }
 
+  public Chat getChat(Long id){
+    return em.load(Chat.class, id);
+  }
+
   public void addChat(Chat newChat){
     em.save(newChat);
   }

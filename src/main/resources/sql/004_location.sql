@@ -4,8 +4,7 @@ insert into Obj_types (object_type_id, name) values
 insert into attributes (attr_id, attr_name,attr_type) values
 (1025,'lng', 0),
 (1026,'lat', 0),
-(1027,'place_name', 0),
-(1028,'meetings', 0);
+(1027,'place_name', 0);
 
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'location'),

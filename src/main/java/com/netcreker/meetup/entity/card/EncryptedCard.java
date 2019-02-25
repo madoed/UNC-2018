@@ -1,22 +1,20 @@
-package com.netcreker.meetup.entity.location;
+package com.netcreker.meetup.entity.card;
 
 import com.netcreker.meetup.annotation.ObjectType;
 import com.netcreker.meetup.annotation.Parameter;
 import com.netcreker.meetup.annotation.Reference;
 import com.netcreker.meetup.entity.Entity;
-import com.netcreker.meetup.entity.meeting.Meeting;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ObjectType(5)
-public class Location extends Entity {
-  @Parameter(1025)
-  private String lng;
-  @Parameter(1026)
-  private String lat;
-  @Parameter(1027)
-  private String placeName;
+@ObjectType(15)
+public class EncryptedCard extends Entity {
+  @Parameter(1020)
+  private String cardFullNumber;
+  @Parameter(1023)
+  private String codeWord;
+  @Reference(1067)
+  private Card encryptedCard;
 }
-
