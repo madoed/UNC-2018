@@ -25,7 +25,6 @@
         <sqlFile path="sql/005_user.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 
-
     <changeSet id="7" author="ilyina">
         <sqlFile path="sql/007_role.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
@@ -38,7 +37,35 @@
         <sqlFile path="sql/009_message.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 
-    <changeSet id="10" author="ilyina">
+    <changeSet id="10" author="guseva">
+        <sqlFile path="sql/010_meeting.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="11" author="guseva">
+        <sqlFile path="sql/011_participant.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="12" author="guseva">
+        <sqlFile path="sql/012_bill.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="13" author="guseva">
+        <sqlFile path="sql/013_billitem.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="14" author="guseva">
+        <sqlFile path="sql/014_itemamount.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="15" author="guseva">
+        <sqlFile path="sql/015_check.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="16" author="guseva">
+        <sqlFile path="sql/016_encryptedcard.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="17" author="ilyina">
         <sqlFile path="sql/006_testing.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 

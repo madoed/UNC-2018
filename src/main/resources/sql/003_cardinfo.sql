@@ -2,43 +2,36 @@ insert into Obj_types (object_type_id, name) values
 (4,'card');
 
 insert into attributes (attr_id, attr_name,attr_type)
-values ( 1019,'name_surname', 0);
+values ( 1019,'nameSurname', 0);
 
 insert into attributes (attr_id, attr_name,attr_type)
-values (1020,'card_full_number', 0);
+values (1021,'lastFourNumbers', 0);
 
 insert into attributes (attr_id, attr_name,attr_type)
-values (1021,'last_four_numbers', 0);
-
-insert into attributes (attr_id, attr_name,attr_type)
-values (1022,'data_of_expire', 0);
-
-insert into attributes (attr_id, attr_name,attr_type)
-values (1023,'code_word', 0);
+values (1022,'dataOfExpire', 0);
 
 insert into attributes (attr_id, attr_name,attr_type)
 values (1024,'owner', 0);
 
-insert into Obj_attributes (object_type_id, attr_id)
-VALUES((select object_type_id from Obj_types where name like 'card'),
-        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'name_surname'));
+insert into attributes (attr_id, attr_name,attr_type)
+values (1066,'mainCard', 0);
 
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'card'),
-        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'data_of_expire'));
+        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'nameSurname'));
 
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'card'),
-        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'last_four_numbers'));
+        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'dataOfExpire'));
 
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'card'),
-        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'card_full_number'));
-
-insert into Obj_attributes (object_type_id, attr_id)
-VALUES((select object_type_id from Obj_types where name like 'card'),
-        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'code_word'));
+        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'lastFourNumbers'));
 
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'card'),
         (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'owner'));
+
+insert into Obj_attributes (object_type_id, attr_id)
+VALUES((select object_type_id from Obj_types where name like 'card'),
+        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'mainCard'));

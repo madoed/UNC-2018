@@ -19,7 +19,7 @@ public class ChatController {
   @Autowired
   private ChatService chatService;
 
-  @GetMapping("/chat/{id}")
+  @GetMapping("/chats/{id}")
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<List<Chat>>  getChats(@PathVariable long id) {
     List<Chat> chats = chatService.getChats(id);
@@ -27,6 +27,16 @@ public class ChatController {
       return new ResponseEntity<List<Chat>>(HttpStatus.NO_CONTENT);
     }
     return new ResponseEntity<List<Chat>>(chats, HttpStatus.OK);
+  }
+
+  @GetMapping("/chat/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>  getChat(@PathVariable long id) {
+    Chat chat = chatService.getChat(id);
+    if(chat==null){
+      return new ResponseEntity<Chat>(HttpStatus.NO_CONTENT);
+    }
+    return new ResponseEntity<Chat>(chat, HttpStatus.OK);
   }
 
   @GetMapping("/friends/{id}")

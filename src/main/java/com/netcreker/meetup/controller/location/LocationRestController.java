@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -18,17 +19,27 @@ public class LocationRestController {
   @Autowired
   private LocationService locationService;
 
-  @PostMapping("/map")
+  @PostMapping("/add-meeting-location/{id}")//id of participant
   @CrossOrigin(origins = "http://localhost:4200")
-  public ResponseEntity<?> addCard(@RequestBody Location newLocation) {
-    locationService.addLocation(newLocation);
+  public ResponseEntity<?> addMeetingLocation(@PathVariable long id, @RequestBody Location newLocation) {
+    locationService.addMeetingLocation(id, newLocation);
     return new ResponseEntity<String>(HttpStatus.CREATED);
   }
 
-  @GetMapping("/map")
+  @PostMapping("/set-meeting-location/{id}")//id of meeting
   @CrossOrigin(origins = "http://localhost:4200")
-  public ArrayList<Location> getAllСards() {
-    return locationService.getLocations();
+  public ResponseEntity<?> setMeetingLocation(@PathVariable long id, @RequestBody Location newLocation) {
+    locationService.setMeetingLocation(id, newLocation);
+    return new ResponseEntity<String>(HttpStatus.CREATED);
   }
 
+  @GetMapping("/locations-meeting/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<List<Location>> getMeetingLocations(@PathVariable long id) {
+    List<Location> locations = locationService.getMeetingLocations(id);
+    if(locations.isEmpty()){
+      return new ResponseEntity<List<Location>>(HttpStatus.NO_CONTENT);
+    }
+    return new ResponseEntity<List<Location>>(locations, HttpStatus.OK);
+  }
 }
