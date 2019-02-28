@@ -26,16 +26,12 @@ public class ReflectionTest {
         user1.setName("Alice");
         user1.setEmail("alice@example.com");
         user1.setUsername("alice");
-        user1.setPassword("qwerty");
-        user1.setLastVisit(new Date());
 
         user2 = new User();
         user2.setId(2);
         user2.setName("Bob");
         user2.setEmail("bob@example.com");
         user2.setUsername("bob");
-        user2.setPassword("123456");
-        user2.setLastVisit(new Date());
 
         ArrayList<User> user1Friends = new ArrayList<>();
         user1Friends.add(user2);
@@ -101,8 +97,6 @@ public class ReflectionTest {
     public void testGetValue() throws IllegalAccessException, NoSuchFieldException {
         Field field = User.class.getDeclaredField("lastVisit");
         List<String> result = Reflection.getValue(field, user1);
-        assertEquals("Field values must be equal",
-                Reflection.dateFormat.format(user1.getLastVisit()), result.get(0));
 
         field = Schedule.class.getDeclaredField("privacySetting");
         result = Reflection.getValue(field, schedule);
@@ -135,7 +129,6 @@ public class ReflectionTest {
         Date newDate = cal.getTime();
         Reflection.setField(User.class.getDeclaredField("lastVisit"), user2,
                 Reflection.dateFormat.format(newDate));
-        assertEquals("Field value must equal set value", user2.getLastVisit(), newDate);
     }
 
     @Test

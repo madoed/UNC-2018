@@ -1,15 +1,11 @@
 package com.netcreker.meetup.entity.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netcreker.meetup.annotation.ObjectType;
 import com.netcreker.meetup.annotation.Parameter;
 import com.netcreker.meetup.annotation.Reference;
 import com.netcreker.meetup.entity.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import java.util.*;
 
 @Data
@@ -28,24 +24,14 @@ public class User extends Entity {
     @Parameter(1004)
     private String email;
 
-    @Parameter(1005)
-    private String password;
-
     @Reference(1006)
     private List<User> friends = new ArrayList<>();
 
-    @Parameter(1007)
-    private Date lastVisit;
-
     @Parameter(1036)
-    private String avatar;
+    private String avatarUrl;
 
     @Parameter(1037)
-    private String aboutMe = "";
-
-    @JsonIgnore
-    @Reference(1038)
-    private List<Role> roles = new ArrayList<>();
+    private String aboutMe;
 
     public User copy() {
         User user = new User();
@@ -55,21 +41,9 @@ public class User extends Entity {
         user.lastName = lastName;
         user.username = username;
         user.email = email;
-        user.password = password;
-        user.avatar = avatar;
         user.aboutMe = aboutMe;
-        user.roles.addAll(roles);
         user.friends.addAll(friends);
         return user;
-    }
-
-    public void addRole(Role role) {
-        roles.add(role);
-    }
-
-    public void setPassword(String password) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        this.password = passwordEncoder.encode(password);
     }
 
     @Override

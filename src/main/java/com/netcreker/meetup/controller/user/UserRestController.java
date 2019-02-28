@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/users")
 public class UserRestController {
@@ -36,6 +37,7 @@ public class UserRestController {
     @PostMapping
     public ResponseEntity<User> getOrCreate(@RequestBody UserDetails userDetails) {
         User user = userService.loadByUsername(userDetails.getUsername());
+        System.out.println(user);
         if (user == null) {
             user = new User();
             user.setFirstName(userDetails.getGivenName());
