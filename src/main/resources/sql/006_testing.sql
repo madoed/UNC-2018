@@ -1,6 +1,7 @@
 insert into objects values (-1, 1, 'Alice Smith'),
                            (-2, 1, 'Bob Wilde'),
-                           (-3, 1, 'Davy Jones');
+                           (-3, 1, 'Davy Jones'),
+                           (-1000, 1, 'Administrator');
 insert into refs values (-1, 1006, -2),
                         (-1, 1006, -3),
                         (-2, 1006, -1),
@@ -9,8 +10,21 @@ insert into params values (-1, 1001, 'Alice'),
                           (-1, 1002, 'Smith'),
                           (-1, 1003, 'alice'),
                           (-1, 1004, 'alice@example.com'),
-                          (-1, 1005, 'qwerty'),
-                          (-1, 1007, '08-01-2019 22:53:54');
+                          (-1, 1036, 'http://localhost:8000/Female-Avatar-5.png'),
+                          (-1, 1037, 'Hi, my name is Alice!');
+insert into params values (-1000, 1001, 'Super'),
+                          (-1000, 1002, 'User'),
+                          (-1000, 1003, 'admin'),
+                          (-1000, 1004, 'admin@example.com'),
+                          (-1, 1036, 'http://localhost:8000/admin.png');
+insert into params values (-1000, 1001, 'Bob'),
+                          (-1000, 1002, 'Wilde'),
+                          (-1000, 1003, 'bob'),
+                          (-1000, 1004, 'bob@example.com');
+insert into params values (-1000, 1001, 'Davy'),
+                          (-1000, 1002, 'Jones'),
+                          (-1000, 1003, 'davy'),
+                          (-1000, 1004, 'davy@example.com');
 
 insert into objects values (-4, 2, 'schedule of Alice'),
                            (-5, 3, 'birthday party'),

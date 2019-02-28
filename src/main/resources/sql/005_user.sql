@@ -4,14 +4,11 @@ insert into Obj_types (object_type_id, name) values
 insert into Attributes (attr_id, attr_name) values
     (1001, 'first_name'),
     (1002, 'last_name'),
-    (1003, 'login'),
+    (1003, 'username'),
     (1004, 'email'),
-    (1005, 'password'),
     (1006, 'friend'),
-    (1007, 'last_visit'),
-    (1036, 'avatar'),
-    (1037, 'about_me'),
-    (1038, 'role');
+    (1036, 'avatar_url'),
+    (1037, 'about_me');
 
 insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id
@@ -26,7 +23,7 @@ where Obj_types.name like 'user' and attr_name like 'last_name';
 insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id
 from Obj_types, Attributes
-where Obj_types.name like 'user' and attr_name like 'login';
+where Obj_types.name like 'user' and attr_name like 'username';
 
 insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id
@@ -36,29 +33,14 @@ where Obj_types.name like 'user' and attr_name like 'email';
 insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id
 from Obj_types, Attributes
-where Obj_types.name like 'user' and attr_name like 'password';
-
-insert into Obj_attributes (object_type_id, attr_id)
-select object_type_id, attr_id
-from Obj_types, Attributes
 where Obj_types.name like 'user' and attr_name like 'friend';
 
 insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id
 from Obj_types, Attributes
-where Obj_types.name like 'user' and attr_name like 'last_visit';
-
-insert into Obj_attributes (object_type_id, attr_id)
-select object_type_id, attr_id
-from Obj_types, Attributes
-where Obj_types.name like 'user' and attr_name like 'avatar';
+where Obj_types.name like 'user' and attr_name like 'avatar_url';
 
 insert into Obj_attributes (object_type_id, attr_id)
 select object_type_id, attr_id
 from Obj_types, Attributes
 where Obj_types.name like 'user' and attr_name like 'about_me';
-
-insert into Obj_attributes (object_type_id, attr_id)
-select object_type_id, attr_id
-from Obj_types, Attributes
-where Obj_types.name like 'user' and attr_name like 'role';

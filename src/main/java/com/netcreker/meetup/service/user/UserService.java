@@ -23,18 +23,12 @@ public class UserService {
         return em.filter(User.class, query, true);
     }
 
-    public User loadByUsernameOrEmail(String usernameOrEmail) {
+    public User loadByUsername(String username) {
         ObjectQuery query = ObjectQuery.newInstance()
                 .objectTypeId(1)
-                .value(1003, usernameOrEmail);
+                .value(1003, username);
         List<User> result = em.filter(User.class, query, false);
 
-        if (result.isEmpty()) {
-            query = query.clear()
-                    .objectTypeId(1)
-                    .value(1004, usernameOrEmail);
-            result = em.filter(User.class, query, false);
-        }
         return result.isEmpty() ? null : result.get(0);
     }
 
