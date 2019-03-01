@@ -21,11 +21,11 @@ public class MessageController {
   @GetMapping(value = "/messages/{chatId}")
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<List<Message>> findMessages(@PathVariable("chatId") long chatId) {
-    List<Message> users = messageService.findAllByChat(chatId);
-    if(users==null){
+    List<Message> messages = messageService.findAllByChat(chatId);
+    if(messages==null){
       return new ResponseEntity<List<Message>>(HttpStatus.NO_CONTENT);
     }
-    return new ResponseEntity<List<Message>>(users, HttpStatus.OK);
+    return new ResponseEntity<List<Message>>(messages, HttpStatus.OK);
   }
 
   /*@PostMapping(value = "/messages")
