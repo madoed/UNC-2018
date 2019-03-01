@@ -22,7 +22,7 @@ public class MessageController {
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<List<Message>> findMessages(@PathVariable("chatId") long chatId) {
     List<Message> users = messageService.findAllByChat(chatId);
-    if(users.isEmpty()){
+    if(users==null){
       return new ResponseEntity<List<Message>>(HttpStatus.NO_CONTENT);
     }
     return new ResponseEntity<List<Message>>(users, HttpStatus.OK);
