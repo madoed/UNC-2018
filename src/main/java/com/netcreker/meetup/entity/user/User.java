@@ -24,6 +24,9 @@ public class User extends Entity {
     @Parameter(1004)
     private String email;
 
+    @Parameter(1005)
+    private String keycloakId;
+
     @Reference(1006)
     private List<User> friends = new ArrayList<>();
 
@@ -41,6 +44,7 @@ public class User extends Entity {
         user.lastName = lastName;
         user.username = username;
         user.email = email;
+        user.keycloakId = keycloakId;
         user.aboutMe = aboutMe;
         user.friends.addAll(friends);
         return user;

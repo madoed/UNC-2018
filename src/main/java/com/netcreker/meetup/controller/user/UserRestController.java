@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserRestController {
     @Autowired
     UserService userService;
@@ -36,8 +36,7 @@ public class UserRestController {
 
     @PostMapping
     public ResponseEntity<User> getOrCreate(@RequestBody UserDetails userDetails) {
-        User user = userService.loadByUsername(userDetails.getUsername());
-        System.out.println(user);
+        User user = userService.loadByKeycloakId(userDetails.getId());
         if (user == null) {
             user = new User();
             user.setFirstName(userDetails.getGivenName());

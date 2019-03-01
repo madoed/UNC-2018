@@ -10,21 +10,23 @@ insert into params values (-1, 1001, 'Alice'),
                           (-1, 1002, 'Smith'),
                           (-1, 1003, 'alice'),
                           (-1, 1004, 'alice@example.com'),
-                          (-1, 1036, 'http://localhost:8000/Female-Avatar-5.png'),
+                          (-1, 1005, '57301afa-2110-41f9-8cd7-09d0dccefb7a'),
+                          (-1, 1036, 'http://localhost:8000/images/Female-Avatar-5.png'),
                           (-1, 1037, 'Hi, my name is Alice!');
 insert into params values (-1000, 1001, 'Super'),
                           (-1000, 1002, 'User'),
                           (-1000, 1003, 'admin'),
                           (-1000, 1004, 'admin@example.com'),
-                          (-1, 1036, 'http://localhost:8000/admin.png');
-insert into params values (-1000, 1001, 'Bob'),
-                          (-1000, 1002, 'Wilde'),
-                          (-1000, 1003, 'bob'),
-                          (-1000, 1004, 'bob@example.com');
-insert into params values (-1000, 1001, 'Davy'),
-                          (-1000, 1002, 'Jones'),
-                          (-1000, 1003, 'davy'),
-                          (-1000, 1004, 'davy@example.com');
+                          (-1000, 1005, 'feca05ad-c775-4c92-a332-2174493049d9'),
+                          (-1000, 1036, 'http://localhost:8000/images/admin.png');
+insert into params values (-2, 1001, 'Bob'),
+                          (-2, 1002, 'Wilde'),
+                          (-2, 1003, 'bob'),
+                          (-2, 1004, 'bob@example.com');
+insert into params values (-3, 1001, 'Davy'),
+                          (-3, 1002, 'Jones'),
+                          (-3, 1003, 'davy'),
+                          (-3, 1004, 'davy@example.com');
 
 insert into objects values (-4, 2, 'schedule of Alice'),
                            (-5, 3, 'birthday party'),
