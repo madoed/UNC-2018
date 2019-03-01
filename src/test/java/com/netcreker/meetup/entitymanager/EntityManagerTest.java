@@ -34,14 +34,12 @@ public class EntityManagerTest {
         assertEquals("Alice", user.getFirstName());
         assertEquals("Smith", user.getLastName());
         assertEquals("alice", user.getUsername());
-        assertEquals("qwerty", user.getPassword());
         assertEquals("alice@example.com", user.getEmail());
         assertEquals(2, user.getFriends().size());
 
         Calendar cal = Calendar.getInstance();
         cal.set(2019, Calendar.JANUARY, 8, 22, 53, 54);
         Date date = cal.getTime();
-        assertEquals(Reflection.dateFormat.format(date), Reflection.dateFormat.format(user.getLastVisit()));
     }
 
     @Test(expected = EmptyResultDataAccessException.class)
@@ -57,7 +55,6 @@ public class EntityManagerTest {
         user.setName("Bob Wilde");
         user.setFirstName("Bob");
         user.setLastName("Wilde");
-        user.setLastVisit(new Date());
         em.save(user);
 
         User loadedUser = em.load(User.class, id);
@@ -72,9 +69,7 @@ public class EntityManagerTest {
         user.setFirstName("test");
         user.setLastName("user");
         user.setUsername("user");
-        user.setPassword("1111");
         user.setEmail("user@example.com");
-        user.setLastVisit(new Date());
         ArrayList<User> friends = new ArrayList<>();
         friends.add(em.load(User.class, -2));
         friends.add(em.load(User.class, -3));

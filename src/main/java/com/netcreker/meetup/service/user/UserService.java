@@ -32,6 +32,15 @@ public class UserService {
         return result.isEmpty() ? null : result.get(0);
     }
 
+    public User loadByKeycloakId(String keycloakId) {
+        ObjectQuery query = ObjectQuery.newInstance()
+                .objectTypeId(1)
+                .value(1005, keycloakId);
+        List<User> result = em.filter(User.class, query, false);
+
+        return result.isEmpty() ? null : result.get(0);
+    }
+
     public boolean usernameExists(String username) {
         ObjectQuery query = ObjectQuery.newInstance()
                 .objectTypeId(1)
