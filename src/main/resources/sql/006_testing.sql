@@ -118,8 +118,8 @@ insert into params values (-16, 1051, '24-02-2019 00:00:00'),
 --check(14)
 insert into objects values (-18, 14, 'check for participant 1 of meeting 1' ),
                            (-19, 14, 'check for participant 2 of meeting 1' );
-insert into refs values (-18, 1062, -1),
-                        (-19, 1062, -2);
+insert into refs values (-18, 1062, -11),
+                        (-19, 1062, -12);
 insert into params values (-18, 1065, 'not payed'),
                           (-19, 1065, 'not payed'),
                           (-18, 1063, '300'),

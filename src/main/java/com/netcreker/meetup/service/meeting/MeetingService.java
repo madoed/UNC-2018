@@ -22,7 +22,7 @@ public class MeetingService {
 
     //change -1 on id
     ObjectQuery query = ObjectQuery.newInstance()
-            .objectTypeId(10).reference(1046, -1);
+            .objectTypeId(10).reference(1046, id);
     List<Participant> participantion = em.filter(Participant.class, query, false);
 
     /*for (Participant part:participantion) {
@@ -41,6 +41,16 @@ public class MeetingService {
     /*ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(9).reference(1043, id);*/
     return em.load(Meeting.class, id);
+
+    //return meeting.isEmpty() ? null : meeting.get(0);
+  }
+
+  public Participant getParticipant(Long id){
+
+    //change -1 on id
+    /*ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(9).reference(1043, id);*/
+    return em.load(Participant.class, id);
 
     //return meeting.isEmpty() ? null : meeting.get(0);
   }

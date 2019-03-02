@@ -79,4 +79,14 @@ public class MeetingController {
     return new ResponseEntity<List<Participant>>(participants, HttpStatus.OK);
   }
 
+  @GetMapping("/participant/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>  getParticipant(@PathVariable long id) {
+    Participant participant = meetingService.getParticipant(id);
+    if(participant==null){
+      return new ResponseEntity<Participant>(HttpStatus.NO_CONTENT);
+    }
+    return new ResponseEntity<Participant>(participant, HttpStatus.OK);
+  }
+
 }
