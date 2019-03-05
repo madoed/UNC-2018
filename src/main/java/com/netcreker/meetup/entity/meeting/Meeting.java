@@ -34,5 +34,6 @@ public class Meeting extends Entity {
   private Chat meetingChat;
   @Reference(1045)
   private Location meetingLocation;
-
+  @Parameter(1076)
+  private Integer amountOfParticipants;
 }

@@ -30,5 +30,6 @@ public class Bill extends Entity {
   private Date dateOfBill;
   @Parameter(1052)
   private String billStatus;//open,closed
-
+  @Parameter(1064)
+  private Double checkCommonAmount;
 }

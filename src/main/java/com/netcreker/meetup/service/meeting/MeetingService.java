@@ -65,6 +65,12 @@ public class MeetingService {
     em.save(meeting);
   }
 
+  public void  setDescription(String newDescription, long id) {
+    Meeting meeting = em.load(Meeting.class, id);
+    meeting.setMeetingDescription(newDescription);
+    em.save(meeting);
+  }
+
   public List<Participant> getParticipants(Long id){
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(10).reference(1048, id);

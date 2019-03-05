@@ -88,7 +88,9 @@ insert into params values (-9, 1039, 'First meeting!'),
                           (-9, 1042, 'new'),
                           (-10, 1040, 'We need to talk'),
                           (-10, 1041, '27-05-2019 00:00:00'),
-                          (-10, 1042, 'new');
+                          (-10, 1042, 'new'),
+                          (-9, 1076, 2),
+                          (-10, 1076, 1);
 
 --participant(10)
 insert into objects values (-11, 10, 'participant 1' ),
@@ -113,7 +115,8 @@ insert into refs values (-16, 1049, -1),
 insert into params values (-16, 1051, '24-02-2019 00:00:00'),
                           (-16, 1052, 'open'),
                           (-17, 1051, '22-01-2019 00:00:00'),
-                          (-17, 1052, 'open');
+                          (-17, 1052, 'open'),
+                          (-16, 1064, '750');--from common
 
 --check(14)
 insert into objects values (-18, 14, 'check for participant 1 of meeting 1' ),
@@ -123,10 +126,7 @@ insert into refs values (-18, 1062, -11),
 insert into params values (-18, 1065, 'not payed'),
                           (-19, 1065, 'not payed'),
                           (-18, 1063, '300'),
-                          (-19, 1063, '300'),
-                          (-18, 1064, '750'),--from common
-                          (-19, 1064, '750');
-
+                          (-19, 1063, '300');
 --bill item(12)
 insert into objects values (-20, 12, 'candles' ),
                            (-21, 12, 'cake' ),
@@ -219,4 +219,4 @@ insert into params values (-29, 1019, 'Alice Smith'),
                           (-36, 1023, 'xfghfg'),--salt
                           (-32, 1066, '0');
 
--- max attr_id: 1075, max obj_type_id: 17
+-- max attr_id: 1076, max obj_type_id: 17

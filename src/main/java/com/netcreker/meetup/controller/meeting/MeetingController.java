@@ -69,6 +69,15 @@ public class MeetingController {
     return new ResponseEntity<String>(HttpStatus.CREATED);
   }
 
+  @PostMapping("/meeting-description/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>setDescription(@RequestBody String newDescription, @PathVariable long id) {
+    meetingService.setDescription(newDescription, id);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<String>(HttpStatus.CREATED);
+  }
+
   @GetMapping("/participants/{id}")
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<List<Participant>>  getFriends(@PathVariable long id) {

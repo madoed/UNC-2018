@@ -6,11 +6,10 @@ import com.netcreker.meetup.entity.check.Check;
 import com.netcreker.meetup.entity.check.ItemAmount;
 import com.netcreker.meetup.service.check.CheckService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -41,4 +40,39 @@ public class CheckController {
     }
     return new ResponseEntity<List<ItemAmount>>(items, HttpStatus.OK);
   }
+
+  @PutMapping(value = "/item-update/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?> updateItem(@PathVariable long id, @RequestBody BillItem item) {
+    BillItem billItem = checkService.loadItem(item.getId());
+    if (billItem==null) {
+      return new ResponseEntity<BillItem>(HttpStatus.NOT_FOUND);
+    }
+    if(item.getItemAmount() < (billItem.getItemAmount() - billItem.getItemCurrentAmount()))
+      return new ResponseEntity<BillItem>(HttpStatus.CONFLICT);
+    checkService.updateItem(item, billItem, id);
+    return new ResponseEntity<BillItem>(item, HttpStatus.OK);
+  }
+
+  @PostMapping(value = "/item-add/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>addItem(@RequestBody BillItem item, @PathVariable long id) {
+    checkService.addItem(item, id);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<BillItem>(item, HttpStatus.OK);
+  }
+
+  //если current!=amount то не удаляем - ошибка
+  @DeleteMapping(value = "/item-delete/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?> deleteItem(@PathVariable long id) {
+    BillItem billItem = checkService.loadItem(id);
+    if (billItem==null) {
+      return new ResponseEntity<BillItem>(HttpStatus.NOT_FOUND);
+    }
+    checkService.deleteItem(id);
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
 }
