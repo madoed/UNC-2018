@@ -22,4 +22,6 @@ public class Participant extends Entity {
   private List<Location> suggestedLocations;
   @Reference(1048)
   private Meeting participantOfMeeting;
+  @Parameter(1078)
+  private String statusOfConfirmation;// not confirmed, confirmed
 }

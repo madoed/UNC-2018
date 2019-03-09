@@ -11,6 +11,8 @@ import com.netcreker.meetup.entitymanager.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,6 +20,12 @@ public class CheckService {
 
   @Autowired
   private EntityManager em;
+
+  public Bill findCheckByMeting(long meetingId){
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(11).reference(1050, meetingId);
+    return em.filter(Bill.class, query, false).get(0);
+  }
 
   public List<BillItem> findAllBillItems(long meetingId){
     ObjectQuery query = ObjectQuery.newInstance()
@@ -52,33 +60,91 @@ public class CheckService {
     return em.load(BillItem.class, item);
   }
 
-  public void deleteItem (long id) {
-    em.delete(id);
+  public void deleteChecks (long meetingId) {
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(10).reference(1048, meetingId);
+    List<Participant> participants = em.filter(Participant.class, query, false);
+    Check check;
+    for (Participant participant:
+            participants) {
+      query = ObjectQuery.newInstance()
+              .objectTypeId(14).reference(1062, participant.getId());
+      check = em.filter(Check.class, query, false).get(0);
+      em.delete(check.getId());
+    }
   }
 
-  public void updateItem(BillItem newItem, BillItem item, long id) {
+  public void deleteItem (BillItem billItem) {
+    Bill bill = em.load(Bill.class, billItem.getItemBill().getId());
+    bill.setBillTotalSum(billItem.getPrice()*billItem.getItemAmount());
+    bill.setBillCommonAmount((bill.getBillCommonAmount()*bill.getBillOfMeeting().getAmountOfParticipants() -
+            billItem.getPrice())/bill.getBillOfMeeting().getAmountOfParticipants());
+    if(bill.getBillTotalSum()==0.0) {
+      String status = "closed";
+      bill.setBillStatus(status);
+      deleteChecks(bill.getBillOfMeeting().getId());
+    }
+    em.save(bill);
+    em.delete(billItem.getId());
+  }
+
+  public BillItem updateItem(BillItem newItem, BillItem item, long id) {
     Bill bill = em.load(Bill.class, item.getItemBill().getId());
     Meeting meeting = em.load(Meeting.class, id);
-    bill.setBillStatus("open");
-    Double amount_without_item = bill.getCheckCommonAmount()*meeting.getAmountOfParticipants() -
+    String status = "open";
+    bill.setBillStatus(status);
+    Double amount_without_item = bill.getBillCommonAmount()*meeting.getAmountOfParticipants() -
             item.getPrice()*item.getItemAmount();
-    bill.setCheckCommonAmount((amount_without_item + newItem.getPrice()*newItem.getItemAmount())
-            /meeting.getAmountOfParticipants());
+    Double common = (amount_without_item + newItem.getPrice()*newItem.getItemAmount())
+            /meeting.getAmountOfParticipants();
+    bill.setBillCommonAmount(common);
+    Double total = bill.getBillTotalSum() - item.getPrice()*item.getItemAmount() +
+            newItem.getPrice()*newItem.getItemAmount();
+    bill.setBillTotalSum(total);
     item.setPrice(newItem.getPrice());
-    item.setItemAmount(newItem.getItemAmount());
-    item.setItemCurrentAmount(item.getItemCurrentAmount() + newItem.getItemAmount() - item.getItemAmount());
+    item.setItemTitle(newItem.getItemTitle());
+    Integer current;
+    if (newItem.getItemCurrentAmount() == 0) {
+      current = newItem.getItemAmount() - (item.getItemAmount()-item.getItemCurrentAmount()) ;
+      item.setItemAmount(newItem.getItemAmount());
+    }
+    else {
+      current = item.getItemCurrentAmount() + newItem.getItemCurrentAmount();
+    }
+    item.setItemCurrentAmount(current);
     em.save(bill);
     item.setName(item.getItemTitle());
     em.save(item);
+    return item;
   }
 
-  public void addItem(BillItem item, long id) {
+  public void  createChecks (long meetingId) {
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(10).reference(1048, meetingId);
+    List<Participant> participants = em.filter(Participant.class, query, false);
+    Check check;
+    Meeting meeting = em.load(Meeting.class, meetingId);
+    for (Participant participant: participants) {
+      check = new Check();
+      check.setCheckAmount(0.0);
+      check.setCheckStatus("notpayed");
+      check.setCheckOwner(participant);
+      check.setName(meeting.getBoss().getName());
+      em.save(check);
+    }
+  }
+
+  public BillItem addItem(BillItem item, long id) {
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(11).reference(1050, id);
     Bill bill = em.filter(Bill.class, query, false).get(0);
     Meeting meeting = em.load(Meeting.class, id);
-    bill.setBillStatus("open");
-    bill.setCheckCommonAmount(( meeting.getAmountOfParticipants()*bill.getCheckCommonAmount()+
+    if(bill.getBillStatus().equals("empty"))
+      createChecks(id);
+    String status = "open";
+    bill.setBillStatus(status);
+    bill.setBillTotalSum(bill.getBillTotalSum() + item.getPrice()*item.getItemAmount());
+    bill.setBillCommonAmount(( meeting.getAmountOfParticipants()*bill.getBillCommonAmount()+
             item.getPrice()*item.getItemAmount())
             /meeting.getAmountOfParticipants());
     item.setItemBill(bill);
@@ -86,5 +152,114 @@ public class CheckService {
     em.save(bill);
     item.setName(item.getItemTitle());
     em.save(item);
+    return item;
+  }
+
+  public void checkUpdate(List<BillItem> items, long participantId) {
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(14).reference(1062, participantId);
+    Check check = em.filter(Check.class, query, false).get(0);
+    check.setCheckStatus("notpayed");
+    List<ItemAmount> billItem;
+    ItemAmount itemAmount;
+    for (BillItem item: items) {
+      check.setCheckStatus("notpayed");
+      query = ObjectQuery.newInstance()
+              .objectTypeId(13).reference(1060, check.getId()).
+                      objectTypeId(13).reference(1059, item.getId());
+      billItem = em.filter(ItemAmount.class, query, false);
+      if (billItem.isEmpty()) {
+
+        itemAmount = new ItemAmount();
+        itemAmount.setName(item.getItemTitle());
+        itemAmount.setBillItemAmount(item);
+        itemAmount.setAmountInCheck(item.getItemCurrentAmount());
+        itemAmount.setItemAmountCheck(check);
+        itemAmount.setName(item.getItemTitle() +" " + check.getCheckOwner().getName());
+        check.setCheckAmount(check.getCheckAmount()+item.getPrice()*item.getItemCurrentAmount());
+        em.save(check);
+        em.save(itemAmount);
+      }
+      else {
+        itemAmount = billItem.get(0);
+        check.setCheckAmount(check.getCheckAmount()-
+                item.getPrice()*itemAmount.getAmountInCheck()
+                +item.getPrice()*item.getItemCurrentAmount());
+        em.save(check);
+        itemAmount.setAmountInCheck(item.getItemCurrentAmount());
+        em.save(itemAmount);
+      }
+    }
+  }
+
+  public void deleteItemFromCheck(long participantId, long itemId) {
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(14).reference(1062, participantId);
+    Check check = em.filter(Check.class, query, false).get(0);
+    query = ObjectQuery.newInstance()
+            .objectTypeId(13).reference(1060, check.getId()).
+                    objectTypeId(13).reference(1059, itemId);
+    ItemAmount itemAmount = em.filter(ItemAmount.class, query, false).get(0);
+    check.setCheckAmount(check.getCheckAmount()-itemAmount.getAmountInCheck()*
+            itemAmount.getBillItemAmount().getPrice());
+    em.save(check);
+    em.delete(itemAmount.getId());
+  }
+
+  public List<Check> getChecks(Long id, String status){
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(10).reference(1046, id);
+    List<Participant> participation = em.filter(Participant.class, query, false);
+
+    List<Check> checks = new ArrayList<>();
+    List<Check> check;
+    for (Participant part:participation) {
+      query = ObjectQuery.newInstance()
+              .objectTypeId(14).reference(1062, part.getId())
+              .value(1065, status);
+      check = em.filter(Check.class, query, false);
+      if(!check.isEmpty())
+        checks.add(check.get(0));
+    }
+    return checks;
+  }
+
+  public List<Check> getOwedChecks(Long id, String status){
+    ObjectQuery query;
+    if(status.equals("notpayed")) {
+      query = ObjectQuery.newInstance()
+              .objectTypeId(11).reference(1049, id)
+              .value(1052, "open");
+    }
+    else {
+      query = ObjectQuery.newInstance()
+              .objectTypeId(11).reference(1049, id)
+              .value(1052, "closed");
+    }
+    List<Bill> bills = em.filter(Bill.class, query, false);
+
+    List<Check> checks = new ArrayList<>();
+    List<Check> check;
+    List<Participant> participation;
+
+    //get all bills where i'm owed
+    for (Bill bill: bills) {
+      query = ObjectQuery.newInstance()
+              .objectTypeId(10).reference(1048, bill.getBillOfMeeting().getId());
+      participation = em.filter(Participant.class, query, false);
+
+      //!=
+      for (Participant participant:participation) {
+        if (participant.getMeetingParticipant().getId() == id) {
+          query = ObjectQuery.newInstance()
+                  .objectTypeId(14).reference(1062, participant.getId())
+                  .value(1065, status);
+          check = em.filter(Check.class, query, false);
+          if(!check.isEmpty())
+            checks.addAll(check);
+        }
+      }
+    }
+    return checks;
   }
 }

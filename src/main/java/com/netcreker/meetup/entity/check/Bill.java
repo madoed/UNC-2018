@@ -29,7 +29,9 @@ public class Bill extends Entity {
   @Temporal(TemporalType.TIMESTAMP)
   private Date dateOfBill;
   @Parameter(1052)
-  private String billStatus;//open,closed
+  private String billStatus;//empty, open, closed
   @Parameter(1064)
-  private Double checkCommonAmount;
+  private Double billCommonAmount;
+  @Parameter(1077)
+  private Double billTotalSum;
 }

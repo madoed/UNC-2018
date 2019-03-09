@@ -19,6 +19,6 @@ public class Check extends Entity {
   private Participant checkOwner;
   @Parameter(1063)
   private Double checkAmount;
-  @Reference(1065)
-  private String checkStatus;
+  @Parameter(1065)
+  private String checkStatus;//notpayed, payed
 }

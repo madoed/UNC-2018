@@ -26,7 +26,7 @@ public class Meeting extends Entity {
   @Temporal(TemporalType.TIMESTAMP)
   private  Date dateOfMeeting;
   @Parameter(1042)
-  private String status;
+  private String status;//new, confirmed, past, closed?
 
   @Reference(1043)
   private User boss;
