@@ -52,74 +52,74 @@ insert into params values (-4, 1008, 'My schedule. Yay!!!'),
                           (-6, 1015, '604800000');
 
 --chat
-insert into objects values (-7, 6, 'First chat' ),
-                           (-8, 6, 'Second chat' );
-insert into refs values (-7, 1030, -1),
-                        (-7, 1030, -2),
-                        (-8, 1030, -1);
-insert into params values (-7, 1029, 'First chat!'),
-                          (-8, 1029, 'Second chat!');
+-- insert into objects values (-7, 6, 'First chat' ),
+--                            (-8, 6, 'Second chat' );
+-- insert into refs values (-7, 1030, -1),
+--                         (-7, 1030, -2),
+--                         (-8, 1030, -1);
+-- insert into params values (-7, 1029, 'First chat!'),
+--                           (-8, 1029, 'Second chat!');
 
 --location
-insert into objects values (-14, 5, 'place1' ),
-                           (-15, 5, 'place2' );
-insert into params values (-14, 1027, 'Place1 !'),
-                          (-14, 1026, '51.6754966'),
-                          (-14, 1025, '39.2088823'),
-                          (-15, 1025, '39.254592'),
-                          (-15, 1026, '51.685036'),
-                          (-15, 1027, 'Place 2 !');
+-- insert into objects values (-14, 5, 'place1' ),
+--                            (-15, 5, 'place2' );
+-- insert into params values (-14, 1027, 'Place1 !'),
+--                           (-14, 1026, '51.6754966'),
+--                           (-14, 1025, '39.2088823'),
+--                           (-15, 1025, '39.254592'),
+--                           (-15, 1026, '51.685036'),
+--                           (-15, 1027, 'Place 2 !');
 
 --meeting
-insert into objects values (-9, 9, 'First meeting' ),
-                           (-10, 9, 'Second meeting' );
-insert into refs values (-9, 1043, -1),
-                        (-10, 1043, -1),
-                        (-9, 1044, -7),
-                        (-9, 1043, -2),
-                        (-10, 1043, -1),
-                        (-9, 1044, -7),
-                        (-10, 1044, -8),
-                        (-9, 1045, -14);
-insert into params values (-9, 1039, 'First meeting!'),
-                          (-10, 1039, 'Second meeting!'),
-                          (-9, 1040, 'Lets eat'),
-                          (-9, 1041, '20-04-2019 00:00:00'),
-                          (-9, 1042, 'new'),
-                          (-10, 1040, 'We need to talk'),
-                          (-10, 1041, '27-05-2019 00:00:00'),
-                          (-10, 1042, 'new'),
-                          (-9, 1076, 2),
-                          (-10, 1076, 1);
+-- insert into objects values (-9, 9, 'First meeting' ),
+--                            (-10, 9, 'Second meeting' );
+-- insert into refs values (-9, 1043, -1),
+--                         (-10, 1043, -1),
+--                         (-9, 1044, -7),
+--                         (-9, 1043, -2),
+--                         (-10, 1043, -1),
+--                         (-9, 1044, -7),
+--                         (-10, 1044, -8),
+--                         (-9, 1045, -14);
+-- insert into params values (-9, 1039, 'First meeting!'),
+--                           (-10, 1039, 'Second meeting!'),
+--                           (-9, 1040, 'Lets eat'),
+--                           (-9, 1041, '20-04-2019 00:00:00'),
+--                           (-9, 1042, 'new'),
+--                           (-10, 1040, 'We need to talk'),
+--                           (-10, 1041, '27-05-2019 00:00:00'),
+--                           (-10, 1042, 'new'),
+--                           (-9, 1076, 2),
+--                           (-10, 1076, 1);
 
 --participant(10)
-insert into objects values (-11, 10, 'participant 1' ),
-                           (-12, 10, 'participant  2' ),
-                           (-13, 10, 'participant  3' );
-insert into refs values (-11, 1048, -9),
-                        (-12, 1048, -10),
-                        (-13, 1048, -9),
-                        (-11, 1046, -1),
-                        (-12, 1046, -1),
-                        (-13, 1046, -2),
-                        (-11, 1047, -14),
-                        (-12, 1047, -15);
+-- insert into objects values (-11, 10, 'participant 1' ),
+--                            (-12, 10, 'participant  2' ),
+--                            (-13, 10, 'participant  3' );
+-- insert into refs values (-11, 1048, -9),
+--                         (-12, 1048, -10),
+--                         (-13, 1048, -9),
+--                         (-11, 1046, -1),
+--                         (-12, 1046, -1),
+--                         (-13, 1046, -2),
+--                         (-11, 1047, -14),
+--                         (-12, 1047, -15);
 
 --bill(11)
-insert into objects values (-16, 11, 'bill for first meeting' ),
-                           (-17, 11, 'bill for second meeting' );
-insert into refs values (-16, 1049, -1),
-                        (-17, 1049, -1),
-                        (-16, 1050, -9),
-                        (-17, 1050, -10);
-insert into params values (-16, 1051, '24-02-2019 00:00:00'),
-                          (-16, 1052, 'empty'),
-                          (-17, 1051, '22-01-2019 00:00:00'),
-                          (-17, 1052, 'empty'),
-                          (-16, 1077, 0),
-                          (-16, 1064, 0),
-                          (-17, 1077, 0),
-                          (-17, 1064, 0);
+-- insert into objects values (-16, 11, 'bill for first meeting' ),
+--                            (-17, 11, 'bill for second meeting' );
+-- insert into refs values (-16, 1049, -1),
+--                         (-17, 1049, -1),
+--                         (-16, 1050, -9),
+--                         (-17, 1050, -10);
+-- insert into params values (-16, 1051, '24-02-2019 00:00:00'),
+--                           (-16, 1052, 'empty'),
+--                           (-17, 1051, '22-01-2019 00:00:00'),
+--                           (-17, 1052, 'empty'),
+--                           (-16, 1077, 0),
+--                           (-16, 1064, 0),
+--                           (-17, 1077, 0),
+--                           (-17, 1064, 0);
 
 --check(14)
 -- insert into objects values (-18, 14, 'check for participant 1 of meeting 1' ),
@@ -222,4 +222,4 @@ insert into params values (-29, 1019, 'Alice Smith'),
                           (-36, 1023, 'xfghfg'),--salt
                           (-32, 1066, '0');
 
--- max attr_id: 1078, max obj_type_id: 17
+-- max attr_id: 1079, max obj_type_id: 17

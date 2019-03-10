@@ -124,4 +124,13 @@ public class CheckController {
     }
     return new ResponseEntity<List<Check>>(checks, HttpStatus.OK);
   }
+
+  @PostMapping("/payment-confirm")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>confirmParticipation(@RequestBody long checkId) {
+    checkService.confirmPayment(checkId);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<String>(HttpStatus.OK);
+  }
 }

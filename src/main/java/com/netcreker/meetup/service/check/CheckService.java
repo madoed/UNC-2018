@@ -157,7 +157,8 @@ public class CheckService {
 
   public void checkUpdate(List<BillItem> items, long participantId) {
     ObjectQuery query = ObjectQuery.newInstance()
-            .objectTypeId(14).reference(1062, participantId);
+            .objectTypeId(14).reference(1062, participantId)
+            .objectTypeId(14).value(1065, "notpayed");
     Check check = em.filter(Check.class, query, false).get(0);
     check.setCheckStatus("notpayed");
     List<ItemAmount> billItem;
@@ -213,53 +214,79 @@ public class CheckService {
 
     List<Check> checks = new ArrayList<>();
     List<Check> check;
+    Bill bill = new Bill();
+
     for (Participant part:participation) {
-      query = ObjectQuery.newInstance()
-              .objectTypeId(14).reference(1062, part.getId())
-              .value(1065, status);
-      check = em.filter(Check.class, query, false);
-      if(!check.isEmpty())
-        checks.add(check.get(0));
+      if(part.getMeetingParticipant().getId()!=id) {
+        query = ObjectQuery.newInstance()
+                .objectTypeId(14).reference(1062, part.getId())
+                .value(1065, status);
+        check = em.filter(Check.class, query, false);
+        if (!check.isEmpty()) {
+          for (Check singleCheck:check) {
+            query = ObjectQuery.newInstance()
+                    .objectTypeId(11).reference(1050, part.getParticipantOfMeeting().getId());
+            bill = em.filter(Bill.class, query, false).get(0);
+            singleCheck.setCheckAmount(singleCheck.getCheckAmount() + bill.getBillCommonAmount());
+            checks.add(singleCheck);
+          }
+        }
+      }
     }
     return checks;
   }
 
   public List<Check> getOwedChecks(Long id, String status){
     ObjectQuery query;
-    if(status.equals("notpayed")) {
-      query = ObjectQuery.newInstance()
-              .objectTypeId(11).reference(1049, id)
-              .value(1052, "open");
-    }
-    else {
-      query = ObjectQuery.newInstance()
-              .objectTypeId(11).reference(1049, id)
-              .value(1052, "closed");
-    }
+    query = ObjectQuery.newInstance()
+            .objectTypeId(11).reference(1049, id)
+            .value(1052, "open");
     List<Bill> bills = em.filter(Bill.class, query, false);
+//    if(status.equals("payed")) {
+//      query = ObjectQuery.newInstance()
+//              .objectTypeId(11).reference(1049, id)
+//              .value(1052, "open");
+//    }
+//    else {
+//      query = ObjectQuery.newInstance()
+//              .objectTypeId(11).reference(1049, id)
+//              .value(1052, "closed");
+//    }
+
 
     List<Check> checks = new ArrayList<>();
     List<Check> check;
     List<Participant> participation;
 
+
     //get all bills where i'm owed
     for (Bill bill: bills) {
-      query = ObjectQuery.newInstance()
-              .objectTypeId(10).reference(1048, bill.getBillOfMeeting().getId());
-      participation = em.filter(Participant.class, query, false);
 
-      //!=
-      for (Participant participant:participation) {
-        if (participant.getMeetingParticipant().getId() == id) {
-          query = ObjectQuery.newInstance()
-                  .objectTypeId(14).reference(1062, participant.getId())
-                  .value(1065, status);
+        query = ObjectQuery.newInstance()
+                .objectTypeId(10).reference(1048, bill.getBillOfMeeting().getId());
+        participation = em.filter(Participant.class, query, false);
+
+        for (Participant participant : participation) {
+          if (participant.getMeetingParticipant().getId() != id) {
+            query = ObjectQuery.newInstance()
+                    .objectTypeId(14).reference(1062, participant.getId())
+                    .value(1065, status);
           check = em.filter(Check.class, query, false);
-          if(!check.isEmpty())
-            checks.addAll(check);
+          if (!check.isEmpty()) {
+            for (Check singleCheck : check) {
+              singleCheck.setCheckAmount(singleCheck.getCheckAmount() + bill.getBillCommonAmount());
+              checks.add(singleCheck);
+            }
+          }
+          }
         }
-      }
     }
     return checks;
+  }
+
+  public void confirmPayment(long checkId) {
+    Check check = em.load(Check.class, checkId);
+    check.setCheckStatus("payed");
+    em.save(check);
   }
 }

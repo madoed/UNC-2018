@@ -9,7 +9,8 @@ insert into attributes (attr_id, attr_name,attr_type) values
 (1043,'boss', 0),
 (1044,'meetingChat', 0),
 (1045,'meetingLocation', 0),
-(1076,'amountOfParticipants', 0);
+(1076,'amountOfParticipants', 0),
+(1079,'timeOfMeeting', 0);
 
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'meeting'),
@@ -42,3 +43,7 @@ VALUES((select object_type_id from Obj_types where name like 'meeting'),
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'meeting'),
         (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'amountOfParticipants'));
+
+insert into Obj_attributes (object_type_id, attr_id)
+VALUES((select object_type_id from Obj_types where name like 'meeting'),
+        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'timeOfMeeting'));
