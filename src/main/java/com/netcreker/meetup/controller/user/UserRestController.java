@@ -54,9 +54,9 @@ public class UserRestController {
         if (currentUser==null) {
             return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
         }
-        currentUser = user.copy();
-        userService.save(currentUser);
-        return new ResponseEntity<User>(currentUser, HttpStatus.OK);
+        user.setId(id);
+        userService.save(user);
+        return new ResponseEntity<User>(user, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
