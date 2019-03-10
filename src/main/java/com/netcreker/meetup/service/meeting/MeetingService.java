@@ -94,6 +94,13 @@ public class MeetingService {
     em.save(meeting);
   }
 
+  public void setLocation(Location location, long id) {
+    em.save(location);
+    Meeting meeting = em.load(Meeting.class, id);
+    meeting.setMeetingLocation(location);
+    em.save(meeting);
+  }
+
   public void  setDescription(String newDescription, long id) {
     Meeting meeting = em.load(Meeting.class, id);
     meeting.setMeetingDescription(newDescription);

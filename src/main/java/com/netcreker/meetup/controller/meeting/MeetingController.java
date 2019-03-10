@@ -1,6 +1,7 @@
 package com.netcreker.meetup.controller.meeting;
 
 
+import com.netcreker.meetup.entity.location.Location;
 import com.netcreker.meetup.entity.meeting.Meeting;
 import com.netcreker.meetup.entity.meeting.Participant;
 import com.netcreker.meetup.entity.user.User;
@@ -82,6 +83,15 @@ public class MeetingController {
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<?>setDescription(@RequestBody String newDescription, @PathVariable long id) {
     meetingService.setDescription(newDescription, id);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<String>(HttpStatus.CREATED);
+  }
+
+  @PostMapping("/meeting-location/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>setLocation(@RequestBody Location location, @PathVariable long id) {
+    meetingService.setLocation(location, id);
     //HttpHeaders headers = new HttpHeaders();
     //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
     return new ResponseEntity<String>(HttpStatus.CREATED);
