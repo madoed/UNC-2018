@@ -63,6 +63,9 @@ public class CheckController {
     if (item.getItemCurrentAmount()!=0&&(billItem.getItemAmount() + item.getItemCurrentAmount()<0)) {
       return new ResponseEntity<BillItem>(billItem, HttpStatus.CONFLICT);
     }
+    if(checkService.checkForAlreadyPayedParticipants(billItem.getItemBill().getId())){
+      return new ResponseEntity<BillItem>(billItem, HttpStatus.FORBIDDEN);
+    }
     item = checkService.updateItem(item, billItem, id);
     return new ResponseEntity<BillItem>(item, HttpStatus.OK);
   }
@@ -85,6 +88,9 @@ public class CheckController {
     }
     if (billItem.getItemCurrentAmount() != billItem.getItemAmount())
       return new ResponseEntity<>(HttpStatus.CONFLICT);
+    if(checkService.checkForAlreadyPayedParticipants(billItem.getItemBill().getId())){
+      return new ResponseEntity<BillItem>(billItem, HttpStatus.FORBIDDEN);
+    }
     checkService.deleteItem(billItem);
       return new ResponseEntity<>(HttpStatus.OK);
   }
@@ -92,10 +98,10 @@ public class CheckController {
   @PostMapping(value = "/check-items-update/{participantId}")
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<?>checkUpdate(@RequestBody List<BillItem> items, @PathVariable long participantId) {
-    checkService.checkUpdate(items, participantId);
+    List<ItemAmount> item = checkService.checkUpdate(items, participantId);
     //HttpHeaders headers = new HttpHeaders();
     //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
-    return new ResponseEntity<>( HttpStatus.OK);
+    return new ResponseEntity<>( item, HttpStatus.OK);
   }
 
   @DeleteMapping(value = "/check-delete-item/{participantId}/{itemId}")
@@ -127,10 +133,27 @@ public class CheckController {
 
   @PostMapping("/payment-confirm")
   @CrossOrigin(origins = "http://localhost:4200")
-  public ResponseEntity<?>confirmParticipation(@RequestBody long checkId) {
+  public ResponseEntity<?>confirmPayment(@RequestBody long checkId) {
     checkService.confirmPayment(checkId);
     //HttpHeaders headers = new HttpHeaders();
     //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
     return new ResponseEntity<String>(HttpStatus.OK);
+  }
+
+  @GetMapping("/check-items-by-check/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<List<ItemAmount>> getItems(@PathVariable long id) {
+    List<ItemAmount> items = checkService.getItems(id);
+    if(items.isEmpty()){
+      return new ResponseEntity<List<ItemAmount>>(HttpStatus.NO_CONTENT);
+    }
+    return new ResponseEntity<List<ItemAmount>>(items, HttpStatus.OK);
+  }
+
+  @GetMapping(value = "/check/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<Check> getCheck(@PathVariable long id) {
+    Check check = checkService.getCheck(id);
+    return new ResponseEntity<Check>(check, HttpStatus.OK);
   }
 }

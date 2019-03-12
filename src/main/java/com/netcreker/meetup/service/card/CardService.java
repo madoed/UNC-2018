@@ -24,7 +24,7 @@ public class CardService {
   public List<Card> getAllCards(Long id){
     //change -1 on id
     ObjectQuery query = ObjectQuery.newInstance()
-            .objectTypeId(4).reference(1024, -1);
+            .objectTypeId(4).reference(1024, id);
     List<Card> cards = em.filter(Card.class, query, false);
 
     return cards;

@@ -24,4 +24,6 @@ public class Participant extends Entity {
   private Meeting participantOfMeeting;
   @Parameter(1078)
   private String statusOfConfirmation;// not confirmed, confirmed
+  @Parameter(1080)
+  private Double alreadyPayed;
 }

@@ -43,12 +43,20 @@ public class CheckService {
   public List<ItemAmount>   findAllParticipantItems(long participantId){
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(14).reference(1062, participantId);
-    long checkId = em.filter(Check.class, query, false).get(0).getId();
+    List<Check> checks = em.filter(Check.class, query, false);
 
-    query = ObjectQuery.newInstance()
-            .objectTypeId(13).reference(1060, checkId);
-
-    List<ItemAmount> items = em.filter(ItemAmount.class, query, false);
+    List<ItemAmount> items = new ArrayList<>();
+    List<ItemAmount> itemsFromOneCheck;
+    for (Check check:checks) {
+      query = ObjectQuery.newInstance()
+              .objectTypeId(13).reference(1060, check.getId());
+      itemsFromOneCheck = em.filter(ItemAmount.class, query, false);
+      if (itemsFromOneCheck!=null){
+        for (ItemAmount a: itemsFromOneCheck) {
+          items.add(a);
+        }
+      }
+    }
 
     return items;
   }
@@ -93,25 +101,41 @@ public class CheckService {
     Meeting meeting = em.load(Meeting.class, id);
     String status = "open";
     bill.setBillStatus(status);
-    Double amount_without_item = bill.getBillCommonAmount()*meeting.getAmountOfParticipants() -
-            item.getPrice()*item.getItemAmount();
-    Double common = (amount_without_item + newItem.getPrice()*newItem.getItemAmount())
-            /meeting.getAmountOfParticipants();
-    bill.setBillCommonAmount(common);
-    Double total = bill.getBillTotalSum() - item.getPrice()*item.getItemAmount() +
-            newItem.getPrice()*newItem.getItemAmount();
-    bill.setBillTotalSum(total);
-    item.setPrice(newItem.getPrice());
-    item.setItemTitle(newItem.getItemTitle());
     Integer current;
-    if (newItem.getItemCurrentAmount() == 0) {
-      current = newItem.getItemAmount() - (item.getItemAmount()-item.getItemCurrentAmount()) ;
+    Double billCommonAmountBefore = bill.getBillCommonAmount();
+    if (newItem.getItemCurrentAmount() == 0) {//if changing price, amount
+      current = item.getItemCurrentAmount() + (newItem.getItemAmount() - item.getItemAmount());
+      newItem.setItemCurrentAmount(current);
+
+      Double amount_without_item = bill.getBillCommonAmount()*meeting.getAmountOfParticipants() -
+              item.getPrice()*item.getItemCurrentAmount();
+      Double common = (amount_without_item + newItem.getPrice()*newItem.getItemCurrentAmount())
+              /meeting.getAmountOfParticipants();
+      bill.setBillCommonAmount(common);
+      Double total = bill.getBillTotalSum() - item.getPrice()*item.getItemAmount() +
+              newItem.getPrice()*newItem.getItemAmount();
+      bill.setBillTotalSum(total);
+
+      item.setItemCurrentAmount(current);
       item.setItemAmount(newItem.getItemAmount());
     }
-    else {
+    else {//if move to list
       current = item.getItemCurrentAmount() + newItem.getItemCurrentAmount();
+      //item.setItemCurrentAmount(current);
+      newItem.setItemCurrentAmount(current);
+
+      Double amount_without_item = bill.getBillCommonAmount()*meeting.getAmountOfParticipants() -
+              item.getPrice()*item.getItemCurrentAmount();
+      Double common = (amount_without_item + newItem.getPrice()*newItem.getItemCurrentAmount())
+              /meeting.getAmountOfParticipants();
+      bill.setBillCommonAmount(common);
+      item.setItemCurrentAmount(current);
     }
-    item.setItemCurrentAmount(current);
+
+    item.setPrice(newItem.getPrice());
+    item.setItemTitle(newItem.getItemTitle());
+
+    createCheckIfNoNotPayedCheck(id, (billCommonAmountBefore-bill.getBillCommonAmount()));
     em.save(bill);
     item.setName(item.getItemTitle());
     em.save(item);
@@ -134,6 +158,32 @@ public class CheckService {
     }
   }
 
+  private void createCheckIfNoNotPayedCheck (long meetingId, Double commonAmountChange) {
+
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(11).reference(1050, meetingId);
+    Bill bill = em.filter(Bill.class, query, false).get(0);
+
+    query = ObjectQuery.newInstance()
+            .objectTypeId(10).reference(1048, meetingId);
+    List<Participant> participants = em.filter(Participant.class, query, false);
+
+    Check check;
+    for (Participant participant:participants) {
+      query = ObjectQuery.newInstance()
+              .objectTypeId(14).reference(1062, participant.getId())
+              .objectTypeId(14).value(1065, "notpayed");
+      if (em.filter(Check.class, query, false)==null){
+        check = new Check();
+        check.setCheckAmount(0.0);
+        check.setCheckStatus("notpayed");
+        check.setCheckOwner(participant);
+        check.setName(bill.getBillOwner().getName());
+        em.save(check);
+      }
+    }
+  }
+
   public BillItem addItem(BillItem item, long id) {
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(11).reference(1050, id);
@@ -141,6 +191,8 @@ public class CheckService {
     Meeting meeting = em.load(Meeting.class, id);
     if(bill.getBillStatus().equals("empty"))
       createChecks(id);
+
+    Double billCommonAmountBefore = bill.getBillCommonAmount();
     String status = "open";
     bill.setBillStatus(status);
     bill.setBillTotalSum(bill.getBillTotalSum() + item.getPrice()*item.getItemAmount());
@@ -152,15 +204,23 @@ public class CheckService {
     em.save(bill);
     item.setName(item.getItemTitle());
     em.save(item);
+
+    createCheckIfNoNotPayedCheck(id, (billCommonAmountBefore-bill.getBillCommonAmount()));
     return item;
   }
 
-  public void checkUpdate(List<BillItem> items, long participantId) {
+  public List<ItemAmount> checkUpdate(List<BillItem> items, long participantId) {
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(14).reference(1062, participantId)
             .objectTypeId(14).value(1065, "notpayed");
+    List<Check> checks = em.filter(Check.class, query, false);
+    if (checks==null) {
+      createCheckIfNoNotPayedCheck(participantId, 0.0);
+    }
     Check check = em.filter(Check.class, query, false).get(0);
     check.setCheckStatus("notpayed");
+
+    List<ItemAmount> newList = new ArrayList<>();
     List<ItemAmount> billItem;
     ItemAmount itemAmount;
     for (BillItem item: items) {
@@ -177,20 +237,23 @@ public class CheckService {
         itemAmount.setAmountInCheck(item.getItemCurrentAmount());
         itemAmount.setItemAmountCheck(check);
         itemAmount.setName(item.getItemTitle() +" " + check.getCheckOwner().getName());
-        check.setCheckAmount(check.getCheckAmount()+item.getPrice()*item.getItemCurrentAmount());
+        //check.setCheckAmount(check.getCheckAmount()+item.getPrice()*item.getItemCurrentAmount());
         em.save(check);
         em.save(itemAmount);
+        newList.add(itemAmount);
       }
       else {
         itemAmount = billItem.get(0);
-        check.setCheckAmount(check.getCheckAmount()-
-                item.getPrice()*itemAmount.getAmountInCheck()
-                +item.getPrice()*item.getItemCurrentAmount());
+//        check.setCheckAmount(check.getCheckAmount()-
+//                item.getPrice()*itemAmount.getAmountInCheck()
+//                +item.getPrice()*item.getItemCurrentAmount());
         em.save(check);
         itemAmount.setAmountInCheck(item.getItemCurrentAmount());
         em.save(itemAmount);
+        newList.add(itemAmount);
       }
     }
+    return newList;
   }
 
   public void deleteItemFromCheck(long participantId, long itemId) {
@@ -217,6 +280,32 @@ public class CheckService {
     Bill bill = new Bill();
 
     for (Participant part:participation) {
+      query = ObjectQuery.newInstance()
+              .objectTypeId(11).reference(1050, part.getParticipantOfMeeting()
+                      .getId());
+      bill = em.filter(Bill.class, query, false).get(0);
+      if (bill.getBillOwner().getId() != id) {
+        query = ObjectQuery.newInstance()
+                .objectTypeId(14).reference(1062, part.getId())
+                .value(1065, status);
+        check = em.filter(Check.class, query, false);
+        if (!check.isEmpty()) {
+          for (Check singleCheck : check) {
+            if (singleCheck.getCheckAmount() != 0.0)
+              checks.add(singleCheck);
+          }
+        }
+      }
+    }
+    return checks;
+  }
+
+
+  private List<Check> getParticipantChecks (List<Participant> participation, String status,long id) {
+   ObjectQuery query;
+    List<Check> check;
+    List<Check> checks = new ArrayList<Check>();
+    for (Participant part:participation) {
       if(part.getMeetingParticipant().getId()!=id) {
         query = ObjectQuery.newInstance()
                 .objectTypeId(14).reference(1062, part.getId())
@@ -224,17 +313,20 @@ public class CheckService {
         check = em.filter(Check.class, query, false);
         if (!check.isEmpty()) {
           for (Check singleCheck:check) {
-            query = ObjectQuery.newInstance()
-                    .objectTypeId(11).reference(1050, part.getParticipantOfMeeting().getId());
-            bill = em.filter(Bill.class, query, false).get(0);
-            singleCheck.setCheckAmount(singleCheck.getCheckAmount() + bill.getBillCommonAmount());
-            checks.add(singleCheck);
+//            query = ObjectQuery.newInstance()
+//                    .objectTypeId(11).reference(1050, part.getParticipantOfMeeting().getId());
+//            bill = em.filter(Bill.class, query, false).get(0);
+//            singleCheck.setCheckAmount(singleCheck.getCheckAmount() + bill.getBillCommonAmount());
+            singleCheck = updateCheckAmount(singleCheck.getId());
+            if (singleCheck.getCheckAmount()!=0.0)
+              checks.add(singleCheck);
           }
         }
       }
     }
     return checks;
   }
+
 
   public List<Check> getOwedChecks(Long id, String status){
     ObjectQuery query;
@@ -262,31 +354,88 @@ public class CheckService {
     //get all bills where i'm owed
     for (Bill bill: bills) {
 
-        query = ObjectQuery.newInstance()
-                .objectTypeId(10).reference(1048, bill.getBillOfMeeting().getId());
-        participation = em.filter(Participant.class, query, false);
+      query = ObjectQuery.newInstance()
+              .objectTypeId(10).reference(1048, bill.getBillOfMeeting().getId());
+      participation = em.filter(Participant.class, query, false);
 
-        for (Participant participant : participation) {
-          if (participant.getMeetingParticipant().getId() != id) {
-            query = ObjectQuery.newInstance()
-                    .objectTypeId(14).reference(1062, participant.getId())
-                    .value(1065, status);
-          check = em.filter(Check.class, query, false);
-          if (!check.isEmpty()) {
-            for (Check singleCheck : check) {
-              singleCheck.setCheckAmount(singleCheck.getCheckAmount() + bill.getBillCommonAmount());
-              checks.add(singleCheck);
-            }
-          }
-          }
-        }
+//        for (Participant participant : participation) {
+//          if (participant.getMeetingParticipant().getId() != id) {
+//            query = ObjectQuery.newInstance()
+//                    .objectTypeId(14).reference(1062, participant.getId())
+//                    .value(1065, status);
+//          check = em.filter(Check.class, query, false);
+//          if (!check.isEmpty()) {
+//            for (Check singleCheck : check) {
+//              singleCheck = updateCheckAmount(singleCheck.getId());
+//              if (singleCheck.getCheckAmount()!=0.0)
+//                checks.add(singleCheck);
+////              singleCheck.setCheckAmount(singleCheck.getCheckAmount() + bill.getBillCommonAmount());
+////              checks.add(singleCheck);
+//            }
+//          }
+//          }
+//        }
+      check = getParticipantChecks(participation, status, id);
+      for (Check a:check) {
+        checks.add(a);
+      }
     }
     return checks;
   }
 
-  public void confirmPayment(long checkId) {
+  private Check updateCheckAmount(long checkId) {
     Check check = em.load(Check.class, checkId);
+    Participant participant = check.getCheckOwner();
+    Meeting meeting = em.load(Meeting.class, participant.getParticipantOfMeeting().getId());
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(11).reference(1050, meeting.getId());
+    Bill bill = em.filter(Bill.class, query, false).get(0);
+    Double amount = bill.getBillCommonAmount();
+    List<ItemAmount> itemsInCheck = getItems(checkId);
+    for (ItemAmount itemAmount: itemsInCheck) {
+      amount += itemAmount.getBillItemAmount().getPrice()*itemAmount.getAmountInCheck();
+    }
+    check.setCheckAmount(amount);
+    em.save(check);
+    return check;
+  }
+
+  public void confirmPayment(long checkId) {
+    Check check = updateCheckAmount(checkId);
+    Participant participant = check.getCheckOwner();
+
+    participant.setAlreadyPayed(participant.getAlreadyPayed() + check.getCheckAmount());
     check.setCheckStatus("payed");
     em.save(check);
+  }
+
+  public List<ItemAmount> getItems (long id) {
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(13).reference(1060, id);
+    List<ItemAmount> items = em.filter(ItemAmount.class, query, false);
+    return items;
+  }
+
+  public Check getCheck (long id) {
+    Check check = em.load(Check.class, id);
+    Participant participant = em.load(Participant.class, check.getCheckOwner().getId());
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(11).reference(1050, participant.getParticipantOfMeeting().getId());
+    Bill bill = em.filter(Bill.class, query, false).get(0);
+    //check.setCheckAmount(check.getCheckAmount() + bill.getBillCommonAmount());
+    check = updateCheckAmount(check.getId());
+    return check;
+  }
+
+  public boolean checkForAlreadyPayedParticipants (long billId) {
+    Bill bill = em.load(Bill.class, billId);
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(10).reference(1048, bill.getBillOfMeeting().getId());
+    List<Participant> participants = em.filter(Participant.class, query, false);
+    for (Participant participant: participants) {
+      if(participant.getAlreadyPayed()!=0.0)
+        return true;
+    }
+    return false;
   }
 }

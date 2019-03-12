@@ -121,7 +121,7 @@ public class MeetingService {
     meeting.setName(meeting.getMeetingName());
     em.save(meeting);
     Bill bill = new Bill();
-    bill.setName("biil for " + meeting.getMeetingName());
+    bill.setName("bill for " + meeting.getMeetingName());
     bill.setBillStatus("empty");
     bill.setBillTotalSum(0.0);
     bill.setBillCommonAmount(0.0);
@@ -130,8 +130,8 @@ public class MeetingService {
     bill.setDateOfBill(meeting.getDateOfMeeting());
     em.save(bill);
     Chat chat = new Chat();
-    chat.setChatName(meeting.getMeetingName() + "chat");
-    chat.setName(meeting.getMeetingName() + "chat");
+    chat.setChatName(meeting.getMeetingName() + " chat");
+    chat.setName(meeting.getMeetingName() + " chat");
     em.save(chat);
     meeting.setMeetingChat(chat);
     em.save(meeting);
@@ -145,6 +145,7 @@ public class MeetingService {
     for (Participant participant:participants) {
       participant.setParticipantOfMeeting(meeting);
       participant.setName(participant.getMeetingParticipant().getName());
+      participant.setAlreadyPayed(0.0);
       em.save(participant);
       pplInChat.add(participant.getMeetingParticipant());
     }

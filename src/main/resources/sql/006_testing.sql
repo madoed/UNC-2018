@@ -222,4 +222,4 @@ insert into params values (-29, 1019, 'Alice Smith'),
                           (-36, 1023, 'xfghfg'),--salt
                           (-32, 1066, '0');
 
--- max attr_id: 1079, max obj_type_id: 17
+-- max attr_id: 1080, max obj_type_id: 17
