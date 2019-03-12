@@ -53,7 +53,7 @@ class WebSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 .anyRequest()
-                .authenticated();
+                .permitAll();
     }
 
     @Bean
