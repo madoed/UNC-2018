@@ -36,11 +36,12 @@ public class UserRestController {
 
     @PostMapping
     public ResponseEntity<User> getOrCreate(@RequestBody UserDetails userDetails) {
-        User user = userService.loadByKeycloakId(userDetails.getId());
+        User user = userService.loadByUsername(userDetails.getUsername());
         if (user == null) {
             user = new User();
-            user.setFirstName(userDetails.getGivenName());
-            user.setLastName(userDetails.getFamilyName());
+            user.setName(userDetails.getFirstName() + " " + userDetails.getLastName());
+            user.setFirstName(userDetails.getFirstName());
+            user.setLastName(userDetails.getLastName());
             user.setUsername(userDetails.getUsername());
             user.setEmail(userDetails.getEmail());
             userService.save(user);
