@@ -7,7 +7,8 @@ insert into attributes (attr_id, attr_name) values
 (1051,'dateOfBill'),
 (1052,'billStatus'),
 (1064,'billCommonAmount'),
-(1077,'billTotalSum');
+(1077,'billTotalSum'),
+(1066,'mainCard');
 
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'bill'),
@@ -32,3 +33,7 @@ VALUES((select object_type_id from Obj_types where name like 'bill'),
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'bill'),
         (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'billTotalSum'));
+
+insert into Obj_attributes (object_type_id, attr_id)
+VALUES((select object_type_id from Obj_types where name like 'bill'),
+        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'mainCard'));

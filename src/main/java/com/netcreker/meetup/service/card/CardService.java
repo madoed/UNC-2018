@@ -3,6 +3,7 @@ package com.netcreker.meetup.service.card;
 import com.netcreker.meetup.databasemanager.ObjectQuery;
 import com.netcreker.meetup.entity.card.Card;
 import com.netcreker.meetup.entity.card.EncryptedCard;
+import com.netcreker.meetup.entity.check.Bill;
 import com.netcreker.meetup.entity.meeting.Meeting;
 import com.netcreker.meetup.entity.meeting.Participant;
 import com.netcreker.meetup.entitymanager.EntityManager;
@@ -34,14 +35,17 @@ public class CardService {
     return em.load(Card.class, id);
   }
 
-  public void addCard(Card newCard){
+  public Card addCard(Card newCard){
     EncryptedCard encryptedCard = new EncryptedCard();
     encryptedCard.setCardFullNumber(newCard.getLastFourNumbers());
-    encryptedCard.setEncryptedCard(newCard);
     EncryptCard(encryptedCard);
     newCard.setLastFourNumbers(newCard.getLastFourNumbers().substring(12));
+    newCard.setName(newCard.getOwner().getName());
     em.save(newCard);
+    encryptedCard.setEncryptedCard(newCard);
+    encryptedCard.setName(newCard.getOwner().getName());
     em.save(encryptedCard);
+    return newCard;
   }
 
   private void EncryptCard(EncryptedCard card){
@@ -50,12 +54,22 @@ public class CardService {
     card.setCodeWord(salt);
     TextEncryptor encryptor = Encryptors.text(password, salt);
     String encryptedText = encryptor.encrypt(card.getCardFullNumber());
+    card.setCardFullNumber(encryptedText);
   }
 
   private String DecryptCard(EncryptedCard card) {
     TextEncryptor decryptor = Encryptors.text("meetup", card.getCodeWord());
     String decryptedText = decryptor.decrypt(card.getCardFullNumber());
     return decryptedText;
+  }
+
+  public void setBillCard(long cardId, long meetingId) {
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(11).reference(1050, meetingId);
+    Bill bill = em.filter(Bill.class, query, false).get(0);
+    Card card = em.load(Card.class, cardId);
+    bill.setMainCard(card);
+    em.save(bill);
   }
 }
 

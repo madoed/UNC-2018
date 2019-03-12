@@ -41,11 +41,19 @@ public class CardRestController {
 
   @PostMapping("/card")
   @CrossOrigin(origins = "http://localhost:4200")
-  public ResponseEntity<?>  addCard(@RequestBody Card newCard) {
-    cardService.addCard(newCard);
+  public ResponseEntity<Card>  addCard(@RequestBody Card newCard) {
+    Card card = cardService.addCard(newCard);
     //HttpHeaders headers = new HttpHeaders();
     //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
-    return new ResponseEntity<String>(HttpStatus.CREATED);
+    return new ResponseEntity<Card>(card, HttpStatus.CREATED);
   }
 
+  @PostMapping("/bill-card/{cardId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?> setBillCard(@PathVariable long cardId, @RequestBody long meetingId) {
+    cardService.setBillCard(cardId, meetingId);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<String>(HttpStatus.OK);
+  }
 }

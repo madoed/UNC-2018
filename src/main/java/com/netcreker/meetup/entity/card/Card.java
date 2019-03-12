@@ -18,8 +18,6 @@ public class Card extends Entity {
   private String lastFourNumbers;
   @Parameter(1022)
   private String dataOfExpire;
-  @Parameter(1066)
-  private Integer mainCard;
   @Reference(1024)
   private User owner;
 

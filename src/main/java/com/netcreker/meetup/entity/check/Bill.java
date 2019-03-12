@@ -4,6 +4,7 @@ import com.netcreker.meetup.annotation.ObjectType;
 import com.netcreker.meetup.annotation.Parameter;
 import com.netcreker.meetup.annotation.Reference;
 import com.netcreker.meetup.entity.Entity;
+import com.netcreker.meetup.entity.card.Card;
 import com.netcreker.meetup.entity.meeting.Meeting;
 import com.netcreker.meetup.entity.user.User;
 import lombok.Data;
@@ -34,4 +35,6 @@ public class Bill extends Entity {
   private Double billCommonAmount;
   @Parameter(1077)
   private Double billTotalSum;
+  @Reference(1066)
+  private Card mainCard;
 }

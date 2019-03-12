@@ -13,9 +13,6 @@ values (1022,'dataOfExpire', 0);
 insert into attributes (attr_id, attr_name,attr_type)
 values (1024,'owner', 0);
 
-insert into attributes (attr_id, attr_name,attr_type)
-values (1066,'mainCard', 0);
-
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'card'),
         (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'nameSurname'));
@@ -31,7 +28,3 @@ VALUES((select object_type_id from Obj_types where name like 'card'),
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'card'),
         (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'owner'));
-
-insert into Obj_attributes (object_type_id, attr_id)
-VALUES((select object_type_id from Obj_types where name like 'card'),
-        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'mainCard'));

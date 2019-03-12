@@ -38,4 +38,8 @@ public class Meeting extends Entity {
   private Location meetingLocation;
   @Parameter(1076)
   private Integer amountOfParticipants;
+  @Parameter(1081)
+  private Integer pollForPlaceOpen;
+  @Parameter(1082)
+  private Integer pollForDateOpen;
 }
