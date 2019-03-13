@@ -291,6 +291,7 @@ public class CheckService {
         check = em.filter(Check.class, query, false);
         if (!check.isEmpty()) {
           for (Check singleCheck : check) {
+            singleCheck = updateCheckAmount(singleCheck.getId());
             if (singleCheck.getCheckAmount() != 0.0)
               checks.add(singleCheck);
           }
