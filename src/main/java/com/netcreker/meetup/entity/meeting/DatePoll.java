@@ -27,4 +27,6 @@ public class DatePoll extends Entity {
   @Parameter(1075)
   @Temporal(TemporalType.TIMESTAMP)
   private Date dateOption;
+  @Parameter(1083)
+  private Double percentageForDate;
 }

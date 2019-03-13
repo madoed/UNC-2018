@@ -1,6 +1,7 @@
 package com.netcreker.meetup.entity.location;
 
 import com.netcreker.meetup.annotation.ObjectType;
+import com.netcreker.meetup.annotation.Parameter;
 import com.netcreker.meetup.annotation.Reference;
 import com.netcreker.meetup.entity.Entity;
 import com.netcreker.meetup.entity.meeting.Meeting;
@@ -24,4 +25,6 @@ public class MeetingLocation extends Entity {
   private User suggesterOfLocation;
   @Reference(1071)
   private List<User> voicesForLocation = new ArrayList<>();
+  @Parameter(1084)
+  private Double percentageForPlace;
 }

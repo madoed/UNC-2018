@@ -25,7 +25,15 @@ public class PollService {
   public List<MeetingLocation> getPlacePoll(long meetingId) {
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(16).reference(1069, meetingId);
-    return em.filter(MeetingLocation.class, query, false);
+    List<MeetingLocation> placePolls = em.filter(MeetingLocation.class, query, false);
+    Integer participantsAmount;
+    for (MeetingLocation place:placePolls) {
+      participantsAmount = ParticipantsAmount(place.getLocationOfMeeting().getId());
+      place.setPercentageForPlace(Math.round(place.getVoicesForLocation().size()*100/ participantsAmount
+              * 100.0) / 100.0);
+    }
+    placePolls.sort((o1, o2) -> o1.getPercentageForPlace().compareTo(o2.getPercentageForPlace()));
+    return placePolls;
   }
 
   public Meeting openPlacePoll(long meetingId) {
@@ -71,10 +79,26 @@ public class PollService {
     return meetingLocation;
   }
 
+  private Integer ParticipantsAmount (long meetingId) {
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(10).reference(1048, meetingId)
+            .objectTypeId(10).value(1078, "confirmed");
+    List<DatePoll> datePolls = em.filter(DatePoll.class, query, false);
+    return datePolls.size();
+  }
+
   public List<DatePoll> getDatePoll(long meetingId) {
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(17).reference(1072, meetingId);
-    return em.filter(DatePoll.class, query, false);
+    List<DatePoll> datePolls = em.filter(DatePoll.class, query, false);
+    Integer participantsAmount;
+    for (DatePoll date:datePolls) {
+      participantsAmount = ParticipantsAmount(date.getOneDateOfMeeting().getId());
+      date.setPercentageForDate(Math.round(date.getVoicesForDate().size()* participantsAmount
+              * 10000.0) / 100.0);
+    }
+    datePolls.sort((o1, o2) -> o1.getPercentageForDate().compareTo(o2.getPercentageForDate()));
+    return datePolls;
   }
 
   public Meeting openDatePoll(long meetingId) {

@@ -46,6 +46,8 @@ public class ChatUpdate {
       //message.setTimestamp(new Date());
       messageService.save(message);
       //String id = chat.getChatName();
+
+      //template.convertAndSend("/user/"+ -1, message);
       template.convertAndSend("/channel/"+ message.getFrom_chat().getId(), message);
     }
 }
