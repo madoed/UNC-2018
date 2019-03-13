@@ -25,7 +25,7 @@ public class MessageService {
 
   public void save(Message message){
     //delete
-    message.setSender(em.load(User.class,-1));
+    message.setSender(em.load(User.class,message.getSender().getId()));
     em.save(message);
   }
 

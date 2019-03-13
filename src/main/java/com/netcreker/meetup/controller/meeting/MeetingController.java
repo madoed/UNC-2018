@@ -70,6 +70,15 @@ public class MeetingController {
     return new ResponseEntity<String>(HttpStatus.CREATED);
   }
 
+  @PostMapping("/meeting-status/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>changeMeetingStatus(@RequestBody String status, @PathVariable long id) {
+    meetingService.changeMeetingStatus(status, id);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<String>(HttpStatus.OK);
+  }
+
   @PostMapping("/meeting-time/{id}")
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<?>setTime(@RequestBody Date newTime, @PathVariable long id) {
@@ -133,6 +142,15 @@ public class MeetingController {
     //HttpHeaders headers = new HttpHeaders();
     //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
     return new ResponseEntity<String>(HttpStatus.CREATED);
+  }
+
+  @PostMapping("/meeting-add-participant/{meetingId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>addParticipants(@RequestBody Participant participant, @PathVariable long meetingId) {
+    Participant part = meetingService.addParticipant(participant, meetingId);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<Participant>(part, HttpStatus.CREATED);
   }
 
   @PostMapping("/participant-confirm")

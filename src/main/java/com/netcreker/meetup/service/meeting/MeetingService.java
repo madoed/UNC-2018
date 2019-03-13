@@ -119,6 +119,9 @@ public class MeetingService {
       em.save(meeting.getMeetingLocation());
     }
     meeting.setName(meeting.getMeetingName());
+    meeting.setAmountOfParticipants(1);
+    meeting.setPollForPlaceOpen(0);
+    meeting.setPollForDateOpen(0);
     em.save(meeting);
     Bill bill = new Bill();
     bill.setName("bill for " + meeting.getMeetingName());
@@ -155,9 +158,33 @@ public class MeetingService {
     em.save(chat);
   }
 
+  public Participant addParticipant(Participant participant, long meetingId) {
+    Meeting meeting = em.load(Meeting.class, meetingId);
+    Chat chat = em.load(Chat.class, meeting.getMeetingChat().getId());
+    List<User> pplInChat = chat.getSubscribers();
+    participant.setParticipantOfMeeting(meeting);
+    participant.setName(participant.getMeetingParticipant().getName());
+    participant.setAlreadyPayed(0.0);
+    em.save(participant);
+    pplInChat.add(participant.getMeetingParticipant());
+    meeting.setAmountOfParticipants(meeting.getAmountOfParticipants()+1);
+    em.save(meeting);
+    chat.setSubscribers(pplInChat);
+    em.save(chat);
+    return participant;
+  }
+
   public void confirmParticipation(long participantId) {
     Participant participant = em.load(Participant.class, participantId);
     participant.setStatusOfConfirmation("confirmed");
+    Meeting meeting = em.load(Meeting.class, participant.getParticipantOfMeeting().getId());
+    meeting.setAmountOfParticipants(meeting.getAmountOfParticipants()+1);
     em.save(participant);
+  }
+
+  public void changeMeetingStatus(String status, long id){
+    Meeting meeting = em.load(Meeting.class, id);
+    meeting.setStatus(status);
+    em.save(meeting);
   }
 }
