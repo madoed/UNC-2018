@@ -18,11 +18,21 @@ public class MessageController {
   @Autowired
   private MessageService messageService;
 
-  @GetMapping(value = "/messages/{chatId}")
+  @GetMapping(value = "/messages-old/{chatId}/{userId}")
   @CrossOrigin(origins = "http://localhost:4200")
-  public ResponseEntity<List<Message>> findMessages(@PathVariable("chatId") long chatId) {
-    List<Message> messages = messageService.findAllByChat(chatId);
-    if(messages==null){
+  public ResponseEntity<List<Message>> findOldMessages(@PathVariable long chatId, @PathVariable long userId) {
+    List<Message> messages = messageService.findOldByChat(chatId, userId);
+    if(messages.isEmpty()){
+      return new ResponseEntity<List<Message>>(HttpStatus.NO_CONTENT);
+    }
+    return new ResponseEntity<List<Message>>(messages, HttpStatus.OK);
+  }
+
+  @GetMapping(value = "/messages-new/{chatId}/{userId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<List<Message>> findNewMessages(@PathVariable long chatId, @PathVariable long userId) {
+    List<Message> messages = messageService.findNewByChat(chatId, userId);
+    if(messages.isEmpty()){
       return new ResponseEntity<List<Message>>(HttpStatus.NO_CONTENT);
     }
     return new ResponseEntity<List<Message>>(messages, HttpStatus.OK);

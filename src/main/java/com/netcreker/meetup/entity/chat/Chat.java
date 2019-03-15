@@ -17,7 +17,10 @@ import java.util.List;
 public class Chat extends Entity {
   @Parameter(1029)
   private String chatName;
-
   @Reference(1030)
   private List<User> subscribers;
+  @Parameter(1088)
+  private String chatType;//dialogue, chat, meeting
+  @Reference(1089)
+  private Message lastMessage;
 }

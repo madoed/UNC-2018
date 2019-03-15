@@ -19,10 +19,20 @@ public class ChatController {
   @Autowired
   private ChatService chatService;
 
-  @GetMapping("/chats/{id}")
+  @GetMapping("/chats-old/{id}")
   @CrossOrigin(origins = "http://localhost:4200")
-  public ResponseEntity<List<Chat>>  getChats(@PathVariable long id) {
-    List<Chat> chats = chatService.getChats(id);
+  public ResponseEntity<List<Chat>> getOldChats(@PathVariable long id ) {
+    List<Chat> chats = chatService.getOldChats(id);
+    if(chats.isEmpty()){
+      return new ResponseEntity<List<Chat>>(HttpStatus.NO_CONTENT);
+    }
+    return new ResponseEntity<List<Chat>>(chats, HttpStatus.OK);
+  }
+
+  @GetMapping("/chats-new/{id}/{userId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<List<Chat>> getNewChats(@PathVariable long id ) {
+    List<Chat> chats = chatService.getNewChats(id);
     if(chats.isEmpty()){
       return new ResponseEntity<List<Chat>>(HttpStatus.NO_CONTENT);
     }
@@ -51,12 +61,22 @@ public class ChatController {
 
   @PostMapping("/chat")
   @CrossOrigin(origins = "http://localhost:4200")
-  public ResponseEntity<?>addCard(@RequestBody Chat newChat) {
+  public ResponseEntity<?>addChat(@RequestBody Chat newChat) {
     chatService.addChat(newChat);
     //HttpHeaders headers = new HttpHeaders();
     //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
     return new ResponseEntity<String>(HttpStatus.CREATED);
   }
+
+  @GetMapping("/dialogue/{user1}/{user2}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<Chat>getDialogue(@PathVariable long user1, @PathVariable long user2) {
+    Chat chat = chatService.getDialogue(user1, user2);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<Chat>(chat, HttpStatus.CREATED);
+  }
+
   /*
   @MessageMapping("/chat")
   public void handleMessage(Message message) {

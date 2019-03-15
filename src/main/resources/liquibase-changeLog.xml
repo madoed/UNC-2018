@@ -73,7 +73,11 @@
         <sqlFile path="sql/018_datepoll.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 
-    <changeSet id="19" author="ilyina">
+    <changeSet id="19" author="guseva">
+        <sqlFile path="sql/019_reserve.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="20" author="ilyina">
         <sqlFile path="sql/006_testing.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 
