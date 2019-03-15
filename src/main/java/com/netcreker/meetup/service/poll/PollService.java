@@ -32,7 +32,7 @@ public class PollService {
       place.setPercentageForPlace(Math.round(place.getVoicesForLocation().size()*100/ participantsAmount
               * 100.0) / 100.0);
     }
-    placePolls.sort((o1, o2) -> o1.getPercentageForPlace().compareTo(o2.getPercentageForPlace()));
+    placePolls.sort((o1, o2) -> o2.getPercentageForPlace().compareTo(o1.getPercentageForPlace()));
     return placePolls;
   }
 
@@ -97,7 +97,7 @@ public class PollService {
       date.setPercentageForDate(Math.round(date.getVoicesForDate().size()* participantsAmount
               * 10000.0) / 100.0);
     }
-    datePolls.sort((o1, o2) -> o1.getPercentageForDate().compareTo(o2.getPercentageForDate()));
+    datePolls.sort((o1, o2) -> o2.getPercentageForDate().compareTo(o1.getPercentageForDate()));
     return datePolls;
   }
 

@@ -95,6 +95,7 @@ public class MeetingService {
   }
 
   public void setLocation(Location location, long id) {
+    location.setName(location.getPlaceName());
     em.save(location);
     Meeting meeting = em.load(Meeting.class, id);
     meeting.setMeetingLocation(location);
