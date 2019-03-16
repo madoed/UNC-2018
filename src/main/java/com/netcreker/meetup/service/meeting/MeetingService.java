@@ -136,6 +136,8 @@ public class MeetingService {
     Chat chat = new Chat();
     chat.setChatName(meeting.getMeetingName() + " chat");
     chat.setName(meeting.getMeetingName() + " chat");
+    chat.setChatType("meeting");
+    chat.setLastUpdate(new Date());
     em.save(chat);
     meeting.setMeetingChat(chat);
     em.save(meeting);

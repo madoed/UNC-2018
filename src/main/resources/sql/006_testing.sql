@@ -221,4 +221,4 @@ insert into params values (-4, 1008, 'My schedule. Yay!!!'),
 --                           (-32, 1022, '12/20'),
 --                           (-36, 1023, 'xfghfg');
 
--- max attr_id: 1089, max obj_type_id: 18
+-- max attr_id: 1091, max obj_type_id: 18

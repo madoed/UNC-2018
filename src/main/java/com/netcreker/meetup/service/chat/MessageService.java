@@ -26,9 +26,15 @@ public class MessageService {
 
   public void save(Message message){
     //delete
+    message.setName("mes");
     message.setTimestamp(new Date());
     message.setSender(em.load(User.class,message.getSender().getId()));
     em.save(message);
+    Chat chat = em.load(Chat.class, message.getFrom_chat().getId());
+    chat.setLastUpdate(message.getTimestamp());
+    chat.setLastMessage(message.getContent());
+    chat.setLastSender(message.getSender());
+    em.save(chat);
     saveToReserve(message);
   }
 

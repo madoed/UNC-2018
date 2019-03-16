@@ -2,6 +2,7 @@ package com.netcreker.meetup.service.chat;
 
 import com.netcreker.meetup.databasemanager.ObjectQuery;
 import com.netcreker.meetup.entity.chat.Chat;
+import com.netcreker.meetup.entity.chat.Message;
 import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.entitymanager.EntityManager;
 import org.checkerframework.checker.units.qual.C;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -24,7 +26,7 @@ public class ChatService {
     if (allChats.isEmpty())
       return allChats;
 
-    allChats.sort((o1, o2) -> o2.getLastMessage().getTimestamp().compareTo(o1.getLastMessage().getTimestamp()));
+    allChats.sort((o1, o2) -> o2.getLastUpdate().compareTo(o1.getLastUpdate()));
     query = ObjectQuery.newInstance().objectTypeId(18).reference(1086, id);
     List<Chat> newChats = em.filter(Chat.class, query, false);
     if (newChats.isEmpty())
@@ -48,7 +50,7 @@ public class ChatService {
 
     List<Chat> result = new ArrayList<>();
 
-    allChats.sort((o1, o2) -> o2.getLastMessage().getTimestamp().compareTo(o1.getLastMessage().getTimestamp()));
+    allChats.sort((o1, o2) -> o2.getLastUpdate().compareTo(o1.getLastUpdate()));
     query = ObjectQuery.newInstance().objectTypeId(18).reference(1086, id);
     List<Chat> newChats = em.filter(Chat.class, query, false);
     if (newChats.isEmpty())
@@ -77,11 +79,13 @@ public class ChatService {
     User second = em.load(User.class, user2);
     Chat dialogue = new Chat();
     dialogue.setChatName("dialogue " + first.getName() + " and " + second.getName());
+    dialogue.setName(dialogue.getChatName());
     dialogue.setChatType("dialogue");
     List<User> subs = new ArrayList<>();
     subs.add(first);
     subs.add(second);
     dialogue.setSubscribers(subs);
+    dialogue.setLastUpdate(new Date());
     em.save(dialogue);
     return dialogue;
   }
@@ -114,6 +118,9 @@ public class ChatService {
   }
 
   public void addChat(Chat newChat){
+    newChat.setName(newChat.getChatName());
+    newChat.setLastUpdate(new Date());
+    newChat.setChatType("chat");
     em.save(newChat);
   }
 }

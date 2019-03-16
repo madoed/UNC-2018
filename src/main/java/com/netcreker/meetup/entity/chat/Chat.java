@@ -9,6 +9,9 @@ import com.netcreker.meetup.entity.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -21,6 +24,11 @@ public class Chat extends Entity {
   private List<User> subscribers;
   @Parameter(1088)
   private String chatType;//dialogue, chat, meeting
-  @Reference(1089)
-  private Message lastMessage;
+  @Parameter(1089)
+  private String lastMessage;
+  @Reference(1090)
+  private User lastSender;
+  @Parameter(1091)
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date lastUpdate;
 }
