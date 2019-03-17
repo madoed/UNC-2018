@@ -3,6 +3,7 @@ package com.netcreker.meetup.service.chat;
 import com.netcreker.meetup.databasemanager.ObjectQuery;
 import com.netcreker.meetup.entity.chat.Chat;
 import com.netcreker.meetup.entity.chat.Message;
+import com.netcreker.meetup.entity.notification.Reserve;
 import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.entitymanager.EntityManager;
 import org.checkerframework.checker.units.qual.C;
@@ -28,17 +29,21 @@ public class ChatService {
 
     allChats.sort((o1, o2) -> o2.getLastUpdate().compareTo(o1.getLastUpdate()));
     query = ObjectQuery.newInstance().objectTypeId(18).reference(1086, id);
-    List<Chat> newChats = em.filter(Chat.class, query, false);
+    List<Reserve> newChats = em.filter(Reserve.class, query, false);
     if (newChats.isEmpty())
       return allChats;
 
+    List<Chat> result = new ArrayList<>(allChats);
+
     for (Chat chat:allChats) {
-      if(newChats.contains(chat)) {
-        allChats.remove(chat);
+      for (Reserve note:newChats) {
+        if (chat.getId()==note.getReserveChat().getId()) {
+          result.remove(chat);
+        }
       }
     }
 
-    return allChats;
+    return result;
   }
 
   public List<Chat> getNewChats(Long id){
@@ -52,12 +57,17 @@ public class ChatService {
 
     allChats.sort((o1, o2) -> o2.getLastUpdate().compareTo(o1.getLastUpdate()));
     query = ObjectQuery.newInstance().objectTypeId(18).reference(1086, id);
-    List<Chat> newChats = em.filter(Chat.class, query, false);
-    if (newChats.isEmpty())
-      return newChats;
+    List<Reserve> newChats = em.filter(Reserve.class, query, false);
+    if (newChats.isEmpty()) {
+      return new ArrayList<Chat>();
+    }
+
     for (Chat chat:allChats) {
-      if(newChats.contains(chat)) {
-        result.add(chat);
+      for (Reserve note:newChats) {
+        if (note.getReserveChat().getId()==chat.getId()) {
+          result.add(chat);
+          break;
+        }
       }
     }
     return result;

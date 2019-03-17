@@ -29,7 +29,7 @@ public class ChatController {
     return new ResponseEntity<List<Chat>>(chats, HttpStatus.OK);
   }
 
-  @GetMapping("/chats-new/{id}/{userId}")
+  @GetMapping("/chats-new/{id}")
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<List<Chat>> getNewChats(@PathVariable long id ) {
     List<Chat> chats = chatService.getNewChats(id);

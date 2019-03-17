@@ -47,6 +47,7 @@ public class MessageService {
         reserve.setReserveChat(chat);
         reserve.setReserveUser(sub);
         reserve.setReserveMessage(message);
+        reserve.setName("new message from " + message.getSender().getName());
         em.save(reserve);
       }
     }
@@ -62,16 +63,21 @@ public class MessageService {
     allMes.sort((o1, o2) -> o1.getTimestamp().compareTo(o2.getTimestamp()));
     query = ObjectQuery.newInstance().objectTypeId(18).reference(1085, channelId)
             .objectTypeId(18).reference(1086, userId);
-    List<Chat> newMes = em.filter(Chat.class, query, false);
+    List<Reserve> newMes = em.filter(Reserve.class, query, false);
     if (newMes.isEmpty())
       return allMes;
 
+    List<Message> result = new ArrayList<>(allMes);
+
     for (Message message:allMes) {
-      if(newMes.contains(message)) {
-        allMes.remove(message);
+      for (Reserve note:newMes) {
+        if (note.getReserveMessage().getId()==message.getId()) {
+          result.remove(message);
+        }
       }
     }
-    return allMes;
+
+    return result;
   }
 
   public List<Message> findNewByChat(long channelId, long userId){
@@ -86,13 +92,16 @@ public class MessageService {
     allMes.sort((o1, o2) -> o1.getTimestamp().compareTo(o2.getTimestamp()));
     query = ObjectQuery.newInstance().objectTypeId(18).reference(1085, channelId)
             .objectTypeId(18).reference(1086, userId);
-    List<Message> newMes = em.filter(Message.class, query, false);
+    List<Reserve> newMes = em.filter(Reserve.class, query, false);
     if (newMes.isEmpty())
-      return newMes;
+      return new ArrayList<Message>();
 
     for (Message message:allMes) {
-      if(newMes.contains(message)) {
-        result.add(message);
+      for (Reserve note:newMes) {
+        if (note.getReserveMessage().getId()==message.getId()) {
+          result.add(message);
+          break;
+        }
       }
     }
     return result;
