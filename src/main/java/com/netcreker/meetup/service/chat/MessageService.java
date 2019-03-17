@@ -104,10 +104,11 @@ public class MessageService {
         }
       }
     }
+    cleanReserve(channelId, userId);
     return result;
   }
 
-  private void cleanReserve(long channelId, long userId) {
+  public void cleanReserve(long channelId, long userId) {
     ObjectQuery query =  ObjectQuery.newInstance()
             .objectTypeId(18).reference(1085, channelId)
             .objectTypeId(18).reference(1086, userId);

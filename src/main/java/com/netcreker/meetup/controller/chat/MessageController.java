@@ -38,6 +38,15 @@ public class MessageController {
     return new ResponseEntity<List<Message>>(messages, HttpStatus.OK);
   }
 
+  @DeleteMapping("/clean-reserve/{userId}/{channelId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>addChat(@PathVariable long userId, @PathVariable long channelId) {
+    messageService.cleanReserve(userId, channelId);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<String>(HttpStatus.OK);
+  }
+
   /*@PostMapping(value = "/messages")
   @CrossOrigin(origins = "http://localhost:4200")
   public void sendReadReceipt(@PathVariable("chatId") long chatId,@PathVariable("userId") long userId) {

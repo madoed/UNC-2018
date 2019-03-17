@@ -185,6 +185,11 @@ public class MeetingService {
     em.save(participant);
   }
 
+  public void declineParticipation(long participantId) {
+    Participant participant = em.load(Participant.class, participantId);;
+    em.delete(participant.getId());
+  }
+
   public void changeMeetingStatus(String status, long id){
     Meeting meeting = em.load(Meeting.class, id);
     meeting.setStatus(status);

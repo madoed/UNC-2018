@@ -162,4 +162,13 @@ public class MeetingController {
     return new ResponseEntity<String>(HttpStatus.OK);
   }
 
+  @PostMapping("/participant-decline")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>declineParticipation(@RequestBody long participantId) {
+    meetingService.declineParticipation(participantId);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<String>(HttpStatus.OK);
+  }
+
 }
