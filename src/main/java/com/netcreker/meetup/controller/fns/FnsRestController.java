@@ -2,13 +2,12 @@ package com.netcreker.meetup.controller.fns;
 
 import com.netcreker.meetup.entity.fns.FnsCheck;
 import com.netcreker.meetup.entity.fns.FnsCheckInfo;
-import com.netcreker.meetup.entity.fns.Receipt;
 import com.netcreker.meetup.service.fns.FnsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +24,7 @@ public class FnsRestController {
     private final String username = "+79102430036";
     private final String password = "800031";
 
-    @GetMapping("/check-details")
+    @PostMapping("/check-details")
     public ResponseEntity<?> getCheckDetails(@RequestBody FnsCheckInfo checkInfo) {
         if (fnsService.login(username, password)) {
             ResponseEntity<FnsCheck> result = fnsService.getCheckDetails(username, password, checkInfo);
