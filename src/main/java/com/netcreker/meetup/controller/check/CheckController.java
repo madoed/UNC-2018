@@ -70,10 +70,11 @@ public class CheckController {
     return new ResponseEntity<BillItem>(item, HttpStatus.OK);
   }
 
-  @PostMapping(value = "/item-add/{id}")
+  @PostMapping(value = "/item-add/{id}/{userId}")
   @CrossOrigin(origins = "http://localhost:4200")
-  public ResponseEntity<?>addItem(@RequestBody BillItem item, @PathVariable long id) {
-    item = checkService.addItem(item, id);
+  public ResponseEntity<?>addItem(@RequestBody BillItem item, @PathVariable long id,
+                                  @PathVariable long userId) {
+    item = checkService.addItem(item, id, userId);
     //HttpHeaders headers = new HttpHeaders();
     //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
     return new ResponseEntity<BillItem>(item, HttpStatus.OK);

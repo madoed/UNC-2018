@@ -54,12 +54,13 @@ public class PollService {
     location.setName(location.getPlaceName());
     em.save(location);
     Participant participant = em.load(Participant.class, participantId);
+    User user = em.load(User.class, participant.getMeetingParticipant().getId());
     MeetingLocation meetingLocation = new MeetingLocation();
     meetingLocation.setLocationOfMeeting(participant.getParticipantOfMeeting());
     meetingLocation.setOneLocation(location);
-    meetingLocation.setSuggesterOfLocation(participant.getMeetingParticipant());
+    meetingLocation.setSuggesterOfLocation(user);
     List<User> voices = new ArrayList<>();
-    voices.add(participant.getMeetingParticipant());
+    voices.add(user);
     meetingLocation.setVoicesForLocation(voices);
     meetingLocation.setName(location.getName());
     em.save(meetingLocation);
@@ -118,12 +119,13 @@ public class PollService {
   public DatePoll addDateInPoll(Date date, long participantId) {
 
     Participant participant = em.load(Participant.class, participantId);
+    User user = em.load(User.class, participant.getMeetingParticipant().getId());
     DatePoll datePoll = new DatePoll();
     datePoll.setDateOption(date);
     datePoll.setOneDateOfMeeting(participant.getParticipantOfMeeting());
-    datePoll.setSuggesterOfDate(participant.getMeetingParticipant());
+    datePoll.setSuggesterOfDate(user);
     List<User> voices = new ArrayList<>();
-    voices.add(participant.getMeetingParticipant());
+    voices.add(user);
     datePoll.setVoicesForDate(voices);
     datePoll.setName(date.toString());
     em.save(datePoll);

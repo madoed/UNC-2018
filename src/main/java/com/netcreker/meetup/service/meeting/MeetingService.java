@@ -130,7 +130,7 @@ public class MeetingService {
     bill.setBillTotalSum(0.0);
     bill.setBillCommonAmount(0.0);
     bill.setBillOfMeeting(meeting);
-    bill.setBillOwner(meeting.getBoss());
+    //bill.setBillOwner(meeting.getBoss());
     bill.setDateOfBill(meeting.getDateOfMeeting());
     em.save(bill);
     Chat chat = new Chat();
@@ -155,7 +155,7 @@ public class MeetingService {
       em.save(participant);
       pplInChat.add(participant.getMeetingParticipant());
     }
-    meeting.setAmountOfParticipants(participants.size());
+    //meeting.setAmountOfParticipants(participants.size());
     em.save(meeting);
     chat.setSubscribers(pplInChat);
     em.save(chat);

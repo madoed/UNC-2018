@@ -7,6 +7,7 @@ import com.netcreker.meetup.entity.check.Check;
 import com.netcreker.meetup.entity.check.ItemAmount;
 import com.netcreker.meetup.entity.meeting.Meeting;
 import com.netcreker.meetup.entity.meeting.Participant;
+import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.entitymanager.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -148,12 +149,16 @@ public class CheckService {
     List<Participant> participants = em.filter(Participant.class, query, false);
     Check check;
     Meeting meeting = em.load(Meeting.class, meetingId);
+    query = ObjectQuery.newInstance()
+            .objectTypeId(11).reference(1050, meetingId);
+    Bill bill = em.filter(Bill.class, query, false).get(0);
+
     for (Participant participant: participants) {
       check = new Check();
       check.setCheckAmount(0.0);
       check.setCheckStatus("notpayed");
       check.setCheckOwner(participant);
-      check.setName(meeting.getBoss().getName());
+      check.setName(bill.getBillOwner().getName());
       em.save(check);
     }
   }
@@ -184,10 +189,15 @@ public class CheckService {
     }
   }
 
-  public BillItem addItem(BillItem item, long id) {
+  public BillItem addItem(BillItem item, long id, long userId) {
+    User user = em.load(User.class, userId);
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(11).reference(1050, id);
     Bill bill = em.filter(Bill.class, query, false).get(0);
+    if (bill.getBillOwner()==null) {
+      bill.setBillOwner(user);
+      em.save(bill);
+    }
     Meeting meeting = em.load(Meeting.class, id);
     if(bill.getBillStatus().equals("empty"))
       createChecks(id);
@@ -314,10 +324,6 @@ public class CheckService {
         check = em.filter(Check.class, query, false);
         if (!check.isEmpty()) {
           for (Check singleCheck:check) {
-//            query = ObjectQuery.newInstance()
-//                    .objectTypeId(11).reference(1050, part.getParticipantOfMeeting().getId());
-//            bill = em.filter(Bill.class, query, false).get(0);
-//            singleCheck.setCheckAmount(singleCheck.getCheckAmount() + bill.getBillCommonAmount());
             singleCheck = updateCheckAmount(singleCheck.getId());
             if (singleCheck.getCheckAmount()!=0.0)
               checks.add(singleCheck);
