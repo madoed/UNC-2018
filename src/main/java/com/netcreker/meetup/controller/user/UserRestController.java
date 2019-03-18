@@ -36,7 +36,7 @@ public class UserRestController {
 
     @PostMapping
     public ResponseEntity<User> getOrCreate(@RequestBody UserDetails userDetails) {
-        User user = userService.loadByKeycloakId(userDetails.getId());
+        User user = userService.loadByUsername(userDetails.getUsername());
         if (user == null) {
             user = new User();
             user.setFirstName(userDetails.getGivenName());
