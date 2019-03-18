@@ -123,6 +123,7 @@ public class MeetingService {
     meeting.setAmountOfParticipants(1);
     meeting.setPollForPlaceOpen(0);
     meeting.setPollForDateOpen(0);
+    meeting.setAvatarUrl(meeting.getAvatarUrl());
     em.save(meeting);
     Bill bill = new Bill();
     bill.setName("bill for " + meeting.getMeetingName());
