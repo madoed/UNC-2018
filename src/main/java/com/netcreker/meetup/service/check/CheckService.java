@@ -154,12 +154,17 @@ public class CheckService {
     Bill bill = em.filter(Bill.class, query, false).get(0);
 
     for (Participant participant: participants) {
-      check = new Check();
-      check.setCheckAmount(0.0);
-      check.setCheckStatus("notpayed");
-      check.setCheckOwner(participant);
-      check.setName(bill.getBillOwner().getName());
-      em.save(check);
+      if (participant.getStatusOfConfirmation().equals("confirmed")) {
+        check = new Check();
+        check.setCheckAmount(0.0);
+        check.setCheckStatus("notpayed");
+        check.setCheckOwner(participant);
+        check.setName(bill.getBillOwner().getName());
+        em.save(check);
+      }
+      else {
+        em.delete(participant.getId());
+      }
     }
   }
 
@@ -178,7 +183,7 @@ public class CheckService {
       query = ObjectQuery.newInstance()
               .objectTypeId(14).reference(1062, participant.getId())
               .objectTypeId(14).value(1065, "notpayed");
-      if (em.filter(Check.class, query, false)==null){
+      if (em.filter(Check.class, query, false).isEmpty()){
         check = new Check();
         check.setCheckAmount(0.0);
         check.setCheckStatus("notpayed");
@@ -291,10 +296,9 @@ public class CheckService {
 
     for (Participant part:participation) {
       query = ObjectQuery.newInstance()
-              .objectTypeId(11).reference(1050, part.getParticipantOfMeeting()
-                      .getId());
+              .objectTypeId(11).reference(1050, part.getParticipantOfMeeting().getId());
       bill = em.filter(Bill.class, query, false).get(0);
-      if (bill.getBillOwner().getId() != id) {
+      if (bill.getBillOwner()!=null&&bill.getBillOwner().getId() != id) {
         query = ObjectQuery.newInstance()
                 .objectTypeId(14).reference(1062, part.getId())
                 .value(1065, status);

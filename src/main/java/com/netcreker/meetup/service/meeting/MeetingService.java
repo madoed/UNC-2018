@@ -170,7 +170,7 @@ public class MeetingService {
     participant.setAlreadyPayed(0.0);
     em.save(participant);
     pplInChat.add(participant.getMeetingParticipant());
-    meeting.setAmountOfParticipants(meeting.getAmountOfParticipants()+1);
+    //meeting.setAmountOfParticipants(meeting.getAmountOfParticipants()+1);
     em.save(meeting);
     chat.setSubscribers(pplInChat);
     em.save(chat);
