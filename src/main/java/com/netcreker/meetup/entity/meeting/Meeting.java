@@ -42,4 +42,6 @@ public class Meeting extends Entity {
   private Integer pollForPlaceOpen;
   @Parameter(1082)
   private Integer pollForDateOpen;
+  @Parameter(1036)
+  private String avatarUrl;
 }
