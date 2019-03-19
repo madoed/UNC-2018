@@ -95,8 +95,8 @@ public class PollService {
     Integer participantsAmount;
     for (DatePoll date:datePolls) {
       participantsAmount = ParticipantsAmount(date.getOneDateOfMeeting().getId());
-      date.setPercentageForDate(Math.round(date.getVoicesForDate().size()* participantsAmount
-              * 10000.0) / 100.0);
+      date.setPercentageForDate(Math.round(date.getVoicesForDate().size()*100/ participantsAmount
+              * 100.0) / 100.0);
     }
     datePolls.sort((o1, o2) -> o2.getPercentageForDate().compareTo(o1.getPercentageForDate()));
     return datePolls;

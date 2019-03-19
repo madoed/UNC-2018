@@ -183,6 +183,7 @@ public class MeetingService {
     participant.setStatusOfConfirmation("confirmed");
     Meeting meeting = em.load(Meeting.class, participant.getParticipantOfMeeting().getId());
     meeting.setAmountOfParticipants(meeting.getAmountOfParticipants()+1);
+    em.save(meeting);
     em.save(participant);
   }
 
