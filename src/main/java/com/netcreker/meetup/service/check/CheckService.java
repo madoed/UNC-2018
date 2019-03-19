@@ -417,6 +417,7 @@ public class CheckService {
 
     participant.setAlreadyPayed(participant.getAlreadyPayed() + check.getCheckAmount());
     check.setCheckStatus("payed");
+    em.save(participant);
     em.save(check);
   }
 
