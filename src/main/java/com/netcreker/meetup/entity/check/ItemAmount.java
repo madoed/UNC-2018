@@ -17,5 +17,5 @@ public class ItemAmount extends Entity {
   @Reference(1060)
   private Check itemAmountCheck;
   @Parameter(1061)
-  private Integer amountInCheck;
+  private Double amountInCheck;
 }

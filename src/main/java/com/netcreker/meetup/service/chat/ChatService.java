@@ -3,6 +3,8 @@ package com.netcreker.meetup.service.chat;
 import com.netcreker.meetup.databasemanager.ObjectQuery;
 import com.netcreker.meetup.entity.chat.Chat;
 import com.netcreker.meetup.entity.chat.Message;
+import com.netcreker.meetup.entity.meeting.Meeting;
+import com.netcreker.meetup.entity.meeting.Participant;
 import com.netcreker.meetup.entity.notification.Reserve;
 import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.entitymanager.EntityManager;
@@ -132,5 +134,10 @@ public class ChatService {
     newChat.setLastUpdate(new Date());
     newChat.setChatType("chat");
     em.save(newChat);
+  }
+
+  public Integer getMeetingChatId(long partId) {
+    Participant participant = em.load(Participant.class, partId);
+    return (int)(participant.getParticipantOfMeeting().getMeetingChat().getId());
   }
 }

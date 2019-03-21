@@ -24,7 +24,7 @@ public class MessageService {
   @Autowired
   private EntityManager em;
 
-  public void save(Message message){
+  public List<User> save(Message message){
     //delete
     message.setName("mes");
     message.setTimestamp(new Date());
@@ -35,10 +35,12 @@ public class MessageService {
     chat.setLastMessage(message.getContent());
     chat.setLastSender(message.getSender());
     em.save(chat);
-    saveToReserve(message);
+    message.setFrom_chat(chat);
+    message.getSender().setFriends(null);
+    return saveToReserve(message);
   }
 
-  private void saveToReserve(Message message) {
+  private List<User> saveToReserve(Message message) {
     Chat chat = em.load(Chat.class, message.getFrom_chat().getId());
     Reserve reserve;
     for (User sub:chat.getSubscribers()) {
@@ -51,6 +53,7 @@ public class MessageService {
         em.save(reserve);
       }
     }
+    return chat.getSubscribers();
   }
 
   public List<Message> findOldByChat(long channelId, long userId){

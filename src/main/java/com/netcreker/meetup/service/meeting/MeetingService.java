@@ -140,6 +140,9 @@ public class MeetingService {
     chat.setChatType("meeting");
     chat.setLastUpdate(new Date());
     chat.setAvatarUrl(meeting.getAvatarUrl());
+    List<User> pplInChat = new ArrayList<>();
+    pplInChat.add(meeting.getBoss());
+    chat.setSubscribers(pplInChat);
     em.save(chat);
     meeting.setMeetingChat(chat);
     em.save(meeting);
@@ -149,17 +152,17 @@ public class MeetingService {
   public void addParticipants(List<Participant> participants, long meetingId) {
     Meeting meeting = em.load(Meeting.class, meetingId);
     Chat chat = em.load(Chat.class, meeting.getMeetingChat().getId());
-    List<User> pplInChat = new ArrayList<>();
+    //List<User> pplInChat = new ArrayList<>();
     for (Participant participant:participants) {
       participant.setParticipantOfMeeting(meeting);
       participant.setName(participant.getMeetingParticipant().getName());
       participant.setAlreadyPayed(0.0);
       em.save(participant);
-      pplInChat.add(participant.getMeetingParticipant());
+      //pplInChat.add(participant.getMeetingParticipant());
     }
     //meeting.setAmountOfParticipants(participants.size());
     em.save(meeting);
-    chat.setSubscribers(pplInChat);
+    //chat.setSubscribers(pplInChat);
     em.save(chat);
   }
 
@@ -186,10 +189,15 @@ public class MeetingService {
     meeting.setAmountOfParticipants(meeting.getAmountOfParticipants()+1);
     em.save(meeting);
     em.save(participant);
+    Chat chat = em.load(Chat.class, participant.getParticipantOfMeeting().getMeetingChat().getId());
+    List<User> userList = chat.getSubscribers();
+    userList.add(participant.getMeetingParticipant());
+    chat.setSubscribers(userList);
+    em.save(chat);
   }
 
   public void declineParticipation(long participantId) {
-    Participant participant = em.load(Participant.class, participantId);;
+    Participant participant = em.load(Participant.class, participantId);
     em.delete(participant.getId());
   }
 

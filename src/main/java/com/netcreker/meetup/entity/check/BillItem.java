@@ -15,9 +15,9 @@ public class BillItem extends Entity {
   @Parameter(1053)
   private String itemTitle;
   @Parameter(1054)
-  private Integer itemAmount;
+  private Double itemAmount;
   @Parameter(1055)
-  private Integer itemCurrentAmount;
+  private Double itemCurrentAmount;
   /*@Parameter(1056)
   private String itemStatus;*/
   @Parameter(1057)

@@ -102,7 +102,7 @@ public class CheckService {
     Meeting meeting = em.load(Meeting.class, id);
     String status = "open";
     bill.setBillStatus(status);
-    Integer current;
+    Double current;
     Double billCommonAmountBefore = bill.getBillCommonAmount();
     if (newItem.getItemCurrentAmount() == 0) {//if changing price, amount
       current = item.getItemCurrentAmount() + (newItem.getItemAmount() - item.getItemAmount());
@@ -119,6 +119,8 @@ public class CheckService {
 
       item.setItemCurrentAmount(current);
       item.setItemAmount(newItem.getItemAmount());
+      item.setItemTitle(newItem.getItemTitle());
+      item.setPrice(newItem.getPrice());
     }
     else {//if move to list
       current = item.getItemCurrentAmount() + newItem.getItemCurrentAmount();
@@ -133,8 +135,8 @@ public class CheckService {
       item.setItemCurrentAmount(current);
     }
 
-    item.setPrice(newItem.getPrice());
-    item.setItemTitle(newItem.getItemTitle());
+    //item.setPrice(newItem.getPrice());
+    //item.setItemTitle(newItem.getItemTitle());
 
     createCheckIfNoNotPayedCheck(id, (billCommonAmountBefore-bill.getBillCommonAmount()));
     em.save(bill);
@@ -269,6 +271,47 @@ public class CheckService {
       }
     }
     return newList;
+  }
+
+  public ItemAmount checkUpdateForShare(BillItem itemShared, long participantId) {
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(14).reference(1062, participantId)
+            .objectTypeId(14).value(1065, "notpayed");
+    List<Check> checks = em.filter(Check.class, query, false);
+    if (checks==null) {
+      createCheckIfNoNotPayedCheck(participantId, 0.0);
+    }
+    Check check = em.filter(Check.class, query, false).get(0);
+    check.setCheckStatus("notpayed");
+
+    List<ItemAmount> billItem;
+    ItemAmount itemAmount;
+
+    BillItem item = em.load(BillItem.class, itemShared.getId());
+
+      query = ObjectQuery.newInstance()
+              .objectTypeId(13).reference(1060, check.getId()).
+                      objectTypeId(13).reference(1059, item.getId());
+      billItem = em.filter(ItemAmount.class, query, false);
+      if (billItem.isEmpty()) {
+
+        itemAmount = new ItemAmount();
+       // itemAmount.setName(item.getItemTitle());
+        itemAmount.setBillItemAmount(item);
+        itemAmount.setAmountInCheck(itemShared.getItemCurrentAmount());
+        itemAmount.setItemAmountCheck(check);
+        itemAmount.setName(item.getItemTitle() +" " + check.getCheckOwner().getName());
+        em.save(check);
+        em.save(itemAmount);
+      }
+      else {
+        itemAmount = billItem.get(0);
+        em.save(check);
+        itemAmount.setAmountInCheck(itemAmount.getAmountInCheck() + itemShared.getItemCurrentAmount());
+        em.save(itemAmount);
+      }
+
+    return itemAmount;
   }
 
   public void deleteItemFromCheck(long participantId, long itemId) {
