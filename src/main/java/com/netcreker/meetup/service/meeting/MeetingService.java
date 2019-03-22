@@ -117,7 +117,9 @@ public class MeetingService {
 
   public Meeting createMeeting(Meeting meeting) {
     if (meeting.getMeetingLocation()!=null){
-      em.save(meeting.getMeetingLocation());
+      Location location = meeting.getMeetingLocation();
+      location.setName(location.getPlaceName());
+      em.save(location);
     }
     meeting.setName(meeting.getMeetingName());
     meeting.setAmountOfParticipants(1);
@@ -152,8 +154,11 @@ public class MeetingService {
   public void addParticipants(List<Participant> participants, long meetingId) {
     Meeting meeting = em.load(Meeting.class, meetingId);
     Chat chat = em.load(Chat.class, meeting.getMeetingChat().getId());
+    User user;
     //List<User> pplInChat = new ArrayList<>();
     for (Participant participant:participants) {
+      user = em.load(User.class, participant.getMeetingParticipant().getId());
+      participant.setMeetingParticipant(user);
       participant.setParticipantOfMeeting(meeting);
       participant.setName(participant.getMeetingParticipant().getName());
       participant.setAlreadyPayed(0.0);

@@ -63,7 +63,7 @@ public class MessageService {
     if (allMes.isEmpty())
       return allMes;
 
-    allMes.sort((o1, o2) -> o1.getTimestamp().compareTo(o2.getTimestamp()));
+    //allMes.sort((o1, o2) -> o1.getTimestamp().compareTo(o2.getTimestamp()));
     query = ObjectQuery.newInstance().objectTypeId(18).reference(1085, channelId)
             .objectTypeId(18).reference(1086, userId);
     List<Reserve> newMes = em.filter(Reserve.class, query, false);
@@ -92,7 +92,7 @@ public class MessageService {
 
     List<Message> result = new ArrayList<>();
 
-    allMes.sort((o1, o2) -> o1.getTimestamp().compareTo(o2.getTimestamp()));
+    //allMes.sort((o1, o2) -> o1.getTimestamp().compareTo(o2.getTimestamp()));
     query = ObjectQuery.newInstance().objectTypeId(18).reference(1085, channelId)
             .objectTypeId(18).reference(1086, userId);
     List<Reserve> newMes = em.filter(Reserve.class, query, false);
