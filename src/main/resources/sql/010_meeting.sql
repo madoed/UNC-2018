@@ -61,4 +61,3 @@ VALUES((select object_type_id from Obj_types where name like 'meeting'),
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'meeting'),
        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'avatar_url'));
-

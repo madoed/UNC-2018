@@ -11,7 +11,7 @@ insert into params values (-1, 1001, 'Alice'),
                           (-1, 1003, 'alice'),
                           (-1, 1004, 'alice@example.com'),
                           (-1, 1005, '57301afa-2110-41f9-8cd7-09d0dccefb7a'),
-                          (-1, 1036, 'http://localhost:8000/images/Female-Avatar-5.png'),
+                          (-1, 1036, 'http://localhost:8000/images/alice-avatar1.png'),
                           (-1, 1037, 'Hi, my name is Alice!');
 insert into params values (-1000, 1001, 'Super'),
                           (-1000, 1002, 'User'),

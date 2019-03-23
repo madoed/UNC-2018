@@ -6,7 +6,9 @@ import com.netcreker.meetup.annotation.Reference;
 import com.netcreker.meetup.entity.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -23,9 +25,6 @@ public class User extends Entity {
 
     @Parameter(1004)
     private String email;
-
-    @Parameter(1005)
-    private String keycloakId;
 
     @Reference(1006)
     private List<User> friends = new ArrayList<>();
@@ -44,7 +43,6 @@ public class User extends Entity {
         user.lastName = lastName;
         user.username = username;
         user.email = email;
-        user.keycloakId = keycloakId;
         user.aboutMe = aboutMe;
         user.friends.addAll(friends);
         return user;
