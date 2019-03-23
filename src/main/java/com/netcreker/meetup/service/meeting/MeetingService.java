@@ -37,6 +37,7 @@ public class MeetingService {
 
     if(type.equals(1)){
       Date date = new Date();
+      date.setTime(24);
       List<Participant> past = new ArrayList<Participant>();
       for (Participant part:participation) {
         if ((part.getParticipantOfMeeting().getDateOfMeeting()!=null)&&part.getParticipantOfMeeting().getDateOfMeeting().before(date)) {
@@ -46,6 +47,7 @@ public class MeetingService {
       return past;
     } else if(type.equals(0)){
       Date date = new Date();
+      date.setTime(24);
       List<Participant> future = new ArrayList<Participant>();
       for (Participant part:participation) {
         if ((part.getParticipantOfMeeting().getDateOfMeeting()==null)||part.getParticipantOfMeeting().getDateOfMeeting().after(date)) {

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class PollService {
       place.setPercentageForPlace(Math.round(place.getVoicesForLocation().size()*100/ participantsAmount
               * 100.0) / 100.0);
     }
-    //placePolls.sort((o1, o2) -> o2.getPercentageForPlace().compareTo(o1.getPercentageForPlace()));
+    placePolls.sort(Comparator.comparing(MeetingLocation::getId));
     return placePolls;
   }
 
@@ -98,7 +99,7 @@ public class PollService {
       date.setPercentageForDate(Math.round(date.getVoicesForDate().size()*100/ participantsAmount
               * 100.0) / 100.0);
     }
-    //datePolls.sort((o1, o2) -> o2.getPercentageForDate().compareTo(o1.getPercentageForDate()));
+    datePolls.sort(Comparator.comparing(DatePoll::getId));
     return datePolls;
   }
 
