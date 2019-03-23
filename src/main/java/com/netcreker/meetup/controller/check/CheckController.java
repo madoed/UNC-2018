@@ -105,6 +105,15 @@ public class CheckController {
     return new ResponseEntity<>( item, HttpStatus.OK);
   }
 
+  @PostMapping(value = "/check-items-update-for-share/{participantId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>checkUpdateForShare(@RequestBody BillItem item, @PathVariable long participantId) {
+    ItemAmount itemAmount = checkService.checkUpdateForShare(item, participantId);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<>( item, HttpStatus.OK);
+  }
+
   @DeleteMapping(value = "/check-delete-item/{participantId}/{itemId}")
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<?> deleteItemFromCheck(@PathVariable long participantId, @PathVariable long itemId) {

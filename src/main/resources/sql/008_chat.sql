@@ -32,3 +32,8 @@ VALUES((select object_type_id from Obj_types where name like 'chat'),
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'chat'),
         (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'lastUpdate'));
+
+insert into Obj_attributes (object_type_id, attr_id)
+VALUES((select object_type_id from Obj_types where name like 'chat'),
+        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'lastUpdate'));
+

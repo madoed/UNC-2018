@@ -2,6 +2,7 @@ package com.netcreker.meetup.controller.chat;
 
 import com.netcreker.meetup.entity.chat.Chat;
 import com.netcreker.meetup.entity.chat.Message;
+import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.service.chat.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
+import java.util.List;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:4200")
@@ -44,10 +46,15 @@ public class ChatUpdate {
     @MessageMapping("/messages")
     public void handleMessage(Message message) {
       //message.setTimestamp(new Date());
-      messageService.save(message);
+      List<User> userList = messageService.save(message);
       //String id = chat.getChatName();
 
-      //template.convertAndSend("/user/"+ -1, message);
+      for (User sub:userList) {
+        if(sub.getId()!=message.getSender().getId()) {
+          template.convertAndSend("/user-notify/"+ sub.getId(), message);
+        }
+      }
+
       template.convertAndSend("/channel/"+ message.getFrom_chat().getId(), message);
     }
 }

@@ -49,6 +49,13 @@ public class ChatController {
     return new ResponseEntity<Chat>(chat, HttpStatus.OK);
   }
 
+  @GetMapping("/meeting-chat-id/{id}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>  getMeetingChatId(@PathVariable long id) {
+    Integer chatId = chatService.getMeetingChatId(id);
+    return new ResponseEntity<Integer>(chatId, HttpStatus.OK);
+  }
+
   @GetMapping("/friends/{id}")
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<List<User>>  getFriends(@PathVariable long id) {

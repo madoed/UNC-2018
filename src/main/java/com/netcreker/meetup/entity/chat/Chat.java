@@ -31,4 +31,6 @@ public class Chat extends Entity {
   @Parameter(1091)
   @Temporal(TemporalType.TIMESTAMP)
   private Date lastUpdate;
+  @Parameter(1036)
+  private String avatarUrl;
 }
