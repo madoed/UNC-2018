@@ -66,9 +66,11 @@ public class CardService {
   public void setBillCard(long cardId, long meetingId) {
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(11).reference(1050, meetingId);
-    Bill bill = em.filter(Bill.class, query, false).get(0);
+    List<Bill> bills = em.filter(Bill.class, query, false);
+    Bill bill = bills.get(0);
     Card card = em.load(Card.class, cardId);
     bill.setMainCard(card);
+    bill.setBillOwner(card.getOwner());
     em.save(bill);
   }
 }

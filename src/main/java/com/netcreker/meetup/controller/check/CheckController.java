@@ -80,6 +80,17 @@ public class CheckController {
     return new ResponseEntity<BillItem>(item, HttpStatus.OK);
   }
 
+  @PostMapping(value = "/item-add-fns/{id}/{userId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<?>addItem(@RequestBody List<BillItem> items, @PathVariable long id,
+                                  @PathVariable long userId) {
+    items = checkService.addItemsFNS(items, id, userId);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<List<BillItem>>(items, HttpStatus.OK);
+  }
+
+
   @DeleteMapping(value = "/item-delete/{id}")
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<?> deleteItemFromBill(@PathVariable long id) {

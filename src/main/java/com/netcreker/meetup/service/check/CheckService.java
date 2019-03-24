@@ -25,7 +25,9 @@ public class CheckService {
   public Bill findCheckByMeting(long meetingId){
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(11).reference(1050, meetingId);
-    return em.filter(Bill.class, query, false).get(0);
+    List<Bill> bills = em.filter(Bill.class, query, false);
+    Bill bill = bills.get(0);
+    return bill;
   }
 
   public List<BillItem> findAllBillItems(long meetingId){
@@ -153,7 +155,8 @@ public class CheckService {
     Meeting meeting = em.load(Meeting.class, meetingId);
     query = ObjectQuery.newInstance()
             .objectTypeId(11).reference(1050, meetingId);
-    Bill bill = em.filter(Bill.class, query, false).get(0);
+    List<Bill> bills = em.filter(Bill.class, query, false);
+    Bill bill = bills.get(0);
 
     for (Participant participant: participants) {
       if (participant.getStatusOfConfirmation().equals("confirmed")) {
@@ -174,7 +177,8 @@ public class CheckService {
 
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(11).reference(1050, meetingId);
-    Bill bill = em.filter(Bill.class, query, false).get(0);
+    List<Bill> bills = em.filter(Bill.class, query, false);
+    Bill bill = bills.get(0);
 
     query = ObjectQuery.newInstance()
             .objectTypeId(10).reference(1048, meetingId);
@@ -196,15 +200,49 @@ public class CheckService {
     }
   }
 
+  public List<BillItem> addItemsFNS(List<BillItem> items, long id, long userId) {
+    User user = em.load(User.class, userId);
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(11).reference(1050, id);
+    List<Bill> bills = em.filter(Bill.class, query, false);
+    Bill bill = bills.get(0);
+
+    Meeting meeting = em.load(Meeting.class, id);
+    if(bill.getBillStatus().equals("empty"))
+      createChecks(id);
+
+    String status = "open";
+    bill.setBillStatus(status);
+    for (BillItem item:items) {
+      Double billCommonAmountBefore = bill.getBillCommonAmount();
+      bill.setBillTotalSum(bill.getBillTotalSum() + item.getPrice()*item.getItemAmount());
+      bill.setBillCommonAmount(( meeting.getAmountOfParticipants()*bill.getBillCommonAmount()+
+              item.getPrice()*item.getItemAmount())
+              /meeting.getAmountOfParticipants());
+      item.setItemBill(bill);
+      item.setItemCurrentAmount(item.getItemAmount());
+      em.save(bill);
+      item.setName(item.getItemTitle());
+      em.save(item);
+
+      createCheckIfNoNotPayedCheck(id, (billCommonAmountBefore-bill.getBillCommonAmount()));
+      bills = em.filter(Bill.class, query, false);
+      bill = bills.get(0);
+    }
+
+    return items;
+  }
+
   public BillItem addItem(BillItem item, long id, long userId) {
     User user = em.load(User.class, userId);
     ObjectQuery query = ObjectQuery.newInstance()
             .objectTypeId(11).reference(1050, id);
-    Bill bill = em.filter(Bill.class, query, false).get(0);
-    if (bill.getBillOwner()==null) {
-      bill.setBillOwner(user);
-      em.save(bill);
-    }
+    List<Bill> bills = em.filter(Bill.class, query, false);
+    Bill bill = bills.get(0);
+//    if (bill.getBillOwner()==null) {
+//      bill.setBillOwner(user);
+//      em.save(bill);
+//    }
     Meeting meeting = em.load(Meeting.class, id);
     if(bill.getBillStatus().equals("empty"))
       createChecks(id);
@@ -340,7 +378,8 @@ public class CheckService {
     for (Participant part:participation) {
       query = ObjectQuery.newInstance()
               .objectTypeId(11).reference(1050, part.getParticipantOfMeeting().getId());
-      bill = em.filter(Bill.class, query, false).get(0);
+      List<Bill> bills = em.filter(Bill.class, query, false);
+      bill = bills.get(0);
       if (bill.getBillOwner()!=null&&bill.getBillOwner().getId() != id) {
         query = ObjectQuery.newInstance()
                 .objectTypeId(14).reference(1062, part.getId())
