@@ -1,14 +1,12 @@
 package com.netcreker.meetup.service.chat;
 
-import com.netcreker.meetup.databasemanager.ObjectQuery;
+import com.netcreker.meetup.databasemanager.query.ObjectQuery;
+import com.netcreker.meetup.databasemanager.query.ReferenceQuery;
 import com.netcreker.meetup.entity.chat.Chat;
-import com.netcreker.meetup.entity.chat.Message;
-import com.netcreker.meetup.entity.meeting.Meeting;
 import com.netcreker.meetup.entity.meeting.Participant;
 import com.netcreker.meetup.entity.notification.Reserve;
 import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.entitymanager.EntityManager;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,8 +74,8 @@ public class ChatService {
   }
 
   public List<User> getFriends(Long id){
-    ObjectQuery query = ObjectQuery.newInstance()
-            .objectTypeId(1).reference(1006, id);
+    ReferenceQuery query = ReferenceQuery.newInstance()
+            .objectId(id).attributeId(1006);
     List<User> result = em.filter(User.class, query, false);
     return result;
   }

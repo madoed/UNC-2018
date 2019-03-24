@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -39,12 +40,15 @@ public class UserRestController {
         User user = userService.loadByUsername(userDetails.getUsername());
         if (user == null) {
             user = new User();
-            user.setFirstName(userDetails.getGivenName());
-            user.setLastName(userDetails.getFamilyName());
+            user.setName(userDetails.getFirstName() + userDetails.getLastName());
+            user.setFirstName(userDetails.getFirstName());
+            user.setLastName(userDetails.getLastName());
             user.setUsername(userDetails.getUsername());
             user.setEmail(userDetails.getEmail());
             userService.save(user);
         }
+        user.setOnline(true);
+        userService.save(user);
         return new ResponseEntity<User>(user, HttpStatus.OK);
     }
 
@@ -66,6 +70,18 @@ public class UserRestController {
             return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
         }
         userService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/logout/{id}")
+    public ResponseEntity<?> logout(@PathVariable long id) {
+        User user = userService.load(id);
+        if (user==null) {
+            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
+        user.setOnline(false);
+        user.setLastVisit(new Date());
+        userService.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

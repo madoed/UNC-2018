@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -35,18 +36,11 @@ public class User extends Entity {
     @Parameter(1037)
     private String aboutMe;
 
-    public User copy() {
-        User user = new User();
-        user.id = id;
-        user.name = name;
-        user.firstName = firstName;
-        user.lastName = lastName;
-        user.username = username;
-        user.email = email;
-        user.aboutMe = aboutMe;
-        user.friends.addAll(friends);
-        return user;
-    }
+    @Parameter(1088)
+    private boolean isOnline;
+
+    @Parameter(1089)
+    private Date lastVisit;
 
     @Override
     public String toString() {

@@ -1,11 +1,9 @@
 package com.netcreker.meetup.service.card;
 
-import com.netcreker.meetup.databasemanager.ObjectQuery;
+import com.netcreker.meetup.databasemanager.query.ObjectQuery;
 import com.netcreker.meetup.entity.card.Card;
 import com.netcreker.meetup.entity.card.EncryptedCard;
 import com.netcreker.meetup.entity.check.Bill;
-import com.netcreker.meetup.entity.meeting.Meeting;
-import com.netcreker.meetup.entity.meeting.Participant;
 import com.netcreker.meetup.entitymanager.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.encrypt.Encryptors;
@@ -13,7 +11,6 @@ import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

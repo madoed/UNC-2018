@@ -1,6 +1,6 @@
 package com.netcreker.meetup.service.check;
 
-import com.netcreker.meetup.databasemanager.ObjectQuery;
+import com.netcreker.meetup.databasemanager.query.ObjectQuery;
 import com.netcreker.meetup.entity.check.Bill;
 import com.netcreker.meetup.entity.check.BillItem;
 import com.netcreker.meetup.entity.check.Check;
@@ -12,7 +12,6 @@ import com.netcreker.meetup.entitymanager.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 

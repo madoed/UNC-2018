@@ -1,6 +1,6 @@
 package com.netcreker.meetup.service.location;
 
-import com.netcreker.meetup.databasemanager.ObjectQuery;
+import com.netcreker.meetup.databasemanager.query.ObjectQuery;
 import com.netcreker.meetup.entity.location.Location;
 import com.netcreker.meetup.entity.meeting.Meeting;
 import com.netcreker.meetup.entity.meeting.Participant;
@@ -8,7 +8,6 @@ import com.netcreker.meetup.entitymanager.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

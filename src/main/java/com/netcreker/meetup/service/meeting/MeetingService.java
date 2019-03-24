@@ -1,6 +1,6 @@
 package com.netcreker.meetup.service.meeting;
 
-import com.netcreker.meetup.databasemanager.ObjectQuery;
+import com.netcreker.meetup.databasemanager.query.ObjectQuery;
 import com.netcreker.meetup.entity.chat.Chat;
 import com.netcreker.meetup.entity.check.Bill;
 import com.netcreker.meetup.entity.location.Location;
