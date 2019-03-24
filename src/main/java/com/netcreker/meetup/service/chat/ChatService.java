@@ -74,10 +74,8 @@ public class ChatService {
   }
 
   public List<User> getFriends(Long id){
-    ReferenceQuery query = ReferenceQuery.newInstance()
-            .objectId(id).attributeId(1006);
-    List<User> result = em.filter(User.class, query, false);
-    return result;
+    User user = em.load(User.class, id);
+    return user.getFriends();
   }
 
   public Chat getChat(Long id){
