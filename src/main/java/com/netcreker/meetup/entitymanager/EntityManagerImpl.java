@@ -3,7 +3,7 @@ package com.netcreker.meetup.entitymanager;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.Cache;
 import com.netcreker.meetup.databasemanager.DatabaseManager;
-import com.netcreker.meetup.databasemanager.ObjectQuery;
+import com.netcreker.meetup.databasemanager.query.Query;
 import com.netcreker.meetup.entity.Entity;
 import com.netcreker.meetup.exceptions.EntityManagerException;
 import com.netcreker.meetup.util.Reflection;
@@ -40,7 +40,7 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     @Override
-    public <T extends Entity> List<T> filter(Class<T> clazz, ObjectQuery query, boolean lazy) {
+    public <T extends Entity> List<T> filter(Class<T> clazz, Query query, boolean lazy) {
         List<T> result = new ArrayList<>();
         for (long id : dbManager.queryForObjectIds(query)) {
             T entity = lazy ? lazyLoad(clazz, id) : load(clazz, id);

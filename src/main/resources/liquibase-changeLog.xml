@@ -26,7 +26,7 @@
     </changeSet>
 
     <changeSet id="7" author="ilyina">
-        <sqlFile path="sql/007_role.sql" relativeToChangelogFile="true" stripComments="true"/>
+        <sqlFile path="sql/007_online.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 
     <changeSet id="8" author="guseva">

@@ -1,5 +1,6 @@
 package com.netcreker.meetup.databasemanager;
 
+import com.netcreker.meetup.databasemanager.query.Query;
 import lombok.Data;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +121,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         jdbcTemplate.update(sql);
     }
 
-    public List<Long> queryForObjectIds(ObjectQuery query) {
+    public List<Long> queryForObjectIds(Query query) {
         return jdbcTemplate.queryForList(query.toString(), Long.class);
     }
 

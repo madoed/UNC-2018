@@ -1,7 +1,7 @@
 package com.netcreker.meetup.service.poll;
 
 
-import com.netcreker.meetup.databasemanager.ObjectQuery;
+import com.netcreker.meetup.databasemanager.query.ObjectQuery;
 import com.netcreker.meetup.entity.location.Location;
 import com.netcreker.meetup.entity.location.MeetingLocation;
 import com.netcreker.meetup.entity.meeting.DatePoll;

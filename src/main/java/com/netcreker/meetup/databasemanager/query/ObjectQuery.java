@@ -1,11 +1,11 @@
-package com.netcreker.meetup.databasemanager;
+package com.netcreker.meetup.databasemanager.query;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ObjectQuery {
+public class ObjectQuery extends Query {
     private long objectTypeId;
     private String objectName;
     private final HashMap<Long, Set<Long>> references = new HashMap<>();

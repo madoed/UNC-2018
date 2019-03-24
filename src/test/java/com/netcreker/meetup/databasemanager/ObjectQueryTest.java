@@ -1,5 +1,6 @@
 package com.netcreker.meetup.databasemanager;
 
+import com.netcreker.meetup.databasemanager.query.ObjectQuery;
 import lombok.extern.log4j.Log4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;

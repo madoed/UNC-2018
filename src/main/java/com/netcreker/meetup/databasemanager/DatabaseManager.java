@@ -1,5 +1,7 @@
 package com.netcreker.meetup.databasemanager;
 
+import com.netcreker.meetup.databasemanager.query.Query;
+
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +31,7 @@ public interface DatabaseManager {
 
     void setName(long id, String name);
 
-    List<Long> queryForObjectIds(ObjectQuery query);
+    List<Long> queryForObjectIds(Query query);
 
     List<Long> getEntitiesByName(String name);
 
