@@ -40,7 +40,7 @@ public class UserRestController {
         User user = userService.loadByUsername(userDetails.getUsername());
         if (user == null) {
             user = new User();
-            user.setName(userDetails.getFirstName() + userDetails.getLastName());
+            user.setName(userDetails.getFirstName() + ' ' + userDetails.getLastName());
             user.setFirstName(userDetails.getFirstName());
             user.setLastName(userDetails.getLastName());
             user.setUsername(userDetails.getUsername());

@@ -487,7 +487,7 @@ public class CheckService {
     for (ItemAmount itemAmount: itemsInCheck) {
       amount += itemAmount.getBillItemAmount().getPrice()*itemAmount.getAmountInCheck();
     }
-    check.setCheckAmount(amount);
+    check.setCheckAmount(Math.round(amount*100.0)/100.0);
     em.save(check);
     return check;
   }
