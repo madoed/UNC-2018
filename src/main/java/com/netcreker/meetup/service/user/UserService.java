@@ -32,10 +32,10 @@ public class UserService {
         return result.isEmpty() ? null : result.get(0);
     }
 
-    public User loadByKeycloakId(String keycloakId) {
+    public User loadByEmail(String email) {
         ObjectQuery query = ObjectQuery.newInstance()
                 .objectTypeId(1)
-                .value(1005, keycloakId);
+                .value(1004, email);
         List<User> result = em.filter(User.class, query, false);
 
         return result.isEmpty() ? null : result.get(0);

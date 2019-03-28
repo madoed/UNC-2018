@@ -39,6 +39,9 @@ public class UserRestController {
     public ResponseEntity<User> getOrCreate(@RequestBody UserDetails userDetails) {
         User user = userService.loadByUsername(userDetails.getUsername());
         if (user == null) {
+            user = userService.loadByEmail(userDetails.getEmail());
+        }
+        if (user == null) {
             user = new User();
             user.setName(userDetails.getFirstName() + ' ' + userDetails.getLastName());
             user.setFirstName(userDetails.getFirstName());

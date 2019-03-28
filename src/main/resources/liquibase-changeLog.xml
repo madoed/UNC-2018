@@ -81,4 +81,8 @@
         <sqlFile path="sql/006_testing.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 
+    <changeSet id="21" author="ilyina">
+        <sqlFile path="sql/020_mock_heroes.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
 </databaseChangeLog>
