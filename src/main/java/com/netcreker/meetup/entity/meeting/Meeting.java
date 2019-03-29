@@ -44,4 +44,8 @@ public class Meeting extends Entity {
   private Integer pollForDateOpen;
   @Parameter(1036)
   private String avatarUrl;
+  @Parameter(1094)
+  private String meetingType;
+  @Parameter(1095)
+  private Integer recursiveInfo;
 }

@@ -12,7 +12,9 @@ insert into attributes (attr_id, attr_name,attr_type) values
 (1076,'amountOfParticipants', 0),
 (1079,'timeOfMeeting', 0),
 (1082,'pollForDateOpen', 0),
-(1081,'pollForPlaceOpen', 0);
+(1081,'pollForPlaceOpen', 0),
+(1094,'meetingType', 0),
+(1095,'recursiveInfo', 0);
 
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'meeting'),
@@ -61,3 +63,11 @@ VALUES((select object_type_id from Obj_types where name like 'meeting'),
 insert into Obj_attributes (object_type_id, attr_id)
 VALUES((select object_type_id from Obj_types where name like 'meeting'),
        (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'avatar_url'));
+
+insert into Obj_attributes (object_type_id, attr_id)
+VALUES((select object_type_id from Obj_types where name like 'meeting'),
+       (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'meetingType'));
+
+insert into Obj_attributes (object_type_id, attr_id)
+VALUES((select object_type_id from Obj_types where name like 'meeting'),
+       (select attr_id from ATTRIBUTES where ATTRIBUTES.ATTR_NAME like 'recursiveInfo'));

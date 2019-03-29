@@ -8,12 +8,11 @@ import com.netcreker.meetup.entity.meeting.Meeting;
 import com.netcreker.meetup.entity.meeting.Participant;
 import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.entitymanager.EntityManager;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class MeetingService {
@@ -117,39 +116,185 @@ public class MeetingService {
     return result;
   }
 
-  public Meeting createMeeting(Meeting meeting) {
-    if (meeting.getMeetingLocation()!=null){
-      Location location = meeting.getMeetingLocation();
-      location.setName(location.getPlaceName());
-      em.save(location);
+  private Meeting setDateForEveryWeek (Meeting meeting) {
+    DateTime dt = new DateTime();
+    int currentDayOfTheWeek = dt.getDayOfWeek();
+    System.out.println("currentDayOfTheWeek " + currentDayOfTheWeek);
+    if (currentDayOfTheWeek>(meeting.getRecursiveInfo())) {
+      dt = dt.plusDays(meeting.getRecursiveInfo()-currentDayOfTheWeek + 7);
+      System.out.println("1 " + dt);
+    } else if (currentDayOfTheWeek<(meeting.getRecursiveInfo())){
+      dt = dt.plusDays(meeting.getRecursiveInfo()-currentDayOfTheWeek);
+      System.out.println("2 " + dt);
     }
-    meeting.setName(meeting.getMeetingName());
-    meeting.setAmountOfParticipants(1);
-    meeting.setPollForPlaceOpen(0);
-    meeting.setPollForDateOpen(0);
-    meeting.setAvatarUrl(meeting.getAvatarUrl());
-    em.save(meeting);
-    Bill bill = new Bill();
-    bill.setName("bill for " + meeting.getMeetingName());
-    bill.setBillStatus("empty");
-    bill.setBillTotalSum(0.0);
-    bill.setBillCommonAmount(0.0);
-    bill.setBillOfMeeting(meeting);
-    //bill.setBillOwner(meeting.getBoss());
-    bill.setDateOfBill(meeting.getDateOfMeeting());
-    em.save(bill);
-    Chat chat = new Chat();
-    chat.setChatName(meeting.getMeetingName() + " chat");
-    chat.setName(meeting.getMeetingName() + " chat");
-    chat.setChatType("meeting");
-    chat.setLastUpdate(new Date());
-    chat.setAvatarUrl(meeting.getAvatarUrl());
-    List<User> pplInChat = new ArrayList<>();
-    pplInChat.add(meeting.getBoss());
-    chat.setSubscribers(pplInChat);
-    em.save(chat);
-    meeting.setMeetingChat(chat);
-    em.save(meeting);
+    meeting.setDateOfMeeting(dt.toDate());
+    System.out.println(meeting.getDateOfMeeting());
+    return meeting;
+  }
+
+  private Meeting setDateForEveryMonthFirst (Meeting meeting) {
+    DateTime dt = new DateTime();
+    DateTime dtFirst = dt.dayOfMonth().setCopy(1);
+    System.out.println(dtFirst);
+    int firstDay = dtFirst.getDayOfWeek();
+    if (firstDay>(meeting.getRecursiveInfo())) {
+      dtFirst = dtFirst.plusDays(-(firstDay - meeting.getRecursiveInfo()) + 7);
+      System.out.println("3 " + dtFirst);
+    } else if (firstDay<(meeting.getRecursiveInfo())){
+      dtFirst = dtFirst.plusDays(meeting.getRecursiveInfo()-firstDay);
+      System.out.println("4 " + dtFirst);
+    }
+
+    if (dtFirst.getDayOfMonth()<dt.getDayOfMonth()) {
+      dtFirst = dt.plusMonths(1).dayOfMonth().setCopy(1);
+      System.out.println(dtFirst);
+      firstDay = dtFirst.getDayOfWeek();
+      if (firstDay>(meeting.getRecursiveInfo())) {
+        dtFirst = dtFirst.plusDays(-(firstDay - meeting.getRecursiveInfo()) + 7);
+        System.out.println("5 " + dtFirst);
+      } else if (firstDay<(meeting.getRecursiveInfo())){
+        dtFirst = dtFirst.plusDays(meeting.getRecursiveInfo()-firstDay);
+        System.out.println("6 " + dtFirst);
+      }
+      dt = dtFirst;
+    } else {
+      dt = dtFirst;
+    }
+
+    meeting.setDateOfMeeting(dt.toDate());
+    System.out.println(meeting.getDateOfMeeting());
+    return meeting;
+  }
+
+  private Meeting setDateForEveryMonthLast (Meeting meeting) {
+    DateTime dt = new DateTime();
+    DateTime dtLast = dt.plusMonths(1).dayOfMonth().setCopy(1).minusDays(1);
+    System.out.println(dtLast);
+    int lastDay = dtLast.getDayOfWeek();
+    if (lastDay<(meeting.getRecursiveInfo())) {
+      dtLast = dtLast.plusDays(meeting.getRecursiveInfo() - lastDay - 7);
+      System.out.println("7 " + dtLast);
+    } else if (lastDay>(meeting.getRecursiveInfo())){
+      dtLast = dtLast.minusDays(lastDay-meeting.getRecursiveInfo());
+      System.out.println("8 " + dtLast);
+    }
+
+    if (dtLast.getDayOfMonth()<dt.getDayOfMonth()) {
+      dtLast = dtLast.plusMonths(2).dayOfMonth().setCopy(1).minusDays(1);
+      System.out.println(dtLast);
+      lastDay = dtLast.getDayOfWeek();
+      if (lastDay<(meeting.getRecursiveInfo())) {
+        dtLast = dtLast.plusDays(meeting.getRecursiveInfo() - lastDay - 7);
+        System.out.println("9 " + dtLast);
+      } else if (lastDay>(meeting.getRecursiveInfo())){
+        System.out.println(dtLast);
+        dtLast = dtLast.minusDays(lastDay-meeting.getRecursiveInfo());
+        System.out.println("10 " + dtLast);
+      }
+      dt = dtLast;
+    } else {
+      dt = dtLast;
+    }
+
+    meeting.setDateOfMeeting(dt.toDate());
+    System.out.println(meeting.getDateOfMeeting());
+    return meeting;
+  }
+
+  private Meeting setDateForEvery (Meeting meeting) {
+    DateTime dt = new DateTime();
+    int currentDayOfTheWeek = dt.getDayOfWeek();
+    if (currentDayOfTheWeek>(meeting.getRecursiveInfo())) {
+      dt = dt.plusDays(meeting.getRecursiveInfo()-currentDayOfTheWeek + 7);
+      System.out.println("1 " + dt);
+    } else if (currentDayOfTheWeek<(meeting.getRecursiveInfo())){
+      dt = dt.plusDays(meeting.getRecursiveInfo()-currentDayOfTheWeek);
+      System.out.println("2 " + dt);
+    }
+    meeting.setDateOfMeeting(dt.toDate());
+    System.out.println(meeting.getDateOfMeeting());
+    return meeting;
+  }
+
+  private Meeting setDateForEveryYear (Meeting meeting) {
+    DateTime dt = new DateTime();
+    int currentDayOfTheWeek = dt.getDayOfWeek();
+    if (currentDayOfTheWeek>(meeting.getRecursiveInfo())) {
+      dt = dt.plusDays(meeting.getRecursiveInfo()-currentDayOfTheWeek + 7);
+      System.out.println("1 " + dt);
+    } else if (currentDayOfTheWeek<(meeting.getRecursiveInfo())){
+      dt = dt.plusDays(meeting.getRecursiveInfo()-currentDayOfTheWeek);
+      System.out.println("2 " + dt);
+    }
+    meeting.setDateOfMeeting(dt.toDate());
+    System.out.println(meeting.getDateOfMeeting());
+    return meeting;
+  }
+
+  private Meeting createRecursiveMeeting (Meeting meeting) {
+    String type = meeting.getMeetingType();
+    if (type.equals("Every week")) {
+      meeting = setDateForEveryWeek(meeting);
+      return meeting;
+    }
+    if (type.equals("Every first week of the month")) {
+      meeting = setDateForEveryMonthFirst(meeting);
+      return meeting;
+    }
+    if (type.equals("Every last week of the month")) {
+      meeting = setDateForEveryMonthLast(meeting);
+      return meeting;
+    }
+    if (type.equals("Every")) {
+      meeting = setDateForEvery(meeting);
+      return meeting;
+    }
+    if (type.equals("Every year")) {
+      meeting = setDateForEveryYear(meeting);
+      return meeting;
+    }
+    return meeting;
+  }
+
+  public Meeting createMeeting(Meeting meeting) {
+
+    if (!meeting.getMeetingType().equals( "simple")) {
+      meeting = createRecursiveMeeting(meeting);
+    }
+
+      if (meeting.getMeetingLocation() != null) {
+        Location location = meeting.getMeetingLocation();
+        location.setName(location.getPlaceName());
+        em.save(location);
+      }
+      meeting.setName(meeting.getMeetingName());
+      meeting.setAmountOfParticipants(1);
+      meeting.setPollForPlaceOpen(0);
+      meeting.setPollForDateOpen(0);
+      meeting.setAvatarUrl(meeting.getAvatarUrl());
+      em.save(meeting);
+      Bill bill = new Bill();
+      bill.setName("bill for " + meeting.getMeetingName());
+      bill.setBillStatus("empty");
+      bill.setBillTotalSum(0.0);
+      bill.setBillCommonAmount(0.0);
+      bill.setBillOfMeeting(meeting);
+      //bill.setBillOwner(meeting.getBoss());
+      bill.setDateOfBill(meeting.getDateOfMeeting());
+      em.save(bill);
+      Chat chat = new Chat();
+      chat.setChatName(meeting.getMeetingName() + " chat");
+      chat.setName(meeting.getMeetingName() + " chat");
+      chat.setChatType("meeting");
+      chat.setLastUpdate(new Date());
+      chat.setAvatarUrl(meeting.getAvatarUrl());
+      List<User> pplInChat = new ArrayList<>();
+      pplInChat.add(meeting.getBoss());
+      chat.setSubscribers(pplInChat);
+      em.save(chat);
+      meeting.setMeetingChat(chat);
+      em.save(meeting);
+
     return meeting;
   }
 
