@@ -85,4 +85,12 @@
         <sqlFile path="sql/020_mock_heroes.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 
+    <changeSet id="22" author="guseva">
+        <sqlFile path="sql/021_custompoll.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="23" author="guseva">
+        <sqlFile path="sql/022_custompolloption.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
 </databaseChangeLog>

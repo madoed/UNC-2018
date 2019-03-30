@@ -4,9 +4,7 @@ package com.netcreker.meetup.service.poll;
 import com.netcreker.meetup.databasemanager.query.ObjectQuery;
 import com.netcreker.meetup.entity.location.Location;
 import com.netcreker.meetup.entity.location.MeetingLocation;
-import com.netcreker.meetup.entity.meeting.DatePoll;
-import com.netcreker.meetup.entity.meeting.Meeting;
-import com.netcreker.meetup.entity.meeting.Participant;
+import com.netcreker.meetup.entity.meeting.*;
 import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.entitymanager.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,5 +142,97 @@ public class PollService {
     datePoll.setVoicesForDate(voices);
     em.save(datePoll);
     return datePoll;
+  }
+
+  public CustomPoll createPoll (CustomPoll customPoll) {
+    customPoll.setIsOpened(1);
+    customPoll.setName(customPoll.getCustomPollName());
+    em.save(customPoll);
+    return customPoll;
+  }
+
+  public List<CustomPoll> getCustomPolls (long meetingId) {
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(19).reference(1097, meetingId);
+    List<CustomPoll> customPolls = em.filter(CustomPoll.class, query, false);
+    if(customPolls.isEmpty()) {
+      return null;
+    }
+    Integer participantsAmount = ParticipantsAmount(customPolls.get(0).getPollOfMeeting().getId());
+    List<CustomPollOption> customPollOptions;
+    for (CustomPoll customPoll: customPolls) {
+      customPollOptions = customPoll.getOptionsInPoll();
+      for (CustomPollOption customPollOption:customPollOptions) {
+        customPollOption.setPercentageForOption(Math.round(customPollOption.getVoicesForOption().size()*100/ participantsAmount
+                * 100.0) / 100.0);
+      }
+      customPollOptions.sort(Comparator.comparing(CustomPollOption::getId));
+    }
+    return customPolls;
+  }
+
+  public CustomPoll openCustomPoll(long pollId) {
+    CustomPoll customPoll = em.load(CustomPoll.class, pollId);
+    customPoll.setIsOpened(1);
+    em.save(customPoll);
+    return customPoll;
+  }
+
+  public CustomPoll closeCustomPoll(long pollId) {
+    CustomPoll customPoll = em.load(CustomPoll.class, pollId);
+    customPoll.setIsOpened(1);
+    em.save(customPoll);
+    return customPoll;
+  }
+
+  public CustomPollOption voteForOption(long customPollOptionId, long userId) {
+    CustomPollOption customPollOption = em.load(CustomPollOption.class, customPollOptionId);
+    List<User> voices = customPollOption.getVoicesForOption();
+    User user = em.load(User.class, userId);
+    if (voices.contains(user))
+      voices.remove(user);
+    else
+      voices.add(user);
+    customPollOption.setVoicesForOption(voices);
+    em.save(customPollOption);
+
+    ObjectQuery query = ObjectQuery.newInstance()
+            .objectTypeId(19).reference(1100, customPollOption.getId());
+    CustomPoll customPoll = em.filter(CustomPoll.class, query, false).get(0);
+
+    Integer participantsAmount = ParticipantsAmount(customPoll.getPollOfMeeting().getId());
+
+    customPollOption.setPercentageForOption(Math.round(customPollOption.getVoicesForOption().size()*100/ participantsAmount
+              * 100.0) / 100.0);
+
+    return customPollOption;
+  }
+
+  public CustomPoll addOptionInPoll(long pollId, CustomPollOption option, long participantId) {
+
+    Participant participant = em.load(Participant.class, participantId);
+    User user = em.load(User.class, participant.getMeetingParticipant().getId());
+    CustomPollOption customPollOption = new CustomPollOption();
+    customPollOption.setOption(option.getOption());
+    customPollOption.setSuggesterOfOption(user);
+    List<User> voices = new ArrayList<>();
+    voices.add(user);
+    customPollOption.setVoicesForOption(voices);
+    customPollOption.setName(customPollOption.getOption());
+    em.save(customPollOption);
+    CustomPoll poll = em.load(CustomPoll.class, pollId);
+    List<CustomPollOption> options = new ArrayList<>();
+    options.add(customPollOption);
+    poll.setOptionsInPoll(options);
+    em.save(poll);
+
+    Integer participantsAmount = ParticipantsAmount(poll.getPollOfMeeting().getId());
+    for (CustomPollOption opt:poll.getOptionsInPoll()) {
+      opt.setPercentageForOption(Math.round(customPollOption.getVoicesForOption().size()*100/ participantsAmount
+              * 100.0) / 100.0);
+    }
+    poll.getOptionsInPoll().sort(Comparator.comparing(CustomPollOption::getId));
+
+    return poll;
   }
 }

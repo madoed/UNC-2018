@@ -48,4 +48,6 @@ public class Meeting extends Entity {
   private String meetingType;
   @Parameter(1095)
   private Integer recursiveInfo;
+  @Parameter(1096)
+  private String recursiveUpdate;//old, new
 }

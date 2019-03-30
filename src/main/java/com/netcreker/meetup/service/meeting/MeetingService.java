@@ -10,6 +10,7 @@ import com.netcreker.meetup.entity.user.User;
 import com.netcreker.meetup.entitymanager.EntityManager;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -36,7 +37,10 @@ public class MeetingService {
 
     if(type.equals(1)){
       Date date = new Date();
-      date.setTime(24);
+      date.setHours(23);
+
+      //date.setMonth(4);
+
       List<Participant> past = new ArrayList<Participant>();
       for (Participant part:participation) {
         if ((part.getParticipantOfMeeting().getDateOfMeeting()!=null)&&part.getParticipantOfMeeting().getDateOfMeeting().before(date)) {
@@ -46,17 +50,58 @@ public class MeetingService {
       return past;
     } else if(type.equals(0)){
       Date date = new Date();
-      date.setTime(24);
+      date.setHours(23);
+
+      //date.setMonth(4);
+
       List<Participant> future = new ArrayList<Participant>();
       for (Participant part:participation) {
         if ((part.getParticipantOfMeeting().getDateOfMeeting()==null)||part.getParticipantOfMeeting().getDateOfMeeting().after(date)) {
           future.add(part);
         }
+        if ((part.getParticipantOfMeeting().getDateOfMeeting()!=null)&&
+                part.getParticipantOfMeeting().getDateOfMeeting().before(date)&&
+                (!part.getParticipantOfMeeting().getMeetingType().equals("simple"))&&
+                (!part.getParticipantOfMeeting().getRecursiveUpdate().equals("old"))) {
+          Meeting meeting = em.load(Meeting.class, part.getParticipantOfMeeting().getId());
+          meeting = recreateRecursiveMeeting(meeting);
+          if (meeting.getBoss().getId()==id) {
+            query = ObjectQuery.newInstance()
+                    .objectTypeId(10).reference(1046, id)
+                    .objectTypeId(10).reference(1048, meeting.getId());
+            future.add(em.filter(Participant.class, query, false).get(0));
+          }
+        }
       }
       return future;
+    } else {
+      Date date = new Date();
+      date.setHours(23);
+
+      //date.setMonth(4);
+
+      query = ObjectQuery.newInstance()
+              .objectTypeId(10).reference(1046, id)
+              .objectTypeId(10).value(1078, "confirmed");
+      List<Participant> past = em.filter(Participant.class, query, false);
+      for (Participant part:past) {
+        if ((part.getParticipantOfMeeting().getDateOfMeeting()!=null)&&
+                part.getParticipantOfMeeting().getDateOfMeeting().before(date)&&
+                (!part.getParticipantOfMeeting().getMeetingType().equals("simple"))&&
+                (!part.getParticipantOfMeeting().getRecursiveUpdate().equals("old"))) {
+          Meeting meeting = em.load(Meeting.class, part.getParticipantOfMeeting().getId());
+          meeting = recreateRecursiveMeeting(meeting);
+          if (meeting.getBoss().getId()!=id) {
+            query = ObjectQuery.newInstance()
+                    .objectTypeId(10).reference(1046, id)
+                    .objectTypeId(10).reference(1048, meeting.getId());
+             participation.add(em.filter(Participant.class, query, false).get(0));
+          }
+        }
+      }
+      return participation;
     }
 
-    return participation;
   }
 
   public Meeting getMeeting(Long id){
@@ -85,6 +130,12 @@ public class MeetingService {
 
   public void setDate(Date newDate, long id){
     Meeting meeting = em.load(Meeting.class, id);
+    Date d = new Date();
+    d = newDate;
+    d.setHours(0);
+    d.setMinutes(0);
+    d.setSeconds(0);
+    meeting.setDateOfMeeting(d);
     meeting.setDateOfMeeting(newDate);
     em.save(meeting);
   }
@@ -203,29 +254,61 @@ public class MeetingService {
 
   private Meeting setDateForEvery (Meeting meeting) {
     DateTime dt = new DateTime();
-    int currentDayOfTheWeek = dt.getDayOfWeek();
-    if (currentDayOfTheWeek>(meeting.getRecursiveInfo())) {
-      dt = dt.plusDays(meeting.getRecursiveInfo()-currentDayOfTheWeek + 7);
-      System.out.println("1 " + dt);
-    } else if (currentDayOfTheWeek<(meeting.getRecursiveInfo())){
-      dt = dt.plusDays(meeting.getRecursiveInfo()-currentDayOfTheWeek);
-      System.out.println("2 " + dt);
+    DateTime dtLast = dt.plusMonths(1).dayOfMonth().setCopy(1).minusDays(1);
+
+    if (dtLast.getDayOfMonth()<(meeting.getRecursiveInfo())) {
+      dt = dtLast;
+      System.out.println("every 1 " + dt);
+    } else if (dt.getDayOfMonth()<=(meeting.getRecursiveInfo())) {
+      dt = dt.dayOfMonth().setCopy(meeting.getRecursiveInfo());
+      System.out.println("every 2 " + dt);
+    } else {
+      //next month
+      dtLast = dt.plusMonths(2).dayOfMonth().setCopy(1).minusDays(1);
+      if (dtLast.getDayOfMonth()<(meeting.getRecursiveInfo())) {
+        dt = dtLast;
+        System.out.println("every 3 " + dt);
+      } else {
+        dtLast = dtLast.dayOfMonth().setCopy(meeting.getRecursiveInfo());
+        dt = dtLast;
+        System.out.println("every 4 " + dt);
+      }
     }
+
+
     meeting.setDateOfMeeting(dt.toDate());
     System.out.println(meeting.getDateOfMeeting());
     return meeting;
   }
 
   private Meeting setDateForEveryYear (Meeting meeting) {
+    meeting.setRecursiveInfo(meeting.getDateOfMeeting().getDate());
+    System.out.println(meeting.getDateOfMeeting());
     DateTime dt = new DateTime();
-    int currentDayOfTheWeek = dt.getDayOfWeek();
-    if (currentDayOfTheWeek>(meeting.getRecursiveInfo())) {
-      dt = dt.plusDays(meeting.getRecursiveInfo()-currentDayOfTheWeek + 7);
-      System.out.println("1 " + dt);
-    } else if (currentDayOfTheWeek<(meeting.getRecursiveInfo())){
-      dt = dt.plusDays(meeting.getRecursiveInfo()-currentDayOfTheWeek);
-      System.out.println("2 " + dt);
+    Date today = new Date();
+    System.out.println(today);
+    today.setHours(23);
+    System.out.println(today);
+
+    if (((meeting.getDateOfMeeting().getMonth()==today.getMonth())
+            &&(meeting.getDateOfMeeting().getDate()<today.getDate())
+            ||(meeting.getDateOfMeeting().getMonth()<today.getMonth()))) {
+      dt = dt.plusYears(1);
     }
+
+    dt = dt.monthOfYear().setCopy(meeting.getDateOfMeeting().getMonth()+1);
+    DateTime dtLast = dt.plusMonths(1).dayOfMonth().setCopy(1).minusDays(1);
+    System.out.println(meeting.getDateOfMeeting().getDate());
+    if (dtLast.getDayOfMonth()>=meeting.getDateOfMeeting().getDate()) {
+        dt = dt.dayOfMonth().setCopy(meeting.getDateOfMeeting().getDate());
+    } else {
+        dt = dtLast;
+    }
+
+
+//    if (dtLast.getDayOfMonth()>meeting.getDateOfMeeting().getDay()) {
+//      dt = dt.dayOfMonth().setCopy(dtLast.getDayOfMonth());
+//    }
     meeting.setDateOfMeeting(dt.toDate());
     System.out.println(meeting.getDateOfMeeting());
     return meeting;
@@ -256,10 +339,89 @@ public class MeetingService {
     return meeting;
   }
 
+  private Meeting recreateRecursiveMeeting (Meeting meeting) {
+    meeting.setRecursiveUpdate("old");
+    em.save(meeting);
+    Meeting newMeeting = new Meeting();
+    newMeeting.setMeetingName(meeting.getMeetingName());
+    newMeeting.setMeetingDescription(meeting.getMeetingDescription());
+    newMeeting.setTimeOfMeeting(meeting.getTimeOfMeeting());
+    newMeeting.setStatus(meeting.getStatus());
+    User boss = em.load(User.class, meeting.getBoss().getId());
+    newMeeting.setBoss(boss);
+    if (meeting.getMeetingLocation()!=null) {
+      newMeeting.setMeetingLocation(meeting.getMeetingLocation());
+    }
+    newMeeting.setAmountOfParticipants(1);
+    newMeeting.setPollForPlaceOpen(0);
+    newMeeting.setPollForDateOpen(0);
+    newMeeting.setAvatarUrl(meeting.getAvatarUrl());
+    newMeeting.setRecursiveInfo(meeting.getRecursiveInfo());
+    newMeeting.setRecursiveUpdate("new");
+    newMeeting.setMeetingType(meeting.getMeetingType());
+    em.save(newMeeting);
+
+    newMeeting = createRecursiveMeeting(newMeeting);
+
+    Bill bill = new Bill();
+    bill.setName("bill for " + newMeeting.getMeetingName());
+    bill.setBillStatus("empty");
+    bill.setBillTotalSum(0.0);
+    bill.setBillCommonAmount(0.0);
+    bill.setBillOfMeeting(newMeeting);
+    //bill.setBillOwner(meeting.getBoss());
+    bill.setDateOfBill(newMeeting.getDateOfMeeting());
+    em.save(bill);
+    newMeeting.setMeetingChat(meeting.getMeetingChat());
+    newMeeting.setName(newMeeting.getMeetingName());
+    em.save(newMeeting);
+    ObjectQuery query = ObjectQuery.newInstance()
+              .objectTypeId(10).reference(1048, meeting.getId())
+              .objectTypeId(10).value(1078, "confirmed");
+    List<Participant> oldParticipants = em.filter(Participant.class, query, false);
+    System.out.println("parts "+oldParticipants.size());
+    User user;
+    Participant newParticipant = new Participant();
+    //List<User> pplInChat = new ArrayList<>();
+    for (Participant participant:oldParticipants) {
+      user = em.load(User.class, participant.getMeetingParticipant().getId());
+      newParticipant.setMeetingParticipant(user);
+      newParticipant.setParticipantOfMeeting(newMeeting);
+      newParticipant.setName(newMeeting.getName());
+      newParticipant.setAlreadyPayed(0.0);
+      if (participant.getMeetingParticipant().getId()!=meeting.getBoss().getId()) {
+        newParticipant.setStatusOfConfirmation("not confirmed");
+      } else {
+        newParticipant.setStatusOfConfirmation("confirmed");
+      }
+
+      em.save(newParticipant);
+      //pplInChat.add(participant.getMeetingParticipant());
+    }
+    //meeting.setAmountOfParticipants(participants.size());
+    em.save(newMeeting);
+
+    return newMeeting;
+  }
+
   public Meeting createMeeting(Meeting meeting) {
 
+    //System.out.println(meeting.getDateOfMeeting());
     if (!meeting.getMeetingType().equals( "simple")) {
       meeting = createRecursiveMeeting(meeting);
+      if (!meeting.getMeetingType().equals("Every")) {
+        meeting.setMeetingName(meeting.getMeetingName() + " (" + meeting.getMeetingType() + ")");
+      } else {
+        meeting.setMeetingName(meeting.getMeetingName() + " (Every month)");
+      }
+      meeting.setRecursiveUpdate("new");
+    } else {
+      Date d = new Date();
+      d = meeting.getDateOfMeeting();
+      d.setHours(0);
+      d.setMinutes(0);
+      d.setSeconds(0);
+      meeting.setDateOfMeeting(d);
     }
 
       if (meeting.getMeetingLocation() != null) {
@@ -343,7 +505,10 @@ public class MeetingService {
     em.save(participant);
     Chat chat = em.load(Chat.class, participant.getParticipantOfMeeting().getMeetingChat().getId());
     List<User> userList = chat.getSubscribers();
-    userList.add(participant.getMeetingParticipant());
+    User user = em.load(User.class, participant.getMeetingParticipant().getId());
+    if (!userList.contains(user)) {
+      userList.add(participant.getMeetingParticipant());
+    }
     chat.setSubscribers(userList);
     em.save(chat);
   }

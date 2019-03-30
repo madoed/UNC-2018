@@ -2,6 +2,8 @@ package com.netcreker.meetup.controller.poll;
 
 import com.netcreker.meetup.entity.location.Location;
 import com.netcreker.meetup.entity.location.MeetingLocation;
+import com.netcreker.meetup.entity.meeting.CustomPoll;
+import com.netcreker.meetup.entity.meeting.CustomPollOption;
 import com.netcreker.meetup.entity.meeting.DatePoll;
 import com.netcreker.meetup.entity.meeting.Meeting;
 import com.netcreker.meetup.service.poll.PollService;
@@ -102,5 +104,55 @@ public class PollController {
     //HttpHeaders headers = new HttpHeaders();
     //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
     return new ResponseEntity<DatePoll>(datePoll, HttpStatus.OK);
+  }
+
+  @GetMapping("/meeting-custom-polls/{meetingId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<List<CustomPoll>> getCustomPolls(@PathVariable long meetingId) {
+    List<CustomPoll> polls = pollService.getCustomPolls(meetingId);
+    return new ResponseEntity<List<CustomPoll>>(polls, HttpStatus.OK);
+  }
+
+  @GetMapping("/meeting-custom-poll-open/{pollId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<CustomPoll> openCustomPoll(@PathVariable long pollId) {
+    CustomPoll customPoll = pollService.openCustomPoll(pollId);
+    return new ResponseEntity<CustomPoll>(customPoll, HttpStatus.CREATED);
+  }
+
+  @GetMapping("/meeting-custom-poll-close/{pollId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<CustomPoll> closeCustomPoll(@PathVariable long pollId) {
+    CustomPoll customPoll = pollService.closeCustomPoll(pollId);
+    return new ResponseEntity<CustomPoll>(customPoll, HttpStatus.CREATED);
+  }
+
+  @PostMapping("/meeting-custom-poll-vote/{userId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<CustomPollOption> voteForOption(@RequestBody long customPollOptionId, @PathVariable long userId) {
+    CustomPollOption customPollOption = pollService.voteForOption(customPollOptionId, userId);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<CustomPollOption>(customPollOption, HttpStatus.OK);
+  }
+
+  @PostMapping("/meeting-poll-add-option/{participantId}/{pollId}")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<CustomPoll>addOptionInPoll(@RequestBody CustomPollOption customPollOption,
+                                                         @PathVariable long participantId ,
+                                                         @PathVariable long pollId) {
+    CustomPoll newCustomPoll = pollService.addOptionInPoll(pollId, customPollOption, participantId);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<CustomPoll>(newCustomPoll, HttpStatus.CREATED);
+  }
+
+  @PostMapping("/meeting-poll-create")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<CustomPoll>createPoll(@RequestBody CustomPoll customPoll) {
+    CustomPoll newCustomPoll = pollService.createPoll(customPoll);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<CustomPoll>(newCustomPoll, HttpStatus.CREATED);
   }
 }
