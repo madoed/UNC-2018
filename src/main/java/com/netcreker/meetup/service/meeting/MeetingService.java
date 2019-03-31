@@ -39,11 +39,17 @@ public class MeetingService {
       Date date = new Date();
       date.setHours(23);
 
+      DateTime dt = new DateTime();
+      dt = dt.minusDays(1);
+      Date date1 = dt.toDate();
+      date1.setHours(23);
+      date1.setMinutes(59);
+      date1.setSeconds(59);
       //date.setMonth(4);
 
       List<Participant> past = new ArrayList<Participant>();
       for (Participant part:participation) {
-        if ((part.getParticipantOfMeeting().getDateOfMeeting()!=null)&&part.getParticipantOfMeeting().getDateOfMeeting().before(date)) {
+        if ((part.getParticipantOfMeeting().getDateOfMeeting()!=null)&&part.getParticipantOfMeeting().getDateOfMeeting().before(date1)) {
           past.add(part);
         }
       }
@@ -52,15 +58,22 @@ public class MeetingService {
       Date date = new Date();
       date.setHours(23);
 
+      DateTime dt = new DateTime();
+      dt = dt.minusDays(1);
+      Date date1 = dt.toDate();
+      date1.setHours(23);
+      date1.setMinutes(59);
+      date1.setSeconds(59);
+
       //date.setMonth(4);
 
       List<Participant> future = new ArrayList<Participant>();
       for (Participant part:participation) {
-        if ((part.getParticipantOfMeeting().getDateOfMeeting()==null)||part.getParticipantOfMeeting().getDateOfMeeting().after(date)) {
+        if ((part.getParticipantOfMeeting().getDateOfMeeting()==null)||!part.getParticipantOfMeeting().getDateOfMeeting().before(date1)) {
           future.add(part);
         }
         if ((part.getParticipantOfMeeting().getDateOfMeeting()!=null)&&
-                part.getParticipantOfMeeting().getDateOfMeeting().before(date)&&
+                (!part.getParticipantOfMeeting().getDateOfMeeting().after(date1))&&
                 (!part.getParticipantOfMeeting().getMeetingType().equals("simple"))&&
                 (!part.getParticipantOfMeeting().getRecursiveUpdate().equals("old"))) {
           Meeting meeting = em.load(Meeting.class, part.getParticipantOfMeeting().getId());
@@ -78,6 +91,14 @@ public class MeetingService {
       Date date = new Date();
       date.setHours(23);
 
+      DateTime dt = new DateTime();
+      dt = dt.minusDays(1);
+      Date date1 = dt.toDate();
+      date1.setHours(23);
+      date1.setMinutes(59);
+      date1.setSeconds(59);
+
+
       //date.setMonth(4);
 
       query = ObjectQuery.newInstance()
@@ -86,7 +107,7 @@ public class MeetingService {
       List<Participant> past = em.filter(Participant.class, query, false);
       for (Participant part:past) {
         if ((part.getParticipantOfMeeting().getDateOfMeeting()!=null)&&
-                part.getParticipantOfMeeting().getDateOfMeeting().before(date)&&
+                (!part.getParticipantOfMeeting().getDateOfMeeting().after(date1))&&
                 (!part.getParticipantOfMeeting().getMeetingType().equals("simple"))&&
                 (!part.getParticipantOfMeeting().getRecursiveUpdate().equals("old"))) {
           Meeting meeting = em.load(Meeting.class, part.getParticipantOfMeeting().getId());
