@@ -415,7 +415,7 @@ public class MeetingService {
         meeting.setMeetingName(meeting.getMeetingName() + " (Every month)");
       }
       meeting.setRecursiveUpdate("new");
-    } else {
+    } else if (meeting.getDateOfMeeting()!=null){
       Date d = new Date();
       d = meeting.getDateOfMeeting();
       d.setHours(0);

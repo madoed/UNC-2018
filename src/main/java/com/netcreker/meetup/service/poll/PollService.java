@@ -168,6 +168,7 @@ public class PollService {
       }
       customPollOptions.sort(Comparator.comparing(CustomPollOption::getId));
     }
+    customPolls.sort(Comparator.comparing(CustomPoll::getId));
     return customPolls;
   }
 
@@ -180,7 +181,7 @@ public class PollService {
 
   public CustomPoll closeCustomPoll(long pollId) {
     CustomPoll customPoll = em.load(CustomPoll.class, pollId);
-    customPoll.setIsOpened(1);
+    customPoll.setIsOpened(0);
     em.save(customPoll);
     return customPoll;
   }
@@ -222,6 +223,7 @@ public class PollService {
     em.save(customPollOption);
     CustomPoll poll = em.load(CustomPoll.class, pollId);
     List<CustomPollOption> options = new ArrayList<>();
+    options = poll.getOptionsInPoll();
     options.add(customPollOption);
     poll.setOptionsInPoll(options);
     em.save(poll);
