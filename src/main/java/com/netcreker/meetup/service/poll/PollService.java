@@ -163,12 +163,14 @@ public class PollService {
     for (CustomPoll customPoll: customPolls) {
       customPollOptions = customPoll.getOptionsInPoll();
       for (CustomPollOption customPollOption:customPollOptions) {
+        System.out.println(customPollOption.getVoicesForOption());
         customPollOption.setPercentageForOption(Math.round(customPollOption.getVoicesForOption().size()*100/ participantsAmount
                 * 100.0) / 100.0);
       }
       customPollOptions.sort(Comparator.comparing(CustomPollOption::getId));
     }
     customPolls.sort(Comparator.comparing(CustomPoll::getId));
+
     return customPolls;
   }
 
@@ -230,7 +232,7 @@ public class PollService {
 
     Integer participantsAmount = ParticipantsAmount(poll.getPollOfMeeting().getId());
     for (CustomPollOption opt:poll.getOptionsInPoll()) {
-      opt.setPercentageForOption(Math.round(customPollOption.getVoicesForOption().size()*100/ participantsAmount
+      opt.setPercentageForOption(Math.round(opt.getVoicesForOption().size()*100/ participantsAmount
               * 100.0) / 100.0);
     }
     poll.getOptionsInPoll().sort(Comparator.comparing(CustomPollOption::getId));

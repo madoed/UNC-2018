@@ -171,4 +171,12 @@ public class MeetingController {
     return new ResponseEntity<String>(HttpStatus.OK);
   }
 
+  @PostMapping("/meeting-set-simple")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<Meeting>changeMeetingType(@RequestBody long id) {
+    Meeting meeting = meetingService.changeMeetingType(id);
+    //HttpHeaders headers = new HttpHeaders();
+    //headers.setLocation(ucBuilder.path("/card/{id}").buildAndExpand(newCard.getId()).toUri());
+    return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
+  }
 }

@@ -431,8 +431,10 @@ public class MeetingService {
     if (!meeting.getMeetingType().equals( "simple")) {
       meeting = createRecursiveMeeting(meeting);
       if (!meeting.getMeetingType().equals("Every")) {
+        meeting.setName(meeting.getMeetingName());
         meeting.setMeetingName(meeting.getMeetingName() + " (" + meeting.getMeetingType() + ")");
       } else {
+        meeting.setName(meeting.getMeetingName());
         meeting.setMeetingName(meeting.getMeetingName() + " (Every month)");
       }
       meeting.setRecursiveUpdate("new");
@@ -450,7 +452,10 @@ public class MeetingService {
         location.setName(location.getPlaceName());
         em.save(location);
       }
+
+    if (meeting.getMeetingType().equals( "simple")) {
       meeting.setName(meeting.getMeetingName());
+    }
       meeting.setAmountOfParticipants(1);
       meeting.setPollForPlaceOpen(0);
       meeting.setPollForDateOpen(0);
@@ -539,9 +544,25 @@ public class MeetingService {
     em.delete(participant.getId());
   }
 
-  public void changeMeetingStatus(String status, long id){
+  public void changeMeetingStatus(String status, long id) {
     Meeting meeting = em.load(Meeting.class, id);
     meeting.setStatus(status);
     em.save(meeting);
+  }
+
+  public Meeting changeMeetingType (long id) {
+    Meeting meeting = em.load(Meeting.class, id);
+    meeting.setMeetingType("simple");
+    DateTime dt = new DateTime();
+    dt = dt.monthOfYear().setCopy(meeting.getDateOfMeeting().getMonth()+1);
+    dt = dt.dayOfMonth().setCopy(meeting.getDateOfMeeting().getDate());
+    dt = dt.yearOfCentury().setCopy(meeting.getDateOfMeeting().getYear()-100);
+    dt = dt.minusDays(1);
+    System.out.println(dt);
+    meeting.setDateOfMeeting(dt.toDate());
+    System.out.println(dt.toDate());
+    meeting.setMeetingName(meeting.getName());
+    em.save(meeting);
+    return meeting;
   }
 }
